@@ -5,6 +5,7 @@
 #include <Magnum/Shaders/VertexColor.h>
 #include <Magnum/ImGuiIntegration/Context.hpp>
 #include <Magnum/Math/Color.h>
+#include <Magnum/Mesh.h>
 #ifndef CORRADE_TARGET_EMSCRIPTEN
 #include <Magnum/Platform/Sdl2Application.h>
 #else
@@ -12,6 +13,9 @@
 #endif
 
 #include "slider.h"
+#include "vertex_generate.h"
+
+#include <Magnum/Math/Matrix3.h>
 
 using namespace Magnum;
 using namespace Math::Literals;
@@ -41,6 +45,8 @@ class TriangleExample: public Platform::Application {
 
         std::vector<char> slider_string;
         Slider slider;
+        std::vector<Slider_vert> slider_verts;
+        std::vector<Line_vert> line_verts;
 };
 
 TriangleExample::TriangleExample(const Arguments& arguments):
@@ -119,6 +125,40 @@ void TriangleExample::drawEvent() {
             }
         }
 
+        const auto flatten_slider = [](const Slider& slider){
+            Slider_segment out = slider.front();
+            for(std::size_t i = 1; i < slider.size(); ++i){
+                std::copy(slider[i].begin() + 1, slider[i].end(), std::back_inserter(out));
+            }
+            return out;
+        };
+        slider_verts = vertex_generate(flatten_slider(slider));
+
+        std::vector<Magnum::Color3> colors{
+            Magnum::Color3::red(),
+            Magnum::Color3::blue(),
+            Magnum::Color3::green(),
+            Magnum::Color3::yellow(),
+            Magnum::Color3::magenta(),
+        };
+
+        line_verts = line_generate(flatten_slider(slider), 5.f, colors);
+
+        auto m = Matrix3::projection((Magnum::Vector2)windowSize());
+        for(auto& v : line_verts){
+            const auto old = v.position;
+            v.position = (m * Magnum::Vector3{v.position, {}}).xy();
+            printf("%f:%f -> %f:%f", old.x(), old.y(), v.position.x(), v.position.y());
+        }
+
+        GL::Buffer buffer;
+        buffer.setData(line_verts);
+
+        _mesh.setCount(line_verts.size())
+            .setPrimitive(Magnum::MeshPrimitive::TriangleStrip)
+            .addVertexBuffer(std::move(buffer), 0,
+                Shaders::VertexColor2D::Position{},
+                Shaders::VertexColor2D::Color3{});
     }
     ImGui::End();
 
