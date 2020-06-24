@@ -11,6 +11,8 @@
 #include <Magnum/Platform/EmscriptenApplication.h>
 #endif
 
+#include "slider.h"
+
 using namespace Magnum;
 using namespace Math::Literals;
 
@@ -37,10 +39,8 @@ class TriangleExample: public Platform::Application {
 
         ImGuiIntegration::Context _imgui{NoCreate};
 
-        bool _showDemoWindow = true;
-        bool _showAnotherWindow = false;
-        Color4 _clearColor = 0x72909aff_rgbaf;
-        Float _floatValue = 0.0f;
+        std::vector<char> slider_string;
+        Slider slider;
 };
 
 TriangleExample::TriangleExample(const Arguments& arguments):
@@ -86,6 +86,10 @@ TriangleExample::TriangleExample(const Arguments& arguments):
     /* Have some sane speed, please */
     setMinimalLoopPeriod(16);
     #endif
+
+    std::string_view s = "100,100,12600,6,1,B|200:200|250:200|250:200|300:150,2,310.123,2|1|2,0:0|0:0|0:2,0:0:0:0:";
+    slider_string = { s.begin(), s.end() };
+    slider_string.resize(256);
 }
 
 void TriangleExample::drawEvent() {
@@ -102,36 +106,21 @@ void TriangleExample::drawEvent() {
     else if(!ImGui::GetIO().WantTextInput && isTextInputActive())
         stopTextInput();
 
-    /* 1. Show a simple window.
-       Tip: if we don't call ImGui::Begin()/ImGui::End() the widgets appear in
-       a window called "Debug" automatically */
-    {
-        ImGui::Text("Hello, world!");
-        ImGui::SliderFloat("Float", &_floatValue, 0.0f, 1.0f);
-        if(ImGui::ColorEdit3("Clear Color", _clearColor.data()))
-            GL::Renderer::setClearColor(_clearColor);
-        if(ImGui::Button("Test Window"))
-            _showDemoWindow ^= true;
-        if(ImGui::Button("Another Window"))
-            _showAnotherWindow ^= true;
-        ImGui::Text("Application average %.3f ms/frame (%.1f FPS)",
-            1000.0/Double(ImGui::GetIO().Framerate), Double(ImGui::GetIO().Framerate));
-    }
+    ImGui::Begin("Slider");
+    ImGui::InputText("Slider", slider_string.data(), slider_string.size());
+    if(ImGui::Button("Apply")){
+        printf("Prasing slider: %s\n", slider_string.data());
+        slider = parse_slider(slider_string.data()).value();
 
-    /* 2. Show another simple window, now using an explicit Begin/End pair */
-    if(_showAnotherWindow) {
-        ImGui::SetNextWindowSize(ImVec2(500, 100), ImGuiCond_FirstUseEver);
-        ImGui::Begin("Another Window", &_showAnotherWindow);
-        ImGui::Text("Hello");
-        ImGui::End();
-    }
+        for(const auto& segment : slider){
+            printf("Segment\n");
+            for(const auto point : segment){
+                printf("x: %f y: %f\n", point.x(), point.y());
+            }
+        }
 
-    /* 3. Show the ImGui demo window. Most of the sample code is in
-       ImGui::ShowDemoWindow() */
-    if(_showDemoWindow) {
-        ImGui::SetNextWindowPos(ImVec2(650, 20), ImGuiCond_FirstUseEver);
-        ImGui::ShowDemoWindow();
     }
+    ImGui::End();
 
     /* Update application cursor */
     _imgui.updateApplicationCursor(*this);

@@ -19,6 +19,7 @@ set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
 
 add_executable(slider_draw
 	src/main.cpp
+	src/slider.cpp
 	# $<TARGET_OBJECTS:shaders_resources>
 )
 
