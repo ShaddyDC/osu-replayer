@@ -16,6 +16,8 @@
 #include "vertex_generate.h"
 
 #include <Magnum/Math/Matrix3.h>
+#include <Corrade/Utility/Resource.h>
+#include <Corrade/Utility/DebugStl.h>
 
 using namespace Magnum;
 using namespace Math::Literals;
@@ -96,6 +98,9 @@ TriangleExample::TriangleExample(const Arguments& arguments):
     std::string_view s = "100,100,12600,6,1,B|200:200|250:200|250:200|300:150,2,310.123,2|1|2,0:0|0:0|0:2,0:0:0:0:";
     slider_string = { s.begin(), s.end() };
     slider_string.resize(256);
+
+    Utility::Resource rs {"shaders"};
+    Magnum::Debug() << rs.get("sliderbody.frag");
 }
 
 void TriangleExample::drawEvent() {

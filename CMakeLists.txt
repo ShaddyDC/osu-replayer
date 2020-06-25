@@ -17,11 +17,16 @@ add_subdirectory(libs)
 
 set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
 
+# shaders
+corrade_add_resource(ShaderResources res/shaders.conf)
+add_library(shaders_resources OBJECT ${ShaderResources})
+target_link_libraries(shaders_resources Corrade::Utility)
+
 add_executable(slider_draw
 	src/main.cpp
 	src/slider.cpp
 	src/vertex_generate.cpp
-	# $<TARGET_OBJECTS:shaders_resources>
+	$<TARGET_OBJECTS:shaders_resources>
 )
 
 set_target_properties(slider_draw PROPERTIES
@@ -41,7 +46,7 @@ target_link_libraries(slider_draw PRIVATE
     Magnum::Magnum
     Magnum::Shaders
     MagnumIntegration::ImGui
-#	Corrade::Utility
+	Corrade::Utility
 )
 
 # For Emscripten copy the boilerplate next to the executable so it can be run
