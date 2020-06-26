@@ -8,7 +8,7 @@ struct Circle_vertex{
     Magnum::Vector2 local_position;
 };
 
-void Circleobject_renderer::draw(const Magnum::Vector2 position, const float radius)
+Circleobject_mesh Circleobject_renderer::generate_mesh(const Magnum::Vector2 position, const float radius) const
 {
     Circle_vertex data[] = {
         { position + Magnum::Vector2{ -radius, -radius }, { -1, -1 }},
@@ -26,5 +26,10 @@ void Circleobject_renderer::draw(const Magnum::Vector2 position, const float rad
             Circleobject_shader::Position{},
             Circleobject_shader::Local_position{});
 
+    return mesh;
+}
+
+void Circleobject_renderer::draw(Circleobject_mesh& mesh)
+{
     shader.draw(mesh);
 }

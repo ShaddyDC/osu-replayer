@@ -4,10 +4,21 @@
 #include "circleobject_renderer.h"
 #include "vertex_generate.h"
 #include <Magnum/Shaders/Flat.h>
+#include <Magnum/GL/Mesh.h>
+
+
+using Sliderbody_mesh = Magnum::GL::Mesh;
+
+struct Slider_mesh{
+    Circleobject_mesh head;
+    Sliderbody_mesh body;
+};
 
 class Slider_renderer{
 public:
-    void draw(std::vector<Slider_vert> slider, const float radius);
+    Slider_mesh generate_mesh(const Slider& slider, const float radius);
+    void draw(Slider_mesh& mesh);
+    void draw(Sliderbody_mesh& mesh);
 
 private:
     Sliderbody_shader shader;

@@ -52,8 +52,9 @@ class TriangleExample: public Platform::Application {
 
         std::vector<char> slider_string;
         Slider slider;
-        std::vector<Slider_vert> slider_verts;
-        std::vector<Line_vert> line_verts;
+        Slider_mesh slider_mesh;
+        Line_mesh line_mesh;
+        bool loaded = false;
 };
 
 TriangleExample::TriangleExample(const Arguments& arguments):
@@ -94,6 +95,7 @@ TriangleExample::TriangleExample(const Arguments& arguments):
     GL::Renderer::enable(GL::Renderer::Feature::Blending);
     GL::Renderer::enable(GL::Renderer::Feature::ScissorTest);
     GL::Renderer::disable(GL::Renderer::Feature::FaceCulling);
+    GL::Renderer::disable(GL::Renderer::Feature::DepthTest);
 
     #if !defined(MAGNUM_TARGET_WEBGL)
     /* Have some sane speed, please */
@@ -109,9 +111,9 @@ void TriangleExample::drawEvent() {
     GL::defaultFramebuffer.clear(GL::FramebufferClear::Color);
 
     _shader.draw(_mesh);
-    if(!slider_verts.empty()){
-        line_renderer.draw(line_verts, 5.f);
-        slider_renderer.draw(slider_verts, 30.f);
+    if(loaded){
+        line_renderer.draw(line_mesh);
+        slider_renderer.draw(slider_mesh);
     }
 
    _imgui.newFrame();
@@ -142,7 +144,6 @@ void TriangleExample::drawEvent() {
             }
             return out;
         };
-        slider_verts = vertex_generate(flatten_slider(slider));
 
         std::vector<Magnum::Color3> colors{
             Magnum::Color3::red(),
@@ -152,7 +153,10 @@ void TriangleExample::drawEvent() {
             // Magnum::Color3::magenta(),
         };
 
-        line_verts = line_generate(flatten_slider(slider), 5.f, colors);
+        const auto line = flatten_slider(slider);
+        slider_mesh = slider_renderer.generate_mesh(slider, 30.f);
+        line_mesh = line_renderer.generate_mesh(line, 5.f, colors);
+        loaded = true;
     }
     ImGui::End();
 

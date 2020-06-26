@@ -4,18 +4,24 @@
 #include <Magnum/GL/Mesh.h>
 #include <Magnum/Mesh.h>
 
-void Line_renderer::draw(std::vector<Line_vert> line, const float width)
+Line_mesh Line_renderer::generate_mesh(const Slider_segment& line, const float width, const std::vector<Magnum::Color3>& colors)
 {
-    Magnum::GL::Buffer buffer;
+    const auto line_verts = line_generate(line, width, colors);
 
-    buffer.setData(line);
+    Magnum::GL::Buffer buffer;
+    buffer.setData(line_verts);
 
     Magnum::GL::Mesh mesh;
-    mesh.setCount(line.size())
+    mesh.setCount(line_verts.size())
         .setPrimitive(Magnum::MeshPrimitive::TriangleStrip)
         .addVertexBuffer(std::move(buffer), 0,
             Minimal_shader::Position{},
             Minimal_shader::Color{});
 
+    return mesh;
+}
+
+void Line_renderer::draw(Line_mesh& mesh)
+{
     shader.draw(mesh);
 }

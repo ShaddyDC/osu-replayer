@@ -17,29 +17,44 @@ struct Vertex_2d {
     Magnum::Vector2 textureCoordinates;
 };
 
-void Slider_renderer::draw(std::vector<Slider_vert> slider, const float radius)
+Slider_mesh Slider_renderer::generate_mesh(const Slider& slider, const float radius)
 {
-    const auto head_pos = (slider.front().position.xy() + slider[6].position.xy()) / 2.f;
+    Slider_mesh mesh;
 
+    mesh.head = circle_renderer.generate_mesh(slider.front().front(), radius);
+
+    const auto flatten_slider = [](const Slider& slider){
+        Slider_segment out = slider.front();
+        for(std::size_t i = 1; i < slider.size(); ++i){
+            std::copy(slider[i].begin() + 1, slider[i].end(), std::back_inserter(out));
+        }
+        return out;
+    };
+    const auto slider_verts = vertex_generate(flatten_slider(slider));
+    
     Magnum::GL::Buffer buffer;
-    buffer.setData(slider);
+    buffer.setData(slider_verts);
 
-    Magnum::GL::Mesh mesh;
-    mesh.setCount(slider.size())
+    mesh.body.setCount(slider_verts.size())
         .setPrimitive(Magnum::MeshPrimitive::Triangles)
         .addVertexBuffer(std::move(buffer), 0,
             Sliderbody_shader::Position{},
             Sliderbody_shader::Side{});
 
+    return mesh;
+}
 
+Magnum::GL::Texture2D create_texture(
+    Slider_renderer& slider_renderer, Circleobject_renderer& circle_renderer, Slider_mesh& mesh)
+{
+    Magnum::GL::Texture2D texture;
     const auto size = Magnum::GL::defaultFramebuffer.viewport().size();
-    Magnum::GL::Texture2D color;
     Magnum::GL::Renderbuffer depthStencil;
-    color.setStorage(1, Magnum::GL::TextureFormat::RGBA8, size);
+    texture.setStorage(1, Magnum::GL::TextureFormat::RGBA8, size);
     depthStencil.setStorage(Magnum::GL::RenderbufferFormat::Depth24Stencil8, size);
 
     Magnum::GL::Framebuffer framebuffer{{{}, size}};
-    framebuffer.attachTexture(Magnum::GL::Framebuffer::ColorAttachment{0}, color, 0);
+    framebuffer.attachTexture(Magnum::GL::Framebuffer::ColorAttachment{0}, texture, 0);
     framebuffer.attachRenderbuffer(
         Magnum::GL::Framebuffer::BufferAttachment::DepthStencil, depthStencil);
 
@@ -48,10 +63,17 @@ void Slider_renderer::draw(std::vector<Slider_vert> slider, const float radius)
     
     Magnum::GL::Renderer::disable(Magnum::GL::Renderer::Feature::Blending);
     Magnum::GL::Renderer::enable(Magnum::GL::Renderer::Feature::DepthTest);
-    circle_renderer.draw(head_pos, radius);
-    shader.draw(mesh);
+    circle_renderer.draw(mesh.head);
+    slider_renderer.draw(mesh.body);
     Magnum::GL::Renderer::disable(Magnum::GL::Renderer::Feature::DepthTest);
     Magnum::GL::Renderer::enable(Magnum::GL::Renderer::Feature::Blending);
+
+    return texture;
+}
+
+void Slider_renderer::draw(Slider_mesh& mesh)
+{
+    auto texture = create_texture(*this, circle_renderer, mesh);
 
     Vertex_2d verts[] = {
         {{-1.f, -1.f}, {0.f, 0.f}},
@@ -70,5 +92,10 @@ void Slider_renderer::draw(std::vector<Slider_vert> slider, const float radius)
 
     // Render rest
     Magnum::GL::defaultFramebuffer.bind();
-    flat_shader.bindTexture(color).draw(mesh_tmp);
+    flat_shader.bindTexture(texture).draw(mesh_tmp);
+}
+
+void Slider_renderer::draw(Sliderbody_mesh& mesh)
+{
+    shader.draw(mesh);
 }
