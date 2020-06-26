@@ -54,6 +54,7 @@ class TriangleExample: public Platform::Application {
         Slider slider;
         Slider_mesh slider_mesh;
         Line_mesh line_mesh;
+        Line_mesh line_mesh2;
         bool loaded = false;
 };
 
@@ -113,6 +114,7 @@ void TriangleExample::drawEvent() {
     _shader.draw(_mesh);
     if(loaded){
         line_renderer.draw(line_mesh);
+        line_renderer.draw(line_mesh2);
         slider_renderer.draw(slider_mesh);
     }
 
@@ -154,8 +156,11 @@ void TriangleExample::drawEvent() {
         };
 
         const auto line = flatten_slider(slider);
+        Slider_segment line2{ {300, 1}, {1, 300}, {300, 300} };
+
         slider_mesh = slider_renderer.generate_mesh(slider, 30.f);
         line_mesh = line_renderer.generate_mesh(line, 5.f, colors);
+        line_mesh2 = line_renderer.generate_mesh(line2, 5.f, colors);
         loaded = true;
     }
     ImGui::End();

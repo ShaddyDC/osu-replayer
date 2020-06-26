@@ -58,8 +58,8 @@ Magnum::GL::Texture2D create_texture(
     framebuffer.attachRenderbuffer(
         Magnum::GL::Framebuffer::BufferAttachment::DepthStencil, depthStencil);
 
-    framebuffer.clear(Magnum::GL::FramebufferClear::Color | Magnum::GL::FramebufferClear::Depth)
-        .bind();
+    framebuffer.clearColor(0, Magnum::Color4{ 0, 0, 0, 0 });
+    framebuffer.clear(Magnum::GL::FramebufferClear::Depth).bind();
     
     Magnum::GL::Renderer::disable(Magnum::GL::Renderer::Feature::Blending);
     Magnum::GL::Renderer::enable(Magnum::GL::Renderer::Feature::DepthTest);
