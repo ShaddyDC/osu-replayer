@@ -14,10 +14,17 @@
 
 #include "slider.h"
 #include "vertex_generate.h"
+#include "shaders/sliderbody_shader.h"
 
-#include <Magnum/Math/Matrix3.h>
+#include <Magnum/Math/Matrix4.h>
 #include <Corrade/Utility/Resource.h>
 #include <Corrade/Utility/DebugStl.h>
+#include <Magnum/GL/Framebuffer.h>
+#include <Magnum/GL/Renderbuffer.h>
+#include <Magnum/GL/TextureFormat.h>
+#include <Magnum/GL/RenderbufferFormat.h>
+#include <Magnum/GL/Texture.h>
+#include <Magnum/Shaders/Flat.h>
 
 using namespace Magnum;
 using namespace Math::Literals;
@@ -43,7 +50,12 @@ class TriangleExample: public Platform::Application {
         GL::Mesh _mesh;
         Shaders::VertexColor2D _shader;
 
+        GL::Mesh slider_mesh;
+        Sliderbody_shader slider_shader;
+
         ImGuiIntegration::Context _imgui{NoCreate};
+
+        Shaders::Flat2D flat_shader{Shaders::Flat2D::Flag::Textured};
 
         std::vector<char> slider_string;
         Slider slider;
@@ -74,6 +86,8 @@ TriangleExample::TriangleExample(const Arguments& arguments):
             Shaders::VertexColor2D::Position{},
             Shaders::VertexColor2D::Color3{});
 
+    slider_mesh.setCount(0);
+
 
     _imgui = ImGuiIntegration::Context(Vector2{windowSize()}/dpiScaling(),
         windowSize(), framebufferSize());
@@ -87,7 +101,6 @@ TriangleExample::TriangleExample(const Arguments& arguments):
         GL::Renderer::BlendFunction::OneMinusSourceAlpha);
     GL::Renderer::enable(GL::Renderer::Feature::Blending);
     GL::Renderer::enable(GL::Renderer::Feature::ScissorTest);
-    GL::Renderer::disable(GL::Renderer::Feature::DepthTest);
     GL::Renderer::disable(GL::Renderer::Feature::FaceCulling);
 
     #if !defined(MAGNUM_TARGET_WEBGL)
@@ -98,14 +111,55 @@ TriangleExample::TriangleExample(const Arguments& arguments):
     std::string_view s = "100,100,12600,6,1,B|200:200|250:200|250:200|300:150,2,310.123,2|1|2,0:0|0:0|0:2,0:0:0:0:";
     slider_string = { s.begin(), s.end() };
     slider_string.resize(256);
-
-    Utility::Resource rs {"shaders"};
-    Magnum::Debug() << rs.get("sliderbody.frag");
 }
 
 void TriangleExample::drawEvent() {
     GL::defaultFramebuffer.clear(GL::FramebufferClear::Color);
 
+    // Render Slider
+    const Vector2i size = GL::defaultFramebuffer.viewport().size();
+    GL::Texture2D color;
+    GL::Renderbuffer depthStencil;
+    color.setStorage(1, GL::TextureFormat::RGBA8, size);
+    depthStencil.setStorage(GL::RenderbufferFormat::Depth24Stencil8, size);
+
+    GL::Framebuffer framebuffer{{{}, size}};
+    framebuffer.attachTexture(GL::Framebuffer::ColorAttachment{0}, color, 0);
+    framebuffer.attachRenderbuffer(
+        GL::Framebuffer::BufferAttachment::DepthStencil, depthStencil);
+
+    framebuffer.clear(GL::FramebufferClear::Color | GL::FramebufferClear::Depth)
+        .bind();
+    
+    GL::Renderer::disable(GL::Renderer::Feature::Blending);
+    GL::Renderer::enable(GL::Renderer::Feature::DepthTest);
+    slider_shader.draw(slider_mesh);
+    GL::Renderer::disable(GL::Renderer::Feature::DepthTest);
+    GL::Renderer::enable(GL::Renderer::Feature::Blending);
+
+    struct Vertex {
+        Vector2 position;
+        Vector2 textureCoordinates;
+    };
+    Vertex verts[] = {
+        {{-1.f, -1.f}, {0.f, 0.f}},
+        {{-1.f, 1.f}, {0.f, 1.f}},
+        {{1.f, -1.f}, {1.f, 0.f}},
+        {{1.f, 1.f}, {1.f, 1.f}},
+    };
+    GL::Buffer verts_tmp;
+    verts_tmp.setData(verts);
+    GL::Mesh mesh_tmp;
+    mesh_tmp.setCount(4)
+        .setPrimitive(Magnum::MeshPrimitive::TriangleStrip)
+        .addVertexBuffer(std::move(verts_tmp), 0,
+            Shaders::Flat2D::Position{},
+            Shaders::Flat2D::TextureCoordinates{});
+
+    // Render rest
+    GL::defaultFramebuffer.bind();
+    flat_shader.bindTexture(color).draw(mesh_tmp);
+    GL::defaultFramebuffer.clear(GL::FramebufferClear::Depth);
     _shader.draw(_mesh);
     
 
@@ -144,21 +198,34 @@ void TriangleExample::drawEvent() {
             Magnum::Color3::blue(),
             Magnum::Color3::green(),
             Magnum::Color3::yellow(),
-            Magnum::Color3::magenta(),
+            // Magnum::Color3::magenta(),
         };
 
         line_verts = line_generate(flatten_slider(slider), 5.f, colors);
 
-        auto m = Matrix3::projection((Magnum::Vector2)windowSize());
+        const auto x = (Magnum::Vector2)windowSize();
+        auto m = Matrix4::perspectiveProjection({x.x(), 0}, {0,x.y()}, -1.f, 1.f);
+        for(auto& v : slider_verts){
+            const auto old_col = v.position.z();
+            v.position = (m * Magnum::Vector4{v.position.x(), v.position.y(), 1, 0}).xyz();
+            v.position.z() = old_col;
+        }
         for(auto& v : line_verts){
-            const auto old = v.position;
-            v.position = (m * Magnum::Vector3{v.position, {}}).xy();
-            printf("%f:%f -> %f:%f", old.x(), old.y(), v.position.x(), v.position.y());
+            v.position = (m * Magnum::Vector4{Magnum::Vector3{v.position, 1}, {}}).xy();
         }
 
         GL::Buffer buffer;
-        buffer.setData(line_verts);
 
+        buffer.setData(slider_verts);
+        slider_mesh.setCount(slider_verts.size())
+            .setPrimitive(Magnum::MeshPrimitive::Triangles)
+            .addVertexBuffer(std::move(buffer), 0,
+                Sliderbody_shader::Position{},
+                Sliderbody_shader::Side{});
+
+        buffer = GL::Buffer{};
+
+        buffer.setData(line_verts);
         _mesh.setCount(line_verts.size())
             .setPrimitive(Magnum::MeshPrimitive::TriangleStrip)
             .addVertexBuffer(std::move(buffer), 0,

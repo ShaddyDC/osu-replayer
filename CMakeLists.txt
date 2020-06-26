@@ -25,7 +25,9 @@ target_link_libraries(shaders_resources Corrade::Utility)
 add_executable(slider_draw
 	src/main.cpp
 	src/slider.cpp
-	src/vertex_generate.cpp
+    src/vertex_generate.cpp
+    src/shaders/sliderbody_shader.cpp
+    
 	$<TARGET_OBJECTS:shaders_resources>
 )
 

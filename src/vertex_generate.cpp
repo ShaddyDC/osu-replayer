@@ -115,7 +115,7 @@ std::vector<Slider_vert> vertex_generate(const Slider_segment& slider){
             side_c = -side_c;
             std::swap(color_out, color_in);
         }
-        auto color_mid = Magnum::Math::lerp(color_in, color_out, 0.5f);
+        const auto color_mid = Magnum::Math::lerp(color_in, color_out, 0.5f);
         
         const auto [t, u] = Magnum::Math::Intersection::lineSegmentLineSegment(
             a - width * side_a, direction_a, c - width * side_c,
@@ -124,19 +124,6 @@ std::vector<Slider_vert> vertex_generate(const Slider_segment& slider){
 
         const auto inner = a - width * side_a + t * direction_a;
 
-
-        auto inner_a = inner;
-        if(t < 0.f) {
-            const auto t2 = Magnum::Math::Intersection::lineSegmentLine(a - width * side_a, direction_a,
-                                                                        c + width * side_c, direction_c);
-            inner_a = a - width * side_a + t2 * direction_a;
-        }
-        auto inner_c = inner;
-        if(u < 0.f) {
-            const auto u2 = Magnum::Math::Intersection::lineSegmentLine(c - width * side_c, direction_c,
-                                                                        a + width * side_a, direction_a);
-            inner_c = c - width * side_c + u2 * direction_c;
-        }
 
         // Slider consists of two incoming line segments and the outer arc (E)
         // The line segments are each split into two halves (A/B,C/D) each to allow setting the depth buffer to 1 in the middle and 0 at the borders
@@ -152,11 +139,11 @@ std::vector<Slider_vert> vertex_generate(const Slider_segment& slider){
         // A
         output.emplace_back(Magnum::Vector3{ a - width * side_a, depth_border }, color_in);
         output.emplace_back(Magnum::Vector3{ a, depth_mid }, color_mid);
-        output.emplace_back(Magnum::Vector3{ inner_a, depth_border }, color_in);
+        output.emplace_back(Magnum::Vector3{ inner, depth_border }, color_in);
 
         output.emplace_back(Magnum::Vector3{ b, depth_mid }, color_mid);
         output.emplace_back(Magnum::Vector3{ a, depth_mid }, color_mid);
-        output.emplace_back(Magnum::Vector3{ inner_a, depth_border }, color_in);
+        output.emplace_back(Magnum::Vector3{ inner, depth_border }, color_in);
 
         // B
         output.emplace_back(Magnum::Vector3{ b, depth_mid }, color_mid);
@@ -170,11 +157,11 @@ std::vector<Slider_vert> vertex_generate(const Slider_segment& slider){
         // C
         output.emplace_back(Magnum::Vector3{ c - width * side_c, depth_border }, color_in);
         output.emplace_back(Magnum::Vector3{ c, depth_mid }, color_mid);
-        output.emplace_back(Magnum::Vector3{ inner_c, depth_border }, color_in);
+        output.emplace_back(Magnum::Vector3{ inner, depth_border }, color_in);
 
         output.emplace_back(Magnum::Vector3{ b, depth_mid }, color_mid);
         output.emplace_back(Magnum::Vector3{ c, depth_mid }, color_mid);
-        output.emplace_back(Magnum::Vector3{ inner_c, depth_border }, color_in);
+        output.emplace_back(Magnum::Vector3{ inner, depth_border }, color_in);
 
         // D
         output.emplace_back(Magnum::Vector3{ b, depth_mid }, color_mid);

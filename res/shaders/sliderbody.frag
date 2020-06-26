@@ -1,21 +1,21 @@
+precision mediump float;	//Todo: Investigate if should be lower
+
 in float fSide;
 
 out vec4 FragColor;
-
-uniform float inner;
 
 void main()
 {
 	vec4 color = vec4(1, 1, 1, 1);
 
-	float diff = 2 * abs(fSide - 0.5f);
+	float diff = 2.f * abs(fSide - 0.5f);
 
-	if(diff < 0.95f) {
-		if(inner == 0.f) discard;
-		color = vec4((1 - diff) * 1 / 3);
-		color.a = 0.9;
+	if(diff < 0.95) {
+		color = vec4((1.f - diff) * 1.f / 3.f);
+		color.a = 0.7;
 	} else{
-		if(inner == 1.f) discard;
+		diff = 0.95;
+		color = vec4(1);
 	}
 
     FragColor = color;
