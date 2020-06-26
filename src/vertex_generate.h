@@ -15,7 +15,7 @@ struct Slider_vert{
 struct Line_vert{
     Line_vert(Magnum::Vector2 position, Magnum::Color3 color): position{position}, color{color}{}
     Magnum::Vector2 position;
-    Magnum::Color3 color;
+    Magnum::Color4 color;
 };
 
 std::vector<Slider_vert> vertex_generate(const Slider_segment& slider);

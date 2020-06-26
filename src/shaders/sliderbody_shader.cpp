@@ -26,4 +26,6 @@ Sliderbody_shader::Sliderbody_shader()
     
 
 	CORRADE_INTERNAL_ASSERT_OUTPUT(link());
+
+	setUniformBlockBinding(uniformBlockIndex("projection"), 0);
 }

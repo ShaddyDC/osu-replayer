@@ -17,16 +17,9 @@ struct Vertex_2d {
     Magnum::Vector2 textureCoordinates;
 };
 
-Slider_renderer::Slider_renderer(const Coordinate_holder& holder)
-: converter { holder }, circle_renderer { holder }, flat_shader{ Magnum::Shaders::Flat2D::Flag::Textured }
-{}
-
 void Slider_renderer::draw(std::vector<Slider_vert> slider, const float radius)
 {
     const auto head_pos = (slider.front().position.xy() + slider[6].position.xy()) / 2.f;
-    for(auto& vertex : slider){
-        vertex.position.xy() = converter.to_screen(vertex.position.xy());
-    }
 
     Magnum::GL::Buffer buffer;
     buffer.setData(slider);

@@ -41,9 +41,9 @@ class TriangleExample: public Platform::Application {
         void textInputEvent(TextInputEvent& event) override;
     private:
         Coordinate_holder coordinate_holder;
-        Circleobject_renderer circle_renderer{ coordinate_holder };
-        Slider_renderer slider_renderer{ coordinate_holder };
-        Line_renderer line_renderer{ coordinate_holder };
+        Circleobject_renderer circle_renderer;
+        Slider_renderer slider_renderer;
+        Line_renderer line_renderer;
 
         GL::Mesh _mesh;
         Shaders::VertexColor2D _shader;
