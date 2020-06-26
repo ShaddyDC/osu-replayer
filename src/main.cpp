@@ -15,6 +15,7 @@
 #include "slider.h"
 #include "vertex_generate.h"
 #include "shaders/sliderbody_shader.h"
+#include "shaders/circleobject_shader.h"
 
 #include <Magnum/Math/Matrix4.h>
 #include <Corrade/Utility/Resource.h>
@@ -53,6 +54,9 @@ class TriangleExample: public Platform::Application {
         GL::Mesh slider_mesh;
         Sliderbody_shader slider_shader;
 
+        GL::Mesh head_mesh;
+        Circleobject_shader head_shader;
+
         ImGuiIntegration::Context _imgui{NoCreate};
 
         Shaders::Flat2D flat_shader{Shaders::Flat2D::Flag::Textured};
@@ -87,6 +91,7 @@ TriangleExample::TriangleExample(const Arguments& arguments):
             Shaders::VertexColor2D::Color3{});
 
     slider_mesh.setCount(0);
+    head_mesh.setCount(0);
 
 
     _imgui = ImGuiIntegration::Context(Vector2{windowSize()}/dpiScaling(),
@@ -133,6 +138,7 @@ void TriangleExample::drawEvent() {
     
     GL::Renderer::disable(GL::Renderer::Feature::Blending);
     GL::Renderer::enable(GL::Renderer::Feature::DepthTest);
+    head_shader.draw(head_mesh);
     slider_shader.draw(slider_mesh);
     GL::Renderer::disable(GL::Renderer::Feature::DepthTest);
     GL::Renderer::enable(GL::Renderer::Feature::Blending);
@@ -158,9 +164,8 @@ void TriangleExample::drawEvent() {
 
     // Render rest
     GL::defaultFramebuffer.bind();
-    flat_shader.bindTexture(color).draw(mesh_tmp);
-    GL::defaultFramebuffer.clear(GL::FramebufferClear::Depth);
     _shader.draw(_mesh);
+    flat_shader.bindTexture(color).draw(mesh_tmp);
     
 
    _imgui.newFrame();
@@ -231,6 +236,29 @@ void TriangleExample::drawEvent() {
             .addVertexBuffer(std::move(buffer), 0,
                 Shaders::VertexColor2D::Position{},
                 Shaders::VertexColor2D::Color3{});
+
+        // head
+        buffer = GL::Buffer{};
+        struct CVerts{
+            Magnum::Vector2 pos;
+            Magnum::Vector2 center;
+        };
+        const auto center = slider.front().front();
+        CVerts d[] = {
+            {center + Magnum::Vector2{-30, -30}, {-1, -1}},
+            {center + Magnum::Vector2{-30, 30}, {-1, 1}},
+            {center + Magnum::Vector2{30, -30}, {1, -1}},
+            {center + Magnum::Vector2{30, 30}, {1, 1}},
+        };
+        for(auto& v : d){
+            v.pos = (m * Magnum::Vector4{Magnum::Vector3{v.pos, 1}, {}}).xy();
+        }
+        buffer.setData(d);
+        head_mesh.setCount(4)
+            .setPrimitive(Magnum::MeshPrimitive::TriangleStrip)
+            .addVertexBuffer(std::move(buffer), 0,
+                Circleobject_shader::Position{},
+                Circleobject_shader::Local_position{});
     }
     ImGui::End();
 

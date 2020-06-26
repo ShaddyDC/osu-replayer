@@ -15,7 +15,6 @@ void main()
 		color.a = 0.7;
 	} else{
 		diff = 0.95;
-		color = vec4(1);
 	}
 
     FragColor = color;

@@ -27,6 +27,7 @@ add_executable(slider_draw
 	src/slider.cpp
     src/vertex_generate.cpp
     src/shaders/sliderbody_shader.cpp
+    src/shaders/circleobject_shader.cpp
     
 	$<TARGET_OBJECTS:shaders_resources>
 )
