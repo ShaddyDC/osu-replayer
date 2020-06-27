@@ -1,35 +1,7 @@
 #include "slider.h"
-#include <algorithm>
-#include <string>
-enum class Slider_type : char{
-    bezier = 'B',
-    catmull = 'C',
-    perfect = 'P',
-    linear = 'L'
-};
-std::vector<std::string_view> split(const std::string_view s, const char delim);
+#include "string_helpers.h"
+
 std::optional<Slider> bezier_from_points(const std::vector<Slider_point>& points);
-
-std::vector<std::string_view> split(const std::string_view s, const char delim)
-{
-	std::vector<std::string_view> ret;
-	auto it       = std::find(s.begin(), s.end(), delim);
-	auto it_start = s.begin();
-
-	const auto add_if_not_empty = [&]
-	{
-		if(it != it_start){
-			ret.emplace_back(s.data() + (it_start - s.begin()), it - it_start);
-		}
-	};
-
-	for(; it != s.end(); it = std::find(it, s.end(), delim)){
-        add_if_not_empty();
-        it_start = it = it + 1;
-	}
-	add_if_not_empty();
-	return ret;
-}
 
 std::optional<Slider> bezier_from_points(const std::vector<Slider_point>& points){  // Todo: bounds check?
     Slider slider;
@@ -71,6 +43,12 @@ std::optional<Slider> parse_slider(const std::string_view slider_string)
     switch (type)
     {
     case Slider_type::bezier:
+        return bezier_from_points(points);
+    case Slider_type::perfect:
+        return bezier_from_points(points);
+    case Slider_type::linear:
+        return bezier_from_points(points);
+    case Slider_type::catmull:
         return bezier_from_points(points);
     
     default:

@@ -22,9 +22,16 @@ corrade_add_resource(ShaderResources res/shaders.conf)
 add_library(shaders_resources OBJECT ${ShaderResources})
 target_link_libraries(shaders_resources Corrade::Utility)
 
+# data
+corrade_add_resource(DataResources res/data.conf)
+add_library(data_resources OBJECT ${DataResources})
+target_link_libraries(data_resources Corrade::Utility)
+
 add_executable(slider_draw
 	src/main.cpp
+	src/string_helpers.cpp
 	src/slider.cpp
+	src/data_reader.cpp
     src/render/vertex_generate.cpp
     src/render/shaders/sliderbody_shader.cpp
     src/render/shaders/circleobject_shader.cpp
@@ -35,6 +42,7 @@ add_executable(slider_draw
     src/render/line_renderer.cpp
     
 	$<TARGET_OBJECTS:shaders_resources>
+	$<TARGET_OBJECTS:data_resources>
 )
 
 set_target_properties(slider_draw PROPERTIES

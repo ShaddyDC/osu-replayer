@@ -19,6 +19,9 @@
 #include "render/circleobject_renderer.h"
 #include "render/slider_renderer.h"
 #include "render/line_renderer.h"
+#include "data_reader.h"
+
+#include <Magnum/Timeline.h>
 
 using namespace Magnum;
 using namespace Math::Literals;
@@ -50,12 +53,14 @@ class TriangleExample: public Platform::Application {
 
         ImGuiIntegration::Context _imgui{NoCreate};
 
-        std::vector<char> slider_string;
-        Slider slider;
-        Slider_mesh slider_mesh;
-        Line_mesh line_mesh;
-        Line_mesh line_mesh2;
-        bool loaded = false;
+        std::vector<Slider_mesh> sliders;
+        std::vector<Circleobject_mesh> circles;
+
+        Data_reader data;
+
+        int current_time = 0;
+
+        Magnum::Timeline timer;
 };
 
 TriangleExample::TriangleExample(const Arguments& arguments):
@@ -103,20 +108,22 @@ TriangleExample::TriangleExample(const Arguments& arguments):
     setMinimalLoopPeriod(16);
     #endif
 
-    std::string_view s = "100,100,12600,6,1,B|200:200|250:200|250:200|300:150,2,310.123,2|1|2,0:0|0:0|0:2,0:0:0:0:";
-    slider_string = { s.begin(), s.end() };
-    slider_string.resize(256);
+    timer.start();
 }
 
 void TriangleExample::drawEvent() {
     GL::defaultFramebuffer.clear(GL::FramebufferClear::Color);
 
     _shader.draw(_mesh);
-    if(loaded){
-        line_renderer.draw(line_mesh);
-        line_renderer.draw(line_mesh2);
-        slider_renderer.draw(slider_mesh);
+    
+    for (auto it = circles.rbegin(); it != circles.rend(); ++it){
+        circle_renderer.draw(*it);
     }
+    
+    for (auto it = sliders.rbegin(); it != sliders.rend(); ++it){
+        slider_renderer.draw(*it);
+    }
+    
 
    _imgui.newFrame();
 
@@ -127,35 +134,28 @@ void TriangleExample::drawEvent() {
         stopTextInput();
 
     ImGui::Begin("Slider");
-    ImGui::InputText("Slider", slider_string.data(), slider_string.size());
-    if(ImGui::Button("Apply")){
-        printf("Prasing slider: %s\n", slider_string.data());
-        slider = parse_slider(slider_string.data()).value();
+    // ImGui::InputText("Slider", slider_string.data(), slider_string.size());
+    ImGui::InputInt("Time:", &current_time, 1000);
 
-        const auto flatten_slider = [](const Slider& slider){
-            Slider_segment out = slider.front();
-            for(std::size_t i = 1; i < slider.size(); ++i){
-                std::copy(slider[i].begin() + 1, slider[i].end(), std::back_inserter(out));
-            }
-            return out;
-        };
+    // reload data
+    {
+        circles.clear();
+        sliders.clear();
 
-        std::vector<Magnum::Color4> colors{
-            Magnum::Color4::red(),
-            Magnum::Color4::blue(),
-            Magnum::Color4::green(),
-            Magnum::Color4::yellow(),
-            Magnum::Color4::magenta(),
-        };
+        const auto cs = data.circles_at(current_time);
+        const auto ss = data.sliders_at(current_time);
 
-        const auto line = flatten_slider(slider);
-        Slider_segment line2{ {300, 1}, {1, 300}, {300, 300} };
+        for (const auto c : cs){
+            circles.push_back(circle_renderer.generate_mesh(c.position, 30.f));
+        }
 
-        slider_mesh = slider_renderer.generate_mesh(slider, 30.f);
-        line_mesh = line_renderer.generate_mesh(line, 5.f, colors);
-        line_mesh2 = line_renderer.generate_mesh(line2, 2.0f, { Magnum::Color4::cyan() });
-        loaded = true;
+        for (const auto s : ss){
+            sliders.push_back(slider_renderer.generate_mesh(s.slider, 30.f));
+        }
     }
+    current_time += static_cast<int>(timer.previousFrameDuration() * 1000.f);
+    if(current_time >= data.time_range().y()) current_time = 0;
+
     ImGui::End();
 
     /* Update application cursor */
@@ -165,6 +165,7 @@ void TriangleExample::drawEvent() {
 
     swapBuffers();
     redraw();
+    timer.nextFrame();
 }
 
 void TriangleExample::viewportEvent(ViewportEvent& event) {
