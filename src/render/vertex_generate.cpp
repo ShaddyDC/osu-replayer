@@ -264,7 +264,7 @@ std::vector<Line_vert> line_generate(const std::vector<Magnum::Vector2>& points,
                 result.emplace_back(a + width / 2.f * side_a, color_at(i - 2));
             }
             result.emplace_back(inner, color_at(i - 2));
-            if(angle > Magnum::Rad{ 140._degf }){
+            if(angle > Magnum::Rad{ 140._degf }){   //Todo: Keep inner from deviating too much
                 result_emplace_if(a + width / 2.f * side_a, color_at(i - 2), triangles_mesh);
                 result_emplace_if(inner, color_at(i - 2), triangles_mesh);
                 result.emplace_back(b + width / 2.f * side_a, color_at(i - 2));
