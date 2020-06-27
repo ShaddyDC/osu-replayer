@@ -1,6 +1,6 @@
 #pragma once
 #include "shaders/sliderbody_shader.h"
-#include "slider.h"
+#include "../slider.h"
 #include "circleobject_renderer.h"
 #include "vertex_generate.h"
 #include <Magnum/Shaders/Flat.h>

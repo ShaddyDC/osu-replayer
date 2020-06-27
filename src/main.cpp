@@ -13,12 +13,12 @@
 #endif
 
 #include "slider.h"
-#include "vertex_generate.h"
-#include "shaders/sliderbody_shader.h"
-#include "coordinate_converter.h"
-#include "circleobject_renderer.h"
-#include "slider_renderer.h"
-#include "line_renderer.h"
+#include "render/vertex_generate.h"
+#include "render/shaders/sliderbody_shader.h"
+#include "render/coordinate_converter.h"
+#include "render/circleobject_renderer.h"
+#include "render/slider_renderer.h"
+#include "render/line_renderer.h"
 
 using namespace Magnum;
 using namespace Math::Literals;

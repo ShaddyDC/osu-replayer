@@ -4,7 +4,7 @@
 #include <Magnum/Math/Vector3.h>
 #include <Magnum/Math/Color.h>
 
-#include "slider.h"
+#include "../slider.h"
 
 struct Slider_vert{
     Slider_vert(Magnum::Vector3 position, Magnum::Float side): position{position}, side{side}{}

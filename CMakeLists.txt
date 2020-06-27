@@ -25,14 +25,14 @@ target_link_libraries(shaders_resources Corrade::Utility)
 add_executable(slider_draw
 	src/main.cpp
 	src/slider.cpp
-    src/vertex_generate.cpp
-    src/shaders/sliderbody_shader.cpp
-    src/shaders/circleobject_shader.cpp
-    src/shaders/minimal_shader.cpp
-    src/circleobject_renderer.cpp
-    src/coordinate_converter.cpp
-    src/slider_renderer.cpp
-    src/line_renderer.cpp
+    src/render/vertex_generate.cpp
+    src/render/shaders/sliderbody_shader.cpp
+    src/render/shaders/circleobject_shader.cpp
+    src/render/shaders/minimal_shader.cpp
+    src/render/circleobject_renderer.cpp
+    src/render/coordinate_converter.cpp
+    src/render/slider_renderer.cpp
+    src/render/line_renderer.cpp
     
 	$<TARGET_OBJECTS:shaders_resources>
 )
