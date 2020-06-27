@@ -204,13 +204,23 @@ std::vector<Slider_vert> vertex_generate(const Slider_segment& slider){
     return output;
 }
 
-std::vector<Line_vert> line_generate(const std::vector<Magnum::Vector2>& points, const float width, std::vector<Magnum::Color3> colors)
+void line_segment_singlecolor()
+{
+
+}
+
+std::vector<Line_vert> line_generate(const std::vector<Magnum::Vector2>& points, const float width, const std::vector<Magnum::Color4>& colors)
 {
 	using namespace Magnum::Math::Literals;
 
-    if(colors.size() != points.size()){ //Todo: Make parameter reference again
-        colors = std::vector<Magnum::Color3>(points.size(), Magnum::Color3::red());
-    }
+    const auto multi_color = colors.size() >= points.size() - 1;
+    const auto triangles_mesh = multi_color;
+    const auto color_at = [multi_color, &colors](const int i)
+        {
+            if(multi_color) return colors[i];
+            if(!colors.empty()) return colors[0];
+            return Magnum::Color4::red();
+        };
 
     std::vector<Line_vert> result{};
 
@@ -242,42 +252,83 @@ std::vector<Line_vert> line_generate(const std::vector<Magnum::Vector2>& points,
         const auto inner = a - width / 2.f * side_a + t * direction_a;
         const auto outer = b + (b - inner);
 
+        const auto result_emplace_if = [&result](const auto position, const auto color, const auto condition)
+            {
+                if(condition) result.emplace_back(position, color);
+            };
+
         // For the first segment (i==2), the segment start has to be added
         if(counter_clockwise(a, b, c)){
-            if(i == 2){ //Todo: Different colours because no centre point
-                result.emplace_back(a - width / 2.f * side_a, colors[i - 2]);
-                result.emplace_back(a + width / 2.f * side_a, colors[i - 2]);
+            if(triangles_mesh || i == 2){
+                result.emplace_back(a - width / 2.f * side_a, color_at(i - 2));
+                result.emplace_back(a + width / 2.f * side_a, color_at(i - 2));
             }
+            result.emplace_back(inner, color_at(i - 2));
             if(angle > Magnum::Rad{ 140._degf }){
-                result.emplace_back(inner, colors[i - 1]);
-                result.emplace_back(b + width / 2.f * side_a, colors[i - 1]);
-                result.emplace_back(inner, colors[i - 1]);
-                result.emplace_back(b + width / 2.f * side_c, colors[i - 1]);
+                result_emplace_if(a + width / 2.f * side_a, color_at(i - 2), triangles_mesh);
+                result_emplace_if(inner, color_at(i - 2), triangles_mesh);
+                result.emplace_back(b + width / 2.f * side_a, color_at(i - 2));
+
+                result_emplace_if(b + width / 2.f * side_a, color_at(i - 2), triangles_mesh);
+                result.emplace_back(inner, color_at(i - 1));
+                result.emplace_back(b + width / 2.f * side_c, color_at(i - 1));
+
+                result_emplace_if(inner, color_at(i - 1), triangles_mesh);
+                result_emplace_if(b + width / 2.f * side_c, color_at(i - 1), triangles_mesh);
+                result.emplace_back(c - width / 2.f * side_c, color_at(i - 1));
+
+                result_emplace_if(b + width / 2.f * side_c, color_at(i - 1), triangles_mesh);
+                result_emplace_if(c - width / 2.f * side_c, color_at(i - 1), triangles_mesh);
+                result.emplace_back(c + width / 2.f * side_c, color_at(i - 1));
             }
             else{
-                result.emplace_back(inner, colors[i - 1]);
-                result.emplace_back(outer, colors[i - 1]);
+                result_emplace_if(a + width / 2.f * side_a, color_at(i - 2), triangles_mesh);
+                result_emplace_if(inner, color_at(i - 2), triangles_mesh);
+                result.emplace_back(outer, color_at(i - 2));
+
+                result_emplace_if(inner, color_at(i - 1), triangles_mesh);
+                result_emplace_if(outer, color_at(i - 1), triangles_mesh);
+                result.emplace_back(c - width / 2.f * side_c, color_at(i - 1));
+
+                result_emplace_if(outer, color_at(i - 1), triangles_mesh);
+                result_emplace_if(c - width / 2.f * side_c, color_at(i - 1), triangles_mesh);
+                result.emplace_back(c + width / 2.f * side_c, color_at(i - 1));
             }
-            result.emplace_back(c - width / 2.f * side_c, colors[i - 1]);
-            result.emplace_back(c + width / 2.f * side_c, colors[i - 1]);
         }
         else{
-            if(i == 2){
-                result.emplace_back(a + width / 2.f * side_a, colors[i - 2]);
-                result.emplace_back(a - width / 2.f * side_a, colors[i - 2]);
+            if(triangles_mesh || i == 2){
+                result.emplace_back(a + width / 2.f * side_a, color_at(i - 2));
+                result.emplace_back(a - width / 2.f * side_a, color_at(i - 2));
             }
             if(angle > Magnum::Rad{ 140._degf }){
-                result.emplace_back(b + width / 2.f * side_a, colors[i - 1]);
-                result.emplace_back(inner, colors[i - 1]);
-                result.emplace_back(b + width / 2.f * side_c, colors[i - 1]);
-                result.emplace_back(inner, colors[i - 1]);
+                result.emplace_back(b + width / 2.f * side_a, color_at(i - 1));
+
+                result_emplace_if(a - width / 2.f * side_a, color_at(i - 2), triangles_mesh);
+                result_emplace_if(b + width / 2.f * side_a, color_at(i - 2), triangles_mesh);
+                result.emplace_back(inner, color_at(i - 2));
+
+                result_emplace_if(b + width / 2.f * side_a, color_at(i - 2), triangles_mesh);
+                result.emplace_back(b + width / 2.f * side_c, color_at(i - 1));                
+                result.emplace_back(inner, color_at(i - 1));
+
+                result_emplace_if(b + width / 2.f * side_c, color_at(i - 1), triangles_mesh);                
+                result_emplace_if(inner, color_at(i - 1), triangles_mesh);
+                result.emplace_back(c + width / 2.f * side_c, color_at(i - 1));
             }
             else{
-                result.emplace_back(outer, colors[i - 1]);
-                result.emplace_back(inner, colors[i - 1]);
-            }
-            result.emplace_back(c + width / 2.f * side_c, colors[i - 1]);
-            result.emplace_back(c - width / 2.f * side_c, colors[i - 1]);
+                result.emplace_back(outer, color_at(i - 2));
+
+                result_emplace_if(a - width / 2.f * side_a, color_at(i - 2), triangles_mesh);
+                result_emplace_if(outer, color_at(i - 2), triangles_mesh);
+                result.emplace_back(inner, color_at(i - 2));
+
+                result_emplace_if(outer, color_at(i - 1), triangles_mesh);                
+                result_emplace_if(inner, color_at(i - 1), triangles_mesh);
+                result.emplace_back(c + width / 2.f * side_c, color_at(i - 1));
+            }      
+            result_emplace_if(inner, color_at(i - 1), triangles_mesh);
+            result_emplace_if(c + width / 2.f * side_c, color_at(i - 1), triangles_mesh);
+            result.emplace_back(c - width / 2.f * side_c, color_at(i - 1));
         }
     }
     

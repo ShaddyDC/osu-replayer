@@ -132,13 +132,6 @@ void TriangleExample::drawEvent() {
         printf("Prasing slider: %s\n", slider_string.data());
         slider = parse_slider(slider_string.data()).value();
 
-        for(const auto& segment : slider){
-            printf("Segment\n");
-            for(const auto point : segment){
-                printf("x: %f y: %f\n", point.x(), point.y());
-            }
-        }
-
         const auto flatten_slider = [](const Slider& slider){
             Slider_segment out = slider.front();
             for(std::size_t i = 1; i < slider.size(); ++i){
@@ -147,12 +140,12 @@ void TriangleExample::drawEvent() {
             return out;
         };
 
-        std::vector<Magnum::Color3> colors{
-            Magnum::Color3::red(),
-            Magnum::Color3::blue(),
-            Magnum::Color3::green(),
-            Magnum::Color3::yellow(),
-            // Magnum::Color3::magenta(),
+        std::vector<Magnum::Color4> colors{
+            Magnum::Color4::red(),
+            Magnum::Color4::blue(),
+            Magnum::Color4::green(),
+            Magnum::Color4::yellow(),
+            Magnum::Color4::magenta(),
         };
 
         const auto line = flatten_slider(slider);
@@ -160,7 +153,7 @@ void TriangleExample::drawEvent() {
 
         slider_mesh = slider_renderer.generate_mesh(slider, 30.f);
         line_mesh = line_renderer.generate_mesh(line, 5.f, colors);
-        line_mesh2 = line_renderer.generate_mesh(line2, 5.f, colors);
+        line_mesh2 = line_renderer.generate_mesh(line2, 2.0f, { Magnum::Color4::cyan() });
         loaded = true;
     }
     ImGui::End();
