@@ -18,14 +18,7 @@ Play_container::Play_container()
         Magnum::Vector2{ static_cast<float>(top_left.x()), static_cast<float>(bottom_right.y()) },
         Magnum::Vector2{ top_left },
     };
-
-    // std::vector<Magnum::Vector2> points{    //Todo: Fix top left corner
-    //     Magnum::Vector2{ -1, -1 },
-    //     Magnum::Vector2{ 1, -1 },
-    //     Magnum::Vector2{ 1, 1 },
-    //     Magnum::Vector2{ -1, 1 },
-    //     Magnum::Vector2{ -1, -1 },
-    // };
+    
     border_mesh = line_renderer.generate_mesh(points, 5.f, { Magnum::Color4{ 1 } });
 }
 
@@ -35,7 +28,6 @@ void Play_container::update(int time_passed)
     if(last_time == current_time && time_passed == 0) return;
 
     // Size stuff
-    // Todo: Handle scissoring
     scaling_size = static_cast<Magnum::Vector2i>(size_scale * size);
 
     // Hitobject stuff
@@ -48,7 +40,7 @@ void Play_container::update(int time_passed)
     for (auto circle : data.circles_at(current_time)){
         const auto position = to_screen(circle.position);
 
-        circles.emplace_back(circle_renderer.generate_mesh(position, 30.f), circle.time);
+        circles.emplace_back(circle_renderer.generate_mesh(position, 20.f), circle.time);
     }
 
     for (auto slider : data.sliders_at(current_time)){
@@ -57,7 +49,7 @@ void Play_container::update(int time_passed)
                 point = to_screen(point);
             }
         }
-        sliders.emplace_back(slider_renderer.generate_mesh(slider.slider, 30.f), slider.time);
+        sliders.emplace_back(slider_renderer.generate_mesh(slider.slider, 20.f), slider.time);
     }
 
     last_time = current_time;
@@ -74,6 +66,9 @@ Magnum::GL::Texture2D Play_container::draw()
 
     framebuffer.clearColor(0, Magnum::Color4{ 0, 0, 0, 0 });
     framebuffer.clear(Magnum::GL::FramebufferClear::Depth).bind();
+
+    //Todo: Better to set viewport accordingly 
+    Magnum::GL::Renderer::disable(Magnum::GL::Renderer::Feature::ScissorTest);
 
     line_renderer.draw(border_mesh);
 
@@ -101,6 +96,8 @@ Magnum::GL::Texture2D Play_container::draw()
     }
 
     Magnum::GL::defaultFramebuffer.bind();
+
+    Magnum::GL::Renderer::enable(Magnum::GL::Renderer::Feature::ScissorTest);
 
     return texture;
 }

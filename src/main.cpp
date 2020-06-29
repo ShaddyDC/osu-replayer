@@ -103,11 +103,20 @@ TriangleExample::TriangleExample(const Arguments& arguments):
 void TriangleExample::drawEvent() {
     GL::defaultFramebuffer.clear(GL::FramebufferClear::Color);
 
+   _imgui.newFrame();
+
     _shader.draw(_mesh);
 
-    play_container.update(static_cast<int>(timer.previousFrameDuration() * 1000.f));    //Todo: Handle fractions better
+    // Set playfield size
+    if(ImGui::Begin("Playfield")){
+        const auto size = ImGui::GetWindowSize();
+        constexpr auto bottom_offset = 20.f;    // Prevent scrollbar from appearing
+        const float scale = std::min((size.y - bottom_offset) / play_container.size.y(), size.x / play_container.size.x());
+        play_container.size_scale = scale;
+        ImGui::End();
+    }
 
-   _imgui.newFrame();
+    play_container.update(static_cast<int>(timer.previousFrameDuration() * 1000.f));    //Todo: Handle fractions better
 
     /* Enable text input, if needed */
     if(ImGui::GetIO().WantTextInput && !isTextInputActive())
@@ -116,8 +125,11 @@ void TriangleExample::drawEvent() {
         stopTextInput();
 
     if(ImGui::Begin("Playfield")){
+        ImVec2 image_size = { (float)play_container.scaling_size.x(), (float)play_container.scaling_size.y() };
+        ImVec2 pos = {(ImGui::GetWindowSize().x - image_size.x) / 2, (ImGui::GetWindowSize().y - image_size.y) / 2};
+        ImGui::SetCursorPos(pos);
         playtext = play_container.draw();
-        ImGui::Image((void*)&playtext, { (float)play_container.scaling_size.x(), (float)play_container.scaling_size.y() }, {0, 1}, {1, 0});
+        ImGui::Image((void*)&playtext, image_size, {0, 1}, {1, 0});
         // ImGui::GetWindowDrawList()->AddImage
         ImGui::End();
     }

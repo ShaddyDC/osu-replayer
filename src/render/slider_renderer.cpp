@@ -30,7 +30,7 @@ Slider_mesh Slider_renderer::generate_mesh(const Slider& slider, const float rad
         }
         return out;
     };
-    const auto slider_verts = vertex_generate(flatten_slider(slider));
+    const auto slider_verts = vertex_generate(flatten_slider(slider), radius);
     
     Magnum::GL::Buffer buffer;
     buffer.setData(slider_verts);

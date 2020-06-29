@@ -13,11 +13,10 @@ inline bool counter_clockwise(const Magnum::Vector2 a, const Magnum::Vector2 b, 
 	return signed_area(a, b, c) > 0;
 }
 
-std::vector<Slider_vert> vertex_generate(const Slider_segment& slider){
+std::vector<Slider_vert> vertex_generate(const Slider_segment& slider, const float width){
     using namespace Magnum::Math;
 	using namespace Magnum::Math::Literals;
 
-	constexpr auto width = 30;
 	constexpr const auto angle_diff = Magnum::Rad{ 10._degf };
 
 	constexpr const auto color_left = 1.f;
