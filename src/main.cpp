@@ -13,13 +13,9 @@
 #endif
 
 #include "slider.h"
-#include "render/vertex_generate.h"
 #include "render/shaders/sliderbody_shader.h"
 #include "render/coordinate_converter.h"
-#include "render/circleobject_renderer.h"
-#include "render/slider_renderer.h"
-#include "render/line_renderer.h"
-#include "data_reader.h"
+#include "play_container.h"
 
 #include <Magnum/Timeline.h>
 
@@ -44,23 +40,16 @@ class TriangleExample: public Platform::Application {
         void textInputEvent(TextInputEvent& event) override;
     private:
         Coordinate_holder coordinate_holder;
-        Circleobject_renderer circle_renderer;
-        Slider_renderer slider_renderer;
-        Line_renderer line_renderer;
 
         GL::Mesh _mesh;
         Shaders::VertexColor2D _shader;
 
         ImGuiIntegration::Context _imgui{NoCreate};
 
-        std::vector<Slider_mesh> sliders;
-        std::vector<Circleobject_mesh> circles;
-
-        Data_reader data;
-
-        int current_time = 0;
-
         Magnum::Timeline timer;
+        Play_container play_container;
+
+        Magnum::GL::Texture2D playtext;
 };
 
 TriangleExample::TriangleExample(const Arguments& arguments):
@@ -68,7 +57,7 @@ TriangleExample::TriangleExample(const Arguments& arguments):
 {
     using namespace Math::Literals;
 
-    coordinate_holder.set_resolution(windowSize());
+    coordinate_holder.set_resolution(play_container.size);
 
     struct TriangleVertex {
         Vector2 position;
@@ -105,7 +94,7 @@ TriangleExample::TriangleExample(const Arguments& arguments):
 
     #if !defined(MAGNUM_TARGET_WEBGL)
     /* Have some sane speed, please */
-    setMinimalLoopPeriod(16);
+    // setMinimalLoopPeriod(16);
     #endif
 
     timer.start();
@@ -115,15 +104,8 @@ void TriangleExample::drawEvent() {
     GL::defaultFramebuffer.clear(GL::FramebufferClear::Color);
 
     _shader.draw(_mesh);
-    
-    for (auto it = circles.rbegin(); it != circles.rend(); ++it){
-        circle_renderer.draw(*it);
-    }
-    
-    for (auto it = sliders.rbegin(); it != sliders.rend(); ++it){
-        slider_renderer.draw(*it);
-    }
-    
+
+    play_container.update(static_cast<int>(timer.previousFrameDuration() * 1000.f));    //Todo: Handle fractions better
 
    _imgui.newFrame();
 
@@ -133,30 +115,24 @@ void TriangleExample::drawEvent() {
     else if(!ImGui::GetIO().WantTextInput && isTextInputActive())
         stopTextInput();
 
-    ImGui::Begin("Slider");
-    // ImGui::InputText("Slider", slider_string.data(), slider_string.size());
-    ImGui::InputInt("Time:", &current_time, 1000);
-
-    // reload data
-    {
-        circles.clear();
-        sliders.clear();
-
-        const auto cs = data.circles_at(current_time);
-        const auto ss = data.sliders_at(current_time);
-
-        for (const auto c : cs){
-            circles.push_back(circle_renderer.generate_mesh(c.position, 30.f));
-        }
-
-        for (const auto s : ss){
-            sliders.push_back(slider_renderer.generate_mesh(s.slider, 30.f));
-        }
+    if(ImGui::Begin("Playfield")){
+        playtext = play_container.draw();
+        ImGui::Image((void*)&playtext, { (float)play_container.scaling_size.x(), (float)play_container.scaling_size.y() }, {0, 1}, {1, 0});
+        // ImGui::GetWindowDrawList()->AddImage
+        ImGui::End();
     }
-    current_time += static_cast<int>(timer.previousFrameDuration() * 1000.f);
-    if(current_time >= data.time_range().y()) current_time = 0;
+
+    ImGui::Begin("Controls");
+    // ImGui::InputText("Slider", slider_string.data(), slider_string.size());
+    const auto range = play_container.data.time_range();
+    ImGui::SliderInt("Time", &play_container.current_time, range.x(), range.y());
+    ImGui::InputFloat("Speed", &play_container.speed);
+    ImGui::Checkbox("Paused", &play_container.paused);
+    ImGui::InputFloat("Size", &play_container.size_scale);
 
     ImGui::End();
+
+    ImGui::ShowMetricsWindow();
 
     /* Update application cursor */
     _imgui.updateApplicationCursor(*this);
@@ -174,7 +150,7 @@ void TriangleExample::viewportEvent(ViewportEvent& event) {
     _imgui.relayout(Vector2{event.windowSize()}/event.dpiScaling(),
         event.windowSize(), event.framebufferSize());
 
-    coordinate_holder.set_resolution(windowSize());
+    coordinate_holder.set_resolution(play_container.size);  //Todo: Rework class
 }
 
 void TriangleExample::keyPressEvent(KeyEvent& event) {

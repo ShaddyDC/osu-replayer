@@ -71,7 +71,7 @@ Magnum::GL::Texture2D create_texture(
     return texture;
 }
 
-void Slider_renderer::draw(Slider_mesh& mesh)
+void Slider_renderer::draw(Slider_mesh& mesh, Magnum::GL::Framebuffer& target)
 {
     auto texture = create_texture(*this, circle_renderer, mesh);
 
@@ -91,7 +91,7 @@ void Slider_renderer::draw(Slider_mesh& mesh)
             Magnum::Shaders::Flat2D::TextureCoordinates{});
 
     // Render rest
-    Magnum::GL::defaultFramebuffer.bind();
+    target.bind();
     flat_shader.bindTexture(texture).draw(mesh_tmp);
 }
 

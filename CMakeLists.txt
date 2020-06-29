@@ -32,6 +32,7 @@ add_executable(slider_draw
 	src/string_helpers.cpp
 	src/slider.cpp
 	src/data_reader.cpp
+	src/play_container.cpp
     src/render/vertex_generate.cpp
     src/render/shaders/sliderbody_shader.cpp
     src/render/shaders/circleobject_shader.cpp

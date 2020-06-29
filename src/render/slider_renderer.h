@@ -5,6 +5,7 @@
 #include "vertex_generate.h"
 #include <Magnum/Shaders/Flat.h>
 #include <Magnum/GL/Mesh.h>
+#include <Magnum/GL/Framebuffer.h>
 
 
 using Sliderbody_mesh = Magnum::GL::Mesh;
@@ -17,7 +18,7 @@ struct Slider_mesh{
 class Slider_renderer{
 public:
     Slider_mesh generate_mesh(const Slider& slider, const float radius);
-    void draw(Slider_mesh& mesh);
+    void draw(Slider_mesh& mesh, Magnum::GL::Framebuffer& target);
     void draw(Sliderbody_mesh& mesh);
 
 private:
