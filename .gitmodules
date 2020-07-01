@@ -7,3 +7,6 @@
 [submodule "libs/magnum-integration"]
 	path = libs/magnum-integration
 	url = https://github.com/mosra/magnum-integration
+[submodule "libs/json"]
+	path = libs/json
+	url = https://github.com/nlohmann/json/
