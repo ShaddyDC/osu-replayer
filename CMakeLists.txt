@@ -55,6 +55,12 @@ set_target_properties(slider_draw PROPERTIES
     CXX_EXTENSIONS OFF
 )
 
+if(CORRADE_TARGET_EMSCRIPTEN)
+    set_target_properties(slider_draw PROPERTIES
+        LINK_FLAGS "-lidbfs.js -s EXPORTED_FUNCTIONS='[_main, _loaded_callback]' -s EXPORTED_RUNTIME_METHODS='[ccall]'"
+    )
+endif()
+
 target_compile_options(slider_draw PRIVATE
   $<$<CXX_COMPILER_ID:MSVC>:/W4>
   $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wall -Wextra -pedantic>
