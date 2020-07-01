@@ -16,6 +16,7 @@
 #include "render/shaders/sliderbody_shader.h"
 #include "render/coordinate_converter.h"
 #include "play_container.h"
+#include "config_manager.h"
 
 #include <Magnum/Timeline.h>
 
@@ -50,6 +51,8 @@ class TriangleExample: public Platform::Application {
         Play_container play_container;
 
         Magnum::GL::Texture2D playtext;
+
+        Config_manager config_manager;
 };
 
 TriangleExample::TriangleExample(const Arguments& arguments):
@@ -143,6 +146,8 @@ void TriangleExample::drawEvent() {
     ImGui::InputFloat("Size", &play_container.size_scale);
 
     ImGui::End();
+
+    config_manager.config_window();
 
     ImGui::ShowMetricsWindow();
 

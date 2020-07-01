@@ -41,6 +41,9 @@ add_executable(slider_draw
     src/render/coordinate_converter.cpp
     src/render/slider_renderer.cpp
     src/render/line_renderer.cpp
+    src/config_manager.cpp
+    
+    libs/imgui/misc/cpp/imgui_stdlib.cpp
     
 	$<TARGET_OBJECTS:shaders_resources>
 	$<TARGET_OBJECTS:data_resources>
@@ -63,7 +66,8 @@ target_link_libraries(slider_draw PRIVATE
     Magnum::Magnum
     Magnum::Shaders
     MagnumIntegration::ImGui
-	Corrade::Utility
+    Corrade::Utility
+    nlohmann_json::nlohmann_json
 )
 
 # For Emscripten copy the boilerplate next to the executable so it can be run
