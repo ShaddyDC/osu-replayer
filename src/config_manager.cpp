@@ -8,7 +8,24 @@
 #include <filesystem>
 #include <stdlib.h>
 
-#ifdef MAGNUM_TARGET_WEBGL
+// Platform dependent code
+#if defined(_WIN32) || defined(WIN32) 
+#include <Shlobj.h>
+#include <Shlobj_core.h>
+// Untested
+wchar_t appdata[MAX_PATH];
+const auto appdata = SHGetSpecialFolderPath(hWnd, buffer, CSIDL_LOCAL_APPDATA, false);
+std::filesystem::path folder{ buffer };
+if(!result){
+    result = folder = "./";
+}
+const auto config_file = foler / "replay_viewer.conf";
+
+const auto config_file = std::filesystem::path{ "/data" } / ".replay_viewer.conf";
+
+#elif defined(MAGNUM_TARGET_WEBGL)
+const auto config_file = std::filesystem::path{ "/data" } / ".replay_viewer.conf";
+
 #include <emscripten.h>
 
 // Probably shouldn't do this
@@ -22,10 +39,13 @@ extern "C" {
         ImGui::LoadIniSettingsFromDisk("/data/imgui.ini");
     }
 }
-#endif
 
-void load_json(nlohmann::json& json);
-const char* save_json(const nlohmann::json& json);
+#elif defined(__unix__)
+const auto config_file = std::filesystem::path{ getenv("HOME") } / ".replay_viewer.conf";
+#else
+// Unknown platform
+const auto config_file = std::filesystem::path{ ".replay_viewer.conf" };
+#endif
 
 Config_manager::Config_manager()
 {
@@ -56,7 +76,18 @@ void Config_manager::load()
 {
     nlohmann::json json{};
 
-    load_json(json);
+    std::ifstream file{ config_file };
+    if(file){
+        try{
+            file >> json;
+        }catch(const nlohmann::detail::parse_error& e){
+            Magnum::Debug() << "Couldn't parse config file." << config_file.c_str() << e.what();
+            json = nlohmann::json::object();
+        }
+    }
+    else {
+        Magnum::Debug() << "Couldn't read config file." << config_file.c_str() << strerror(errno);
+    }
 
     // Make default loading work
     if(json.type() != nlohmann::json::value_t::object)
@@ -70,7 +101,30 @@ void Config_manager::save()
     nlohmann::json json;
     json["api_key"] = config.api_key;
 
-    save_status = save_json(json);
+    std::ofstream file{ config_file };
+    if(!file){
+        const auto error = strerror(errno);
+        Magnum::Debug() << "Couldn't write to config file \"" << config_file.c_str() << "\": " << error;
+        save_status = error;
+    }
+
+    file << json;
+
+    // Apply changes on emscripten
+    #if defined(MAGNUM_TARGET_WEBGL)
+    EM_ASM(
+        console.log("Syncing write");
+        FS.syncfs(false, function (err) {
+            assert(!err);
+        });
+    );
+    #endif
+
+    if(file){
+        save_status = "Saved successfully";
+    } else{
+        save_status = "Something may or may not have gone wrong. Good luck!";
+    }
 }
 
 void Config_manager::config_window()
@@ -85,64 +139,3 @@ void Config_manager::config_window()
         ImGui::End();
     }
 }
-
-// Platform dependent code
-#if defined(_WIN32) || defined(WIN32) || defined(__unix__) || defined(MAGNUM_TARGET_WEBGL)
-
-#if defined(_WIN32) || defined(WIN32) 
-static_assert(false, "Todo");
-#elif defined(MAGNUM_TARGET_WEBGL)
-const auto config_file = std::filesystem::path{ "/data" } / ".replay_viewer.conf";
-#elif defined(__unix__)
-const auto config_file = std::filesystem::path{ getenv("HOME") } / ".replay_viewer.conf";
-#endif
-
-void load_json(nlohmann::json& json)
-{
-    std::ifstream file{ config_file };
-    if(file){
-        try{
-            file >> json;
-        }catch(const nlohmann::detail::parse_error& e){
-            Magnum::Debug() << "Couldn't parse config file." << config_file.c_str() << e.what();
-            json = nlohmann::json::object();
-        }
-    }
-    else {
-        Magnum::Debug() << "Couldn't read config file." << config_file.c_str() << strerror(errno);
-    }
-    #if defined(MAGNUM_TARGET_WEBGL)
-    #endif
-}
-
-const char* save_json(const nlohmann::json& json)
-{
-    std::ofstream file{ config_file };
-    if(!file){
-        const auto error = strerror(errno);
-        Magnum::Debug() << "Couldn't write to config file \"" << config_file.c_str() << "\": " << error;
-        return error;
-    }
-
-    file << json;
-
-    #if defined(MAGNUM_TARGET_WEBGL)
-    EM_ASM(
-        console.log("Syncing write");
-        FS.syncfs(false, function (err) {
-            assert(!err);
-        });
-    );
-    #endif
-
-    if(file){
-        return "Saved successfully";
-    } else{
-        return "Something may or may not have gone wrong. Good luck!";
-    }
-}
-#elif 
-static_assert(false, "Todo");
-#else
-static_assert(false, "Unknown platform");
-#endif
