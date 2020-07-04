@@ -116,8 +116,8 @@ void TriangleExample::drawEvent() {
         constexpr auto bottom_offset = 20.f;    // Prevent scrollbar from appearing
         const float scale = std::min((size.y - bottom_offset) / play_container.size.y(), size.x / play_container.size.x());
         play_container.size_scale = scale;
-        ImGui::End();
     }
+    ImGui::End();
 
     play_container.update(static_cast<int>(timer.previousFrameDuration() * 1000.f));    //Todo: Handle fractions better
 
@@ -134,17 +134,16 @@ void TriangleExample::drawEvent() {
         playtext = play_container.draw();
         ImGui::Image((void*)&playtext, image_size, {0, 1}, {1, 0});
         // ImGui::GetWindowDrawList()->AddImage
-        ImGui::End();
     }
+    ImGui::End();
 
-    ImGui::Begin("Controls");
-    // ImGui::InputText("Slider", slider_string.data(), slider_string.size());
-    const auto range = play_container.data.time_range();
-    ImGui::SliderInt("Time", &play_container.current_time, range.x(), range.y());
-    ImGui::InputFloat("Speed", &play_container.speed);
-    ImGui::Checkbox("Paused", &play_container.paused);
-    ImGui::InputFloat("Size", &play_container.size_scale);
-
+    if(ImGui::Begin("Controls")){
+        const auto range = play_container.data.time_range();
+        ImGui::SliderInt("Time", &play_container.current_time, range.x(), range.y());
+        ImGui::InputFloat("Speed", &play_container.speed);
+        ImGui::Checkbox("Paused", &play_container.paused);
+        ImGui::InputFloat("Size", &play_container.size_scale);
+    }
     ImGui::End();
 
     play_container.data.map_window();

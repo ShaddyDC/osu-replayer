@@ -137,6 +137,6 @@ void Config_manager::config_window()
         if(save_status) {
             ImGui::Text(save_status);
         }
-        ImGui::End();
     }
+    ImGui::End();
 }
