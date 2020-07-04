@@ -11,11 +11,12 @@ if(CORRADE_TARGET_EMSCRIPTEN)
     find_package(Magnum REQUIRED EmscriptenApplication)
 else()
     find_package(Magnum REQUIRED Sdl2Application)
+
+    # WebGL doesn't need OpenSSL because of javascript
+    find_package(OpenSSL REQUIRED)
 endif()
 
 add_subdirectory(libs)
-
-set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
 
 # shaders
 corrade_add_resource(ShaderResources res/shaders.conf)
@@ -33,6 +34,7 @@ add_executable(slider_draw
 	src/slider.cpp
 	src/data_reader.cpp
 	src/play_container.cpp
+	src/web_request.cpp
     src/render/vertex_generate.cpp
     src/render/shaders/sliderbody_shader.cpp
     src/render/shaders/circleobject_shader.cpp
@@ -53,6 +55,7 @@ set_target_properties(slider_draw PROPERTIES
     CXX_STANDARD 20
     CXX_STANDARD_REQUIRED ON
     CXX_EXTENSIONS OFF
+    CORRADE_USE_PEDANTIC_FLAGS ON
 )
 
 if(CORRADE_TARGET_EMSCRIPTEN)
@@ -75,6 +78,14 @@ target_link_libraries(slider_draw PRIVATE
     Corrade::Utility
     nlohmann_json::nlohmann_json
 )
+
+# WebGL doesn't need OpenSSL because of javascript
+if(NOT CORRADE_TARGET_EMSCRIPTEN)
+    target_link_libraries(slider_draw PRIVATE
+        OpenSSL::SSL
+        OpenSSL::Crypto
+    )
+endif()
 
 # For Emscripten copy the boilerplate next to the executable so it can be run
 # directly from the build dir; provide an install target as well

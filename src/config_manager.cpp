@@ -132,6 +132,7 @@ void Config_manager::config_window()
     if(ImGui::Begin("config")){
         ImGui::InputText("Api Key", &config.api_key);
         if(ImGui::Button("Reload")) load();
+        ImGui::SameLine();
         if(ImGui::Button("Save")) save();
         if(save_status) {
             ImGui::Text(save_status);

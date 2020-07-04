@@ -3,6 +3,8 @@
 #include <string>
 #include "string_helpers.h"
 #include <algorithm>
+#include <imgui.h>
+#include "web_request.h"
 
 enum Hitobject_type : char{
 	circle = 1,
@@ -71,4 +73,23 @@ Magnum::Math::Vector2<int> Data_reader::time_range()
 	const int start = std::min(sliders.front().time, circles.front().time);	//Todo: Bounds Check
 	const int end = std::max(sliders.back().time, circles.back().time);
 	return { start - 5, end + 5 };
+}
+
+#include "misc/cpp/imgui_stdlib.h"
+
+void Data_reader::map_window()
+{
+	if(ImGui::Begin("beatmap")){
+		ImGui::InputInt("id", &current_id);
+		ImGui::SameLine();
+		if(ImGui::Button("load") && current_id > 0) load_map(current_id);
+		ImGui::InputTextMultiline("Content", map.data(), map.size());
+		ImGui::End();
+	}
+}
+
+void Data_reader::load_map(const int id)
+{
+	const auto url = "https://osu.ppy.sh/osu/" + std::to_string(id);
+	map = get_url(url);
 }
