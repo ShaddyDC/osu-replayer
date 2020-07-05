@@ -32,6 +32,7 @@ const auto config_file = std::filesystem::path{ "/data" } / ".replay_viewer.conf
 // Todo: Improve
 static Config_manager* instance;
 extern "C" {
+    void loaded_callback(void); // Prototype to prevent warning
     void loaded_callback(void)
     {
         instance->load();
@@ -135,7 +136,7 @@ void Config_manager::config_window()
         ImGui::SameLine();
         if(ImGui::Button("Save")) save();
         if(save_status) {
-            ImGui::Text(save_status);
+            ImGui::Text("%s", save_status);
         }
     }
     ImGui::End();

@@ -44,9 +44,7 @@ add_executable(slider_draw
     src/render/slider_renderer.cpp
     src/render/line_renderer.cpp
     src/config_manager.cpp
-    
-    libs/imgui/misc/cpp/imgui_stdlib.cpp
-    
+
 	$<TARGET_OBJECTS:shaders_resources>
 	$<TARGET_OBJECTS:data_resources>
 )
@@ -64,17 +62,13 @@ if(CORRADE_TARGET_EMSCRIPTEN)
     )
 endif()
 
-target_compile_options(slider_draw PRIVATE
-  $<$<CXX_COMPILER_ID:MSVC>:/W4>
-  $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wall -Wextra -pedantic>
-)
-
 target_link_libraries(slider_draw PRIVATE
     Magnum::Application
     Magnum::GL
     Magnum::Magnum
     Magnum::Shaders
     MagnumIntegration::ImGui
+    ImGui::imgui_stdlib
     Corrade::Utility
     nlohmann_json::nlohmann_json
 )
@@ -84,6 +78,7 @@ if(NOT CORRADE_TARGET_EMSCRIPTEN)
     target_link_libraries(slider_draw PRIVATE
         OpenSSL::SSL
         OpenSSL::Crypto
+        httplib::httplib
     )
 endif()
 

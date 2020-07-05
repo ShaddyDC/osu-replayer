@@ -128,11 +128,11 @@ void TriangleExample::drawEvent() {
         stopTextInput();
 
     if(ImGui::Begin("Playfield")){
-        ImVec2 image_size = { (float)play_container.scaling_size.x(), (float)play_container.scaling_size.y() };
+        ImVec2 image_size = { static_cast<float>(play_container.scaling_size.x()), static_cast<float>(play_container.scaling_size.y()) };
         ImVec2 pos = {(ImGui::GetWindowSize().x - image_size.x) / 2, (ImGui::GetWindowSize().y - image_size.y) / 2};
         ImGui::SetCursorPos(pos);
         playtext = play_container.draw();
-        ImGui::Image((void*)&playtext, image_size, {0, 1}, {1, 0});
+        ImGui::Image(static_cast<void*>(&playtext), image_size, {0, 1}, {1, 0});
         // ImGui::GetWindowDrawList()->AddImage
     }
     ImGui::End();

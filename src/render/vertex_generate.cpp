@@ -203,11 +203,6 @@ std::vector<Slider_vert> vertex_generate(const Slider_segment& slider, const flo
     return output;
 }
 
-void line_segment_singlecolor()
-{
-
-}
-
 std::vector<Line_vert> line_generate(const std::vector<Magnum::Vector2>& points, const float width, const std::vector<Magnum::Color4>& colors)
 {
 	using namespace Magnum::Math::Literals;

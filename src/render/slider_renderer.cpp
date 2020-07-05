@@ -44,7 +44,7 @@ Slider_mesh Slider_renderer::generate_mesh(const Slider& slider, const float rad
     return mesh;
 }
 
-Magnum::GL::Texture2D create_texture(
+static inline Magnum::GL::Texture2D create_texture(
     Slider_renderer& slider_renderer, Circleobject_renderer& circle_renderer, Slider_mesh& mesh)
 {
     Magnum::GL::Texture2D texture;

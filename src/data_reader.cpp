@@ -12,7 +12,7 @@ enum Hitobject_type : char{
 	spinner = 8,
 };
 
-bool is_type(const int a, const Hitobject_type b)
+static inline bool is_type(const int a, const Hitobject_type b)
 {
 	return (a & static_cast<int>(b)) > 0;
 }
