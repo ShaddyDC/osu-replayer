@@ -10,46 +10,21 @@ std::string get_url(const std::string& url)
 {
     // proxy to allow cross-origin resource sharing
     const auto cors_url = "https://cors-anywhere.herokuapp.com/" + url;
-#if 0   // Broken for some reason
     // Also requires "-s ASYNCIFY=1" if enabled
     char* buffer = nullptr;
     int size, error;
     emscripten_wget_data(
-        url.c_str(),
-        (void**)&buffer,
+        cors_url.c_str(),
+        reinterpret_cast<void**>(&buffer),
         &size,
         &error
     );
     if(size > 0){
-        std::string response((char*)buffer, size);
+        std::string response(buffer, size);
         free(buffer);
         return response;
     }
-    return "";
-#else
-    char* buffer = (char*)EM_ASM_ARGS({
-        let url = UTF8ToString($0);
-        console.log(`url: ${url}`);
-        let request = new XMLHttpRequest();
-        request.open("GET", url, false); // false: synchrone, true: async
-        request.send(null);
-        if(request.status === 200) {
-            let response = request.responseText;
-            console.log("Response: %s", response);
-            return allocate(intArrayFromString(response, false), 'i8', ALLOC_NORMAL);
-        } 
-        else{
-            console.log("Failed :(", request.status, request.statusText);
-            return 0;
-        }
-    }, cors_url.c_str());
-    if(buffer){
-        std::string response(buffer);
-        free(buffer);
-        return response;
-    }
-    return "";
-#endif
+    return "Failed :(";
 }
 
 #else

@@ -8,7 +8,8 @@ find_package(Magnum REQUIRED GL Shaders)
 find_package(Corrade REQUIRED Utility)
 
 if(CORRADE_TARGET_EMSCRIPTEN)
-    find_package(Magnum REQUIRED EmscriptenApplication)
+    find_package(Magnum REQUIRED Sdl2Application)   # Todo: Move this to emscripten
+    # find_package(Magnum REQUIRED EmscriptenApplication)
 else()
     find_package(Magnum REQUIRED Sdl2Application)
 
@@ -58,8 +59,13 @@ set_target_properties(slider_draw PROPERTIES
 
 if(CORRADE_TARGET_EMSCRIPTEN)
     set_target_properties(slider_draw PROPERTIES
-        LINK_FLAGS "-lidbfs.js -s EXPORTED_FUNCTIONS='[_main, _loaded_callback]' -s EXPORTED_RUNTIME_METHODS='[ccall]'"
+        LINK_FLAGS "-lidbfs.js -s EXPORTED_FUNCTIONS='[_main, _loaded_callback]' -s EXPORTED_RUNTIME_METHODS='[ccall]' -s ASYNCIFY=1 -s ASYNCIFY_STACK_SIZE=65535"
     )
+    # -lidbfs.js for dbfs file system
+    # EXPORTED_FUNCTIONS to allow access from js
+    # EXPORTED_RUNTIME_METHODS to allow access from js
+    # ASYNCIFY to allow async js calls
+    # ASYNCIFY_STACK_SIZE to avoid "RuntimeError: unreachable executed" in async code
 endif()
 
 target_link_libraries(slider_draw PRIVATE

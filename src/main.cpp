@@ -9,7 +9,8 @@
 #ifndef CORRADE_TARGET_EMSCRIPTEN
 #include <Magnum/Platform/Sdl2Application.h>
 #else
-#include <Magnum/Platform/EmscriptenApplication.h>
+// #include <Magnum/Platform/EmscriptenApplication.h>   // Todo: Switch back to emscripten
+#include <Magnum/Platform/Sdl2Application.h>
 #endif
 
 #include "slider.h"
