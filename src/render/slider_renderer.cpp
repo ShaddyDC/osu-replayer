@@ -11,6 +11,7 @@
 #include <Magnum/GL/Texture.h>
 #include <Magnum/GL/Renderer.h>
 #include <Magnum/GL/DefaultFramebuffer.h>
+#include <Corrade/Containers/ArrayViewStl.h>
 
 struct Vertex_2d {
     Magnum::Vector2 position;

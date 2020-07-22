@@ -75,8 +75,6 @@ Magnum::Math::Vector2<int> Data_reader::time_range()
 	return { start - 5, end + 5 };
 }
 
-#include "misc/cpp/imgui_stdlib.h"
-
 void Data_reader::map_window()
 {
 	if(ImGui::Begin("beatmap")){

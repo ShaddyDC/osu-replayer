@@ -5,7 +5,7 @@
 #include "vertex_generate.h"
 #include <Magnum/Shaders/Flat.h>
 #include <Magnum/GL/Mesh.h>
-#include <Magnum/GL/Framebuffer.h>
+#include <Magnum/GL/Framebuffer.h>  // TODO: Investigate potentially fewer includes
 
 
 using Sliderbody_mesh = Magnum::GL::Mesh;

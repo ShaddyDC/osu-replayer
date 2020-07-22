@@ -3,6 +3,8 @@
 #include <Magnum/Magnum.h>
 #include <Corrade/Utility/Debug.h>
 
+// TODO Make webrequests a promise or something
+
 #if defined(MAGNUM_TARGET_WEBGL)
 #include <emscripten.h>
 
