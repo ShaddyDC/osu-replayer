@@ -34,12 +34,13 @@ jobs:
           cmake --build . "
           
     - name: Push update
-      run: |        
+      run: |
+        cd build-emscripten  
         git config --global user.name 'ShaddyDC'
         git config --global user.email 'shaddythefirst@gmail.com'
         git clone https://x-access-token:${{ secrets.WEBSITETOKEN }}@github.com/ShaddyDC/replayer-website
         ls -R
-        cd build-emscripten/replayer-website
+        cd replayer-website
         cp ../RelWithDebInfo/bin/* .
         git commit -am "Update files"
         git push
