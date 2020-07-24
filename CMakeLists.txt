@@ -95,12 +95,12 @@ if(CORRADE_TARGET_EMSCRIPTEN)
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
             ${MAGNUM_EMSCRIPTENAPPLICATION_JS}
             ${MAGNUM_WEBAPPLICATION_CSS}
-            ${CMAKE_CURRENT_SOURCE_DIR}/src/slider_draw.html
+            ${CMAKE_CURRENT_SOURCE_DIR}/src/index.html
             $<TARGET_FILE_DIR:slider_draw>)
 
     install(TARGETS slider_draw DESTINATION ${MAGNUM_DEPLOY_PREFIX})
     install(FILES
-    slider_draw.html
+        index.html
         ${MAGNUM_EMSCRIPTENAPPLICATION_JS}
         ${MAGNUM_WEBAPPLICATION_CSS}
         DESTINATION ${MAGNUM_DEPLOY_PREFIX})
