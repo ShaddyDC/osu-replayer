@@ -21,6 +21,8 @@
 
 #include <Magnum/Timeline.h>
 
+#include "version.h"
+
 using namespace Magnum;
 using namespace Math::Literals;
 
@@ -60,6 +62,10 @@ TriangleExample::TriangleExample(const Arguments& arguments):
     Platform::Application{arguments, Configuration{}.setTitle("Magnum Triangle Example").setSize({1600, 900})}
 {
     using namespace Math::Literals;
+
+    Magnum::Debug() << "Using Commit " << Version::git_commit_hash;
+    Magnum::Debug() << "Commit from " << Version::git_commit_time;
+    Magnum::Debug() << "Built at " << Version::build_time;
 
     coordinate_holder.set_resolution(play_container.size);
 

@@ -8,6 +8,8 @@
 #include <filesystem>
 #include <stdlib.h>
 
+#include "version.h"
+
 // Platform dependent code
 #if defined(_WIN32) || defined(WIN32) 
 #include <Shlobj.h>
@@ -138,6 +140,9 @@ void Config_manager::config_window()
         if(save_status) {
             ImGui::Text("%s", save_status);
         }
+        ImGui::Text("Using Commit %s", Version::git_commit_hash);
+        ImGui::Text("Commit from %s", Version::git_commit_time);
+        ImGui::Text("Built at %s", Version::build_time);
     }
     ImGui::End();
 }

@@ -1,0 +1,5 @@
+#include "version.h"
+
+const char* const Version::git_commit_hash = "@GIT_SHA1@";
+const char* const Version::git_commit_time = "@GIT_DATE@";
+const char* const Version::build_time = "@BUILD_TIME@";

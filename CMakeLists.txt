@@ -45,10 +45,14 @@ add_executable(slider_draw
     src/render/slider_renderer.cpp
     src/render/line_renderer.cpp
     src/config_manager.cpp
+    ${CMAKE_CURRENT_BINARY_DIR}/version.cpp
 
 	$<TARGET_OBJECTS:shaders_resources>
 	$<TARGET_OBJECTS:data_resources>
 )
+
+# allow inclusion of headers from other folders (version.cpp)
+target_include_directories(slider_draw PRIVATE src)
 
 set_target_properties(slider_draw PROPERTIES
     CXX_STANDARD 20
@@ -87,6 +91,31 @@ if(NOT CORRADE_TARGET_EMSCRIPTEN)
         httplib::httplib
     )
 endif()
+
+# Include Build Information
+
+# get git commit hash
+execute_process(COMMAND
+    "${GIT_EXECUTABLE}" describe --always --abbrev=40 --dirty
+    WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
+    OUTPUT_VARIABLE GIT_SHA1
+    ERROR_QUIET OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+
+# get git commit time
+execute_process(COMMAND
+    "${GIT_EXECUTABLE}" log -1 --format=%ad --date=iso
+    WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
+    OUTPUT_VARIABLE GIT_DATE
+    ERROR_QUIET OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+
+# get build time
+string(TIMESTAMP BUILD_TIME "%Y-%m-%d %H:%M:%S")
+
+# apply variables
+configure_file(src/version.cpp.in ${CMAKE_CURRENT_BINARY_DIR}/version.cpp @ONLY)
+
 
 # For Emscripten copy the boilerplate next to the executable so it can be run
 # directly from the build dir; provide an install target as well
