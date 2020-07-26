@@ -2,15 +2,16 @@
 
 #include "slider.h"
 #include <Magnum/Math/Vector2.h>
+#include <chrono>
 
 struct Slider_object{
-    Slider_object(const Slider& slider, const int time): slider{ slider }, time{ time } {};
+    Slider_object(const Slider& slider, const std::chrono::milliseconds time): slider{ slider }, time{ time } {};
     Slider slider;
-    int time;
+    std::chrono::milliseconds time;
 };
 
 struct Circle_object{
-    Circle_object(Magnum::Math::Vector2<float> position, const int time): position{ position }, time{ time } {};
+    Circle_object(Magnum::Math::Vector2<float> position, const std::chrono::milliseconds time): position{ position }, time{ time } {};
     Magnum::Math::Vector2<float> position;
-    int time;
+    std::chrono::milliseconds time;
 };

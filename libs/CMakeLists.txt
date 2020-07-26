@@ -13,4 +13,5 @@ add_subdirectory(json)
 
 add_subdirectory(httplib)
 
+set(ENABLE_TESTING OFF CACHE INTERNAL "")
 add_subdirectory(osu_reader)

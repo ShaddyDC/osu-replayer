@@ -22,17 +22,17 @@ Play_container::Play_container()
     border_mesh = line_renderer.generate_mesh(points, 5.f, { Magnum::Color4{ 1 } });
 }
 
-void Play_container::update(int time_passed)
+void Play_container::update(std::chrono::milliseconds time_passed)
 {
-    if(paused) time_passed = 0;
-    if(last_time == current_time && time_passed == 0) return;
+    if(paused) time_passed = std::chrono::milliseconds::zero();
+    if(last_time == current_time && time_passed == std::chrono::milliseconds::zero()) return;
 
     // Size stuff
     scaling_size = static_cast<Magnum::Vector2i>(size_scale * size);
 
     // Hitobject stuff
-    current_time += static_cast<int>(speed * time_passed);      //Todo: Handle fractions better
-    if(current_time >= data.time_range().y()) current_time = 0;
+    current_time += duration_cast<std::chrono::milliseconds>(speed * time_passed);      //Todo: Handle fractions better
+    if(current_time >= data.time_range().y()) current_time = std::chrono::milliseconds::zero();
 
     circles.clear();
     sliders.clear();

@@ -1,66 +1,43 @@
 #include "data_reader.h"
 #include <Corrade/Utility/Resource.h>
+#include <Magnum/Magnum.h>
 #include <string>
 #include "string_helpers.h"
 #include <algorithm>
 #include <imgui.h>
 #include "web_request.h"
 
-enum Hitobject_type : char{
-	circle = 1,
-	slider = 2,
-	spinner = 8,
-};
-
-static inline bool is_type(const int a, const Hitobject_type b)
-{
-	return (a & static_cast<int>(b)) > 0;
-}
+using namespace std::chrono_literals;
 
 Data_reader::Data_reader()
 {
 	const Corrade::Utility::Resource rs{ "data" };
 
-	const auto data = rs.get("example.txt");
+	map_string = rs.get("example.osu");
 
-	for(const auto line : split(data, '\n')){
-		const auto tokens = split(line, ',');
-		if(tokens.size() < 4) continue;
-
-		const auto time = std::stoi(tokens[2].data());
-		const auto type = std::stoi(tokens[3].data());
-		if(is_type(type, Hitobject_type::circle)){
-			circles.emplace_back(Magnum::Math::Vector2<float>{ std::stof(tokens[0].data()), std::stof(tokens[1].data()) }, time);
-		} 
-		else if(is_type(type, Hitobject_type::slider)){
-			sliders.emplace_back(parse_slider(line).value(), time);
-		}
-		else if(is_type(type, Hitobject_type::spinner)){
-			Corrade::Utility::Debug() << "Ignore Spiner " << line << '\n';
-		}
-	}
+	init_map();
 }
 
-std::vector<Circle_object> Data_reader::circles_at(int time)
+std::vector<Circle_object> Data_reader::circles_at(std::chrono::milliseconds time)
 {
 	std::vector<Circle_object> ret;
 
 	const auto in_time = [time](const auto& obj)
 		{
-			return std::abs(time - obj.time) < 1'000;
+			return abs(time - obj.time) < 1'000ms;
 		};
 
 	std::copy_if(circles.cbegin(), circles.cend(), std::back_inserter(ret), in_time);
 	return ret;
 }
 
-std::vector<Slider_object> Data_reader::sliders_at(int time)
+std::vector<Slider_object> Data_reader::sliders_at(std::chrono::milliseconds time)
 {
 	std::vector<Slider_object> ret;
 
 	const auto in_time = [time](const auto& obj)
 		{
-			return std::abs(time - obj.time) < 1'000;
+			return abs(time - obj.time) < 1'000ms;
 		};
 
 	std::copy_if(sliders.cbegin(), sliders.cend(), std::back_inserter(ret), in_time);
@@ -68,20 +45,53 @@ std::vector<Slider_object> Data_reader::sliders_at(int time)
 }
 
 
-Magnum::Math::Vector2<int> Data_reader::time_range()
+Magnum::Math::Vector2<std::chrono::milliseconds> Data_reader::time_range()
 {
-	const int start = std::min(sliders.front().time, circles.front().time);	//Todo: Bounds Check
-	const int end = std::max(sliders.back().time, circles.back().time);
-	return { start - 5, end + 5 };
+	const auto start = min(sliders.front().time, circles.front().time);	//Todo: Bounds Check
+	const auto end = max(sliders.back().time, circles.back().time);
+	return { start - 5ms, end + 5ms };
 }
 
 void Data_reader::map_window()
 {
-	if(ImGui::Begin("beatmap")){
+	if(ImGui::Begin("Load Map")){
 		ImGui::InputInt("id", &current_id);
 		ImGui::SameLine();
 		if(ImGui::Button("load") && current_id > 0) load_map(current_id);
-		ImGui::InputTextMultiline("Content", map.data(), map.size());
+		ImGui::InputTextMultiline("Content", map_string.data(), map_string.size());
+	}
+	ImGui::End();
+
+	if(ImGui::Begin("Beatmap")){
+		if(map){
+			const auto label_text = [](const auto label, unsigned long value){
+				char value_string[32];
+				sprintf(value_string, "%lu", value);
+				ImGui::LabelText(label, "%s", value_string);
+			};
+
+			ImGui::LabelText("Title", "%s", map->title.c_str());
+			ImGui::LabelText("Artist", "%s", map->artist.c_str());
+			ImGui::LabelText("Creator", "%s", map->creator.c_str());
+			ImGui::LabelText("Difficulty", "%s", map->difficulty_name.c_str());
+			ImGui::LabelText("Source", "%s", map->source.c_str());
+			label_text("Set ID", map->beatmap_set_id);
+			label_text("Map ID", map->beatmap_id);
+			ImGui::Text("[Difficulty]");
+			ImGui::InputFloat("HP", &map->hp);
+			ImGui::InputFloat("CS", &map->cs);
+			ImGui::InputFloat("OD", &map->od);
+			ImGui::InputFloat("AR", &map->ar);
+			ImGui::InputFloat("Slider Multiplier", &map->slider_multiplier);
+			ImGui::InputFloat("Slider Tickrate", &map->slider_tick_rate);
+			ImGui::Text("[Hitobjects]");
+			label_text("Circles", circles.size());
+			label_text("Sliders", sliders.size());
+			label_text("Spinners", -1);
+		}
+		else{
+			ImGui::Text("Failed loading map");
+		}
 	}
 	ImGui::End();
 }
@@ -89,5 +99,29 @@ void Data_reader::map_window()
 void Data_reader::load_map(const int id)
 {
 	const auto url = "https://osu.ppy.sh/osu/" + std::to_string(id);
-	map = get_url(url);
+	map_string = get_url(url);
+
+	init_map();
+}
+
+void Data_reader::init_map()
+{
+	map = osu::Beatmap::from_string(map_string);
+
+	if(map && map->mode == Gamemode::osu){
+		for (const auto& circle : map->circles){
+			circles.emplace_back(Magnum::Vector2{ circle.pos.x, circle.pos.y }, circle.time);
+		}
+
+		for (const auto& slider : map->sliders){
+			Slider s{};
+			for(const auto& segment : slider.points){
+				s.emplace_back();
+				for(const auto p : segment){
+					s.back().emplace_back(p.x, p.y);
+				}
+			}
+			sliders.emplace_back(s, slider.time);
+		}
+	}
 }

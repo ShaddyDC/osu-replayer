@@ -8,21 +8,21 @@
 #include <Magnum/GL/Texture.h>
 
 struct Slider_meshtime {
-    Slider_meshtime(Slider_mesh&& mesh, const int time): mesh{ std::move(mesh) }, time{ time } {};
+    Slider_meshtime(Slider_mesh&& mesh, const std::chrono::milliseconds time): mesh{ std::move(mesh) }, time{ time } {};
     Slider_mesh mesh;
-    int time;
+    std::chrono::milliseconds time;
 };
 
 struct Circle_meshtime {
-    Circle_meshtime(Circleobject_mesh&& mesh, const int time): mesh{ std::move(mesh) }, time{ time } {};
+    Circle_meshtime(Circleobject_mesh&& mesh, const std::chrono::milliseconds time): mesh{ std::move(mesh) }, time{ time } {};
     Circleobject_mesh mesh;
-    int time;
+    std::chrono::milliseconds time;
 };
 
 class Play_container{
 public:
     Play_container();
-    void update(int time_passed);
+    void update(std::chrono::milliseconds time_passed);
     Magnum::GL::Texture2D draw();
 
     Data_reader data;
@@ -30,8 +30,8 @@ public:
     std::vector<Slider_meshtime> sliders;
     std::vector<Circle_meshtime> circles;
 
-    int current_time = 0;
-    int last_time = current_time;
+    std::chrono::milliseconds current_time = std::chrono::milliseconds::zero();
+    std::chrono::milliseconds last_time = current_time;
     bool paused = false;
     float speed = 1.f;
 

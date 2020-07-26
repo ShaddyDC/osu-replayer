@@ -126,7 +126,7 @@ void TriangleExample::drawEvent() {
     }
     ImGui::End();
 
-    play_container.update(static_cast<int>(timer.previousFrameDuration() * 1000.f));    //Todo: Handle fractions better
+    play_container.update(std::chrono::milliseconds{ static_cast<int>(timer.previousFrameDuration() * 1000.f) });    //Todo: Handle fractions better
 
     /* Enable text input, if needed */
     if(ImGui::GetIO().WantTextInput && !isTextInputActive())
@@ -146,7 +146,10 @@ void TriangleExample::drawEvent() {
 
     if(ImGui::Begin("Controls")){
         const auto range = play_container.data.time_range();
-        ImGui::SliderInt("Time", &play_container.current_time, range.x(), range.y());
+
+        int time = play_container.current_time.count();
+        ImGui::SliderInt("Time", &time, range.x().count(), range.y().count());
+        play_container.current_time = std::chrono::milliseconds{ time };
         ImGui::InputFloat("Speed", &play_container.speed);
         ImGui::Checkbox("Paused", &play_container.paused);
         ImGui::InputFloat("Size", &play_container.size_scale);
