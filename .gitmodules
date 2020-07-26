@@ -10,3 +10,6 @@
 [submodule "libs/json"]
 	path = libs/json
 	url = https://github.com/nlohmann/json/
+[submodule "libs/osu_reader"]
+	path = libs/osu_reader
+	url = https://github.com/ShaddyDC/osu_reader

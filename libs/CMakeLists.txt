@@ -12,3 +12,5 @@ set(JSON_BuildTests OFF CACHE INTERNAL "")
 add_subdirectory(json)
 
 add_subdirectory(httplib)
+
+add_subdirectory(osu_reader)

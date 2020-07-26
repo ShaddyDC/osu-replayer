@@ -81,6 +81,7 @@ target_link_libraries(slider_draw PRIVATE
     ImGui::imgui_stdlib
     Corrade::Utility
     nlohmann_json::nlohmann_json
+    osuReader::osuReader
 )
 
 # WebGL doesn't need OpenSSL because of javascript
