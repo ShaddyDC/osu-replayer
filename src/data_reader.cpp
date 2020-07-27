@@ -24,7 +24,7 @@ std::vector<Circle_object> Data_reader::circles_at(std::chrono::milliseconds tim
 
 	const auto in_time = [time](const auto& obj)
 		{
-			return abs(time - obj.time) < 1'000ms;
+			return abs(time - obj.time).count() < (1'000ms).count();
 		};
 
 	std::copy_if(circles.cbegin(), circles.cend(), std::back_inserter(ret), in_time);
@@ -37,7 +37,7 @@ std::vector<Slider_object> Data_reader::sliders_at(std::chrono::milliseconds tim
 
 	const auto in_time = [time](const auto& obj)
 		{
-			return abs(time - obj.time) < 1'000ms;
+			return abs(time - obj.time).count() < (1'000ms).count();
 		};
 
 	std::copy_if(sliders.cbegin(), sliders.cend(), std::back_inserter(ret), in_time);

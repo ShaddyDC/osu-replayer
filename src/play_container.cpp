@@ -32,7 +32,7 @@ void Play_container::update(std::chrono::milliseconds time_passed)
 
     // Hitobject stuff
     current_time += duration_cast<std::chrono::milliseconds>(speed * time_passed);      //Todo: Handle fractions better
-    if(current_time >= data.time_range().y()) current_time = std::chrono::milliseconds::zero();
+    if(current_time.count() >= data.time_range().y().count()) current_time = std::chrono::milliseconds::zero();
 
     circles.clear();
     sliders.clear();
@@ -90,7 +90,7 @@ Magnum::GL::Texture2D Play_container::draw()
         if(slider_it == sliders.rend()) draw_circle();
         else if(circle_it == circles.rend()) draw_slider();
         else{
-            if(circle_it->time > slider_it->time) draw_circle();
+            if(circle_it->time.count() > slider_it->time.count()) draw_circle();
             else draw_slider();
         }
     }
