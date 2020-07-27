@@ -66,8 +66,9 @@ void Data_reader::map_window()
 	if(ImGui::Begin("Load Map")){
 		ImGui::InputInt("id", &current_id);
 		ImGui::SameLine();
-		if(ImGui::Button("load") && current_id > 0) load_map(current_id);
+		if(ImGui::Button("Load ID") && current_id > 0) load_map(current_id);
 		ImGui::InputTextMultiline("Content", map_string.data(), map_string.size());
+		if(ImGui::Button("Load String")) init_map();
 	}
 	ImGui::End();
 
