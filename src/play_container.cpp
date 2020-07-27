@@ -6,8 +6,7 @@
 #include <Magnum/GL/RenderbufferFormat.h>
 #include <Magnum/GL/Renderer.h>
 #include <Magnum/GL/DefaultFramebuffer.h>
-
-
+#include <osu_reader/beatmap_util.h>
 
 Play_container::Play_container()
 {
@@ -40,7 +39,7 @@ void Play_container::update(std::chrono::milliseconds time_passed)
     for (auto circle : data.circles_at(current_time)){
         const auto position = to_screen(circle.position);
 
-        circles.emplace_back(circle_renderer.generate_mesh(position, 20.f), circle.time);
+        circles.emplace_back(circle_renderer.generate_mesh(position, osu::cs_to_osupixel(data.map->cs)), circle.time);
     }
 
     for (auto slider : data.sliders_at(current_time)){
@@ -49,7 +48,7 @@ void Play_container::update(std::chrono::milliseconds time_passed)
                 point = to_screen(point);
             }
         }
-        sliders.emplace_back(slider_renderer.generate_mesh(slider.slider, 20.f), slider.time);
+        sliders.emplace_back(slider_renderer.generate_mesh(slider.slider, osu::cs_to_osupixel(data.map->cs)), slider.time);
     }
 
     last_time = current_time;

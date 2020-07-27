@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <imgui.h>
 #include "web_request.h"
+#include <osu_reader/beatmap_util.h>
 
 using namespace std::chrono_literals;
 
@@ -22,9 +23,13 @@ std::vector<Circle_object> Data_reader::circles_at(std::chrono::milliseconds tim
 {
 	std::vector<Circle_object> ret;
 
-	const auto in_time = [time](const auto& obj)
+	const auto early_window = std::chrono::milliseconds{ static_cast<int>(osu::ar_to_ms(map->ar)) };
+	const auto late_window = std::chrono::milliseconds{ static_cast<int>(osu::od_to_ms300(map->od)) };
+
+	const auto in_time = [time, early_window, late_window](const auto& obj)
 		{
-			return abs(time - obj.time).count() < (1'000ms).count();
+			return (obj.time - early_window).count() < time.count()
+				&& (obj.time +  late_window).count() > time.count();
 		};
 
 	std::copy_if(circles.cbegin(), circles.cend(), std::back_inserter(ret), in_time);
@@ -35,9 +40,13 @@ std::vector<Slider_object> Data_reader::sliders_at(std::chrono::milliseconds tim
 {
 	std::vector<Slider_object> ret;
 
-	const auto in_time = [time](const auto& obj)
+	const auto early_window = std::chrono::milliseconds{ static_cast<int>(osu::ar_to_ms(map->ar)) };
+	const auto late_window = std::chrono::milliseconds{ static_cast<int>(osu::od_to_ms300(map->od)) };
+
+	const auto in_time = [time, early_window, late_window](const auto& obj)
 		{
-			return abs(time - obj.time).count() < (1'000ms).count();
+			return (obj.time - early_window).count() < time.count()
+				&& (obj.time +  late_window).count() > time.count();
 		};
 
 	std::copy_if(sliders.cbegin(), sliders.cend(), std::back_inserter(ret), in_time);
