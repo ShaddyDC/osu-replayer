@@ -118,6 +118,9 @@ void Data_reader::init_map()
 	map = osu::Beatmap::from_string(map_string);
 
 	if(map && map->mode == Gamemode::osu){
+		circles.clear();
+		sliders.clear();
+
 		for (const auto& circle : map->circles){
 			circles.emplace_back(Magnum::Vector2{ circle.pos.x, circle.pos.y }, circle.time);
 		}
