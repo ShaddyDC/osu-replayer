@@ -61,9 +61,13 @@ class TriangleExample: public Platform::Application {
         Api_manager api_manager{ config_manager.config.api_key };
 };
 
-TriangleExample::TriangleExample(const Arguments& arguments):
-    Platform::Application{arguments, Configuration{}.setTitle("Magnum Triangle Example").setSize({1600, 900})},
-    play_container{ api_manager }
+TriangleExample::TriangleExample(const Arguments& arguments) :
+        Platform::Application{ arguments,
+                               Configuration{}
+                                       .setTitle("Magnum Triangle Example")
+                                       .setSize({ 1600, 900 })
+                                       .setWindowFlags(Configuration::WindowFlag::Resizable) },
+        play_container{ api_manager }
 {
     using namespace Math::Literals;
 
@@ -81,6 +85,7 @@ TriangleExample::TriangleExample(const Arguments& arguments):
         Vector2 position;
         Color3 color;
     };
+
     const TriangleVertex data[]{
         {{-0.5f, -0.5f}, 0xff0000_rgbf},    /* Left vertex, red color */
         {{ 0.5f, -0.5f}, 0x00ff00_rgbf},    /* Right vertex, green color */
