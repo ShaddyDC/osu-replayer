@@ -22,6 +22,7 @@
 #include <Magnum/Timeline.h>
 
 #include "version.h"
+#include "api_manager.h"
 
 using namespace Magnum;
 using namespace Math::Literals;
@@ -56,10 +57,12 @@ class TriangleExample: public Platform::Application {
         Magnum::GL::Texture2D playtext;
 
         Config_manager config_manager;
+        Api_manager api_manager{ config_manager.config.api_key };
 };
 
 TriangleExample::TriangleExample(const Arguments& arguments):
-    Platform::Application{arguments, Configuration{}.setTitle("Magnum Triangle Example").setSize({1600, 900})}
+    Platform::Application{arguments, Configuration{}.setTitle("Magnum Triangle Example").setSize({1600, 900})},
+    play_container{ api_manager }
 {
     using namespace Math::Literals;
 

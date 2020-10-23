@@ -35,8 +35,8 @@ add_executable(slider_draw
 	src/slider.cpp
 	src/data_reader.cpp
 	src/play_container.cpp
-	src/web_request.cpp
     src/render/vertex_generate.cpp
+    src/api_manager.cpp
     src/render/shaders/sliderbody_shader.cpp
     src/render/shaders/circleobject_shader.cpp
     src/render/shaders/minimal_shader.cpp
@@ -63,7 +63,7 @@ set_target_properties(slider_draw PROPERTIES
 
 if(CORRADE_TARGET_EMSCRIPTEN)
     set_target_properties(slider_draw PROPERTIES
-        LINK_FLAGS "-lidbfs.js -s EXPORTED_FUNCTIONS='[_main, _loaded_callback]' -s EXPORTED_RUNTIME_METHODS='[ccall]' -s ASYNCIFY=1 -s ASYNCIFY_STACK_SIZE=65535"
+        LINK_FLAGS "-lidbfs.js -s EXPORTED_FUNCTIONS='[_main, _loaded_callback]' -s EXPORTED_RUNTIME_METHODS='[ccall]' -s ASYNCIFY=1 -s ASYNCIFY_IMPORTS='[js_api_request]' -s ASYNCIFY_STACK_SIZE=65535"
     )
     # -lidbfs.js for dbfs file system
     # EXPORTED_FUNCTIONS to allow access from js

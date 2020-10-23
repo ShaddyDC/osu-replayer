@@ -5,12 +5,11 @@
 #include "string_helpers.h"
 #include <algorithm>
 #include <imgui.h>
-#include "web_request.h"
 #include <osu_reader/beatmap_util.h>
 
 using namespace std::chrono_literals;
 
-Data_reader::Data_reader()
+Data_reader::Data_reader(Api_manager& api_manager): api_manager{ api_manager }
 {
 	const Corrade::Utility::Resource rs{ "data" };
 
@@ -108,8 +107,7 @@ void Data_reader::map_window()
 
 void Data_reader::load_map(const int id)
 {
-	const auto url = "https://osu.ppy.sh/osu/" + std::to_string(id);
-	map_string = get_url(url);
+	map_string = api_manager.beatmap(std::to_string(id));
 
 	init_map();
 }

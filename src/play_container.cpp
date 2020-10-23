@@ -8,7 +8,7 @@
 #include <Magnum/GL/DefaultFramebuffer.h>
 #include <osu_reader/beatmap_util.h>
 
-Play_container::Play_container()
+Play_container::Play_container(Api_manager& api_manager) : data{ api_manager }
 {
     std::vector<Magnum::Vector2> points{    //Todo: Fix top left corner
         Magnum::Vector2{ top_left },

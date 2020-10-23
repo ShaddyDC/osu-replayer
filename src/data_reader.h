@@ -1,11 +1,12 @@
 #pragma once
 #include "hitobjects.h"
+#include "api_manager.h"
 #include <string>
 #include <osu_reader/beatmap.h>
 
 class Data_reader{
 public:
-    Data_reader();
+    Data_reader(Api_manager& api_manager);
 
     std::vector<Circle_object> circles_at(std::chrono::milliseconds time);
     std::vector<Slider_object> sliders_at(std::chrono::milliseconds time);
@@ -23,4 +24,6 @@ private:
 
     std::vector<Circle_object> circles;
     std::vector<Slider_object> sliders;
+
+    Api_manager& api_manager;
 };

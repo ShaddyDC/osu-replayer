@@ -15,4 +15,9 @@ public:
 
     Config config;
     const char* save_status = nullptr;
+
+    Config_manager(const Config_manager&) = delete;
+    Config_manager(Config_manager&&) = delete;
+    Config_manager& operator=(const Config_manager&) = delete;
+    Config_manager& operator=(Config_manager&&) = delete;
 };
