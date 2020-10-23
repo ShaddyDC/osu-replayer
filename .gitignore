@@ -2,4 +2,5 @@
 .idea
 build
 build-emscripten
+cmake-build-debug
 imgui.ini
