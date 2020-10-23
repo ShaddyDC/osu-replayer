@@ -13,6 +13,8 @@ public:
     void save();
     void config_window();
 
+    void update_api_key(std::string api_key);
+
     Config config;
     const char* save_status = nullptr;
 
@@ -20,4 +22,7 @@ public:
     Config_manager(Config_manager&&) = delete;
     Config_manager& operator=(const Config_manager&) = delete;
     Config_manager& operator=(Config_manager&&) = delete;
+
+private:
+    std::string cli_updated_api_key;
 };

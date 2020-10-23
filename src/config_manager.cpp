@@ -134,6 +134,16 @@ void Config_manager::config_window()
 {
     if(ImGui::Begin("config")){
         ImGui::InputText("Api Key", &config.api_key);
+        if(!cli_updated_api_key.empty() && cli_updated_api_key != config.api_key){
+            ImGui::InputText("New Key", &cli_updated_api_key, ImGuiInputTextFlags_ReadOnly);
+            ImGui::SameLine();
+            if(ImGui::Button("Update?")){
+                config.api_key = cli_updated_api_key;
+                save();
+                cli_updated_api_key = "";
+            }
+        }
+
         if(ImGui::Button("Reload")) load();
         ImGui::SameLine();
         if(ImGui::Button("Save")) save();
@@ -145,4 +155,9 @@ void Config_manager::config_window()
         ImGui::Text("Built at %s", Version::build_time);
     }
     ImGui::End();
+}
+
+void Config_manager::update_api_key(std::string api_key)
+{
+    cli_updated_api_key = std::move(api_key);
 }

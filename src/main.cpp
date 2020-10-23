@@ -20,6 +20,7 @@
 #include "config_manager.h"
 
 #include <Magnum/Timeline.h>
+#include <Corrade/Utility/Arguments.h>
 
 #include "version.h"
 #include "api_manager.h"
@@ -69,6 +70,10 @@ TriangleExample::TriangleExample(const Arguments& arguments):
     Magnum::Debug() << "Using Commit " << Version::git_commit_hash;
     Magnum::Debug() << "Commit from " << Version::git_commit_time;
     Magnum::Debug() << "Built at " << Version::build_time;
+
+    Corrade::Utility::Arguments args{ "replayer" };
+    args.addOption("apikey").parse(arguments.argc, arguments.argv);
+    config_manager.update_api_key(args.value("apikey"));
 
     coordinate_holder.set_resolution(play_container.size);
 
