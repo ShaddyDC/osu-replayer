@@ -13,7 +13,7 @@ Api_manager::Api_manager(const std::string& api_key): api_key{ api_key }
 
 std::string Api_manager::beatmap(std::string_view id)
 {
-    const auto endpoint = "/api/v1/map/" + std::string{ id };
+    const auto endpoint = "/api/v1/osufile/" + std::string{ id };
     return api_request(endpoint);
 }
 
