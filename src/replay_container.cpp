@@ -10,8 +10,6 @@ Replay_container::Replay_container(Api_manager& api_manager)
     const auto replay_data = rs.get("example.osr");
 
     replay = osu::Replay::from_string(replay_data, true);
-
-    Corrade::Utility::Debug() << "Replay failed " << (replay.has_value() ? "no" : "yes");
 }
 void Replay_container::replay_window()
 {
