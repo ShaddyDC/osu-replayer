@@ -49,7 +49,7 @@ add_executable(slider_draw
 
 	$<TARGET_OBJECTS:shaders_resources>
 	$<TARGET_OBJECTS:data_resources>
-)
+        src/replay_container.cpp src/replay_container.h)
 
 # allow inclusion of headers from other folders (version.cpp)
 target_include_directories(slider_draw PRIVATE src)

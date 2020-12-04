@@ -116,7 +116,7 @@ void Data_reader::init_map()
 {
 	map = osu::Beatmap::from_string(map_string);
 
-	if(map && map->mode == Gamemode::osu){
+	if(map && map->mode == osu::Gamemode::osu){
 		circles.clear();
 		sliders.clear();
 

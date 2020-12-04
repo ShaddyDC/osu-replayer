@@ -170,6 +170,7 @@ void TriangleExample::drawEvent() {
     ImGui::End();
 
     play_container.data.map_window();
+    play_container.replay_container.replay_window();
     config_manager.config_window();
 
     ImGui::ShowMetricsWindow();

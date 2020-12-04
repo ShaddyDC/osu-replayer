@@ -8,7 +8,7 @@
 #include <Magnum/GL/DefaultFramebuffer.h>
 #include <osu_reader/beatmap_util.h>
 
-Play_container::Play_container(Api_manager& api_manager) : data{ api_manager }
+Play_container::Play_container(Api_manager& api_manager) : data{ api_manager }, replay_container{ api_manager }
 {
     std::vector<Magnum::Vector2> points{    //Todo: Fix top left corner
         Magnum::Vector2{ top_left },
@@ -49,6 +49,17 @@ void Play_container::update(std::chrono::milliseconds time_passed)
             }
         }
         sliders.emplace_back(slider_renderer.generate_mesh(slider.slider, osu::cs_to_osupixel(data.map->cs)), slider.time);
+    }
+
+    if(replay_container.replay) {
+        // TODO This is incorrect, not the replay but the map is flipped
+        const auto current_frame = replay_container.frame_at(current_time);
+        auto pos = Magnum::Vector2{ current_frame.x, current_frame.y };
+        if((replay_container.replay->mods & 16) > 0){
+            pos.y() = 384.f - pos.y();
+        }
+        pos = to_screen(pos);
+        current_cursor = circle_renderer.generate_mesh(pos, osu::cs_to_osupixel(data.map->cs + 3));
     }
 
     last_time = current_time;
@@ -93,6 +104,9 @@ Magnum::GL::Texture2D Play_container::draw()
             else draw_slider();
         }
     }
+
+    if(current_cursor)
+        circle_renderer.draw(*current_cursor);
 
     Magnum::GL::defaultFramebuffer.bind();
 

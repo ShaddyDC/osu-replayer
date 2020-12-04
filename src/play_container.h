@@ -1,9 +1,10 @@
 #pragma once
 
-#include "render/circleobject_renderer.h"
-#include "render/slider_renderer.h"
-#include "render/line_renderer.h"
 #include "data_reader.h"
+#include "render/circleobject_renderer.h"
+#include "render/line_renderer.h"
+#include "render/slider_renderer.h"
+#include "replay_container.h"
 
 #include <Magnum/GL/Texture.h>
 
@@ -26,9 +27,11 @@ public:
     Magnum::GL::Texture2D draw();
 
     Data_reader data;
+    Replay_container replay_container;
 
     std::vector<Slider_meshtime> sliders;
     std::vector<Circle_meshtime> circles;
+    std::optional<Circleobject_mesh> current_cursor;
 
     std::chrono::milliseconds current_time = std::chrono::milliseconds::zero();
     std::chrono::milliseconds last_time = current_time;
