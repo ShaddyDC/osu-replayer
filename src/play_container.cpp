@@ -1,7 +1,6 @@
 #include "play_container.h"
 
 #include <Magnum/GL/DefaultFramebuffer.h>
-#include <Magnum/GL/Framebuffer.h>
 #include <Magnum/GL/Renderbuffer.h>
 #include <Magnum/GL/RenderbufferFormat.h>
 #include <Magnum/GL/Renderer.h>
@@ -40,7 +39,7 @@ void Play_container::update(std::chrono::milliseconds time_passed)
     for(auto circle : data.circles_at(current_time)) {
         const auto position = to_screen(circle.position);
 
-        circles.emplace_back(circle_renderer.generate_mesh(position, osu::cs_to_osupixel(data.map->cs)), circle.time);
+        circles.emplace_back(Circleobject_renderer::generate_mesh(position, osu::cs_to_osupixel(data.map->cs)), circle.time);
     }
 
     for(auto slider : data.sliders_at(current_time)) {
@@ -60,7 +59,7 @@ void Play_container::update(std::chrono::milliseconds time_passed)
             pos.y() = 384.f - pos.y();
         }
         pos = to_screen(pos);
-        current_cursor = circle_renderer.generate_mesh(pos, osu::cs_to_osupixel(data.map->cs + 3));
+        current_cursor = Circleobject_renderer::generate_mesh(pos, osu::cs_to_osupixel(data.map->cs + 3));
     }
 
     last_time = current_time;

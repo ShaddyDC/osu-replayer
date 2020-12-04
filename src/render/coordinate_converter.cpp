@@ -1,5 +1,4 @@
 #include "coordinate_converter.h"
-#include <Magnum/GL/Buffer.h>
 #include <Magnum/Math/Matrix4.h>
 
 void Coordinate_holder::set_resolution(const Magnum::Vector2i res)

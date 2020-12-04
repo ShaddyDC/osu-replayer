@@ -7,7 +7,7 @@
 
 class Replay_container {
 public:
-    Replay_container(Api_manager& api_manager);
+    explicit Replay_container(Api_manager& api_manager);
     std::optional<osu::Replay> replay;
 
     void replay_window();

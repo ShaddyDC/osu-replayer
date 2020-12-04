@@ -6,7 +6,7 @@
 #include <fstream>
 #include <misc/cpp/imgui_stdlib.h>
 #include <nlohmann/json.hpp>
-#include <stdlib.h>
+#include <cstdlib>
 
 #include "version.h"
 

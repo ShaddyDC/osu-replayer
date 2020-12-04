@@ -1,6 +1,4 @@
 #include "circleobject_renderer.h"
-#include <Magnum/GL/Buffer.h>
-#include <Magnum/GL/Mesh.h>
 #include <Magnum/Mesh.h>
 
 struct Circle_vertex {
@@ -8,7 +6,7 @@ struct Circle_vertex {
     Magnum::Vector2 local_position;
 };
 
-Circleobject_mesh Circleobject_renderer::generate_mesh(const Magnum::Vector2 position, const float radius) const
+Circleobject_mesh Circleobject_renderer::generate_mesh(const Magnum::Vector2 position, const float radius)
 {
     Circle_vertex data[] = {
             {position + Magnum::Vector2{-radius, -radius}, {-1, -1}},

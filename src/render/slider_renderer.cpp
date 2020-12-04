@@ -1,16 +1,12 @@
 #include "slider_renderer.h"
 
 #include <Corrade/Containers/ArrayViewStl.h>
-#include <Magnum/GL/Buffer.h>
 #include <Magnum/GL/DefaultFramebuffer.h>
-#include <Magnum/GL/Framebuffer.h>
-#include <Magnum/GL/Mesh.h>
 #include <Magnum/GL/Renderbuffer.h>
 #include <Magnum/GL/RenderbufferFormat.h>
 #include <Magnum/GL/Renderer.h>
 #include <Magnum/GL/Texture.h>
 #include <Magnum/GL/TextureFormat.h>
-#include <Magnum/Math/Vector2.h>
 #include <Magnum/Mesh.h>
 
 struct Vertex_2d {

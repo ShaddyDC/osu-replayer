@@ -16,8 +16,6 @@
 #include "config_manager.h"
 #include "play_container.h"
 #include "render/coordinate_converter.h"
-#include "render/shaders/sliderbody_shader.h"
-#include "slider.h"
 
 #include <Corrade/Utility/Arguments.h>
 #include <Magnum/Timeline.h>

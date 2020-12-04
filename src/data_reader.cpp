@@ -1,11 +1,9 @@
 #include "data_reader.h"
-#include "string_helpers.h"
 #include <Corrade/Utility/Resource.h>
 #include <Magnum/Magnum.h>
 #include <algorithm>
 #include <imgui.h>
 #include <osu_reader/beatmap_util.h>
-#include <string>
 
 using namespace std::chrono_literals;
 
@@ -69,9 +67,9 @@ void Data_reader::map_window()
 
     if(ImGui::Begin("Beatmap")) {
         if(map) {
-            const auto label_text = [](const auto label, unsigned long value) {
+            const auto label_text = [](const auto label, auto value) {
                 char value_string[32];
-                sprintf(value_string, "%lu", value);
+                sprintf(value_string, "%lu", static_cast<long unsigned int>(value));
                 ImGui::LabelText(label, "%s", value_string);
             };
 

@@ -7,7 +7,7 @@ using Circleobject_mesh = Magnum::GL::Mesh;
 
 class Circleobject_renderer {
 public:
-    Circleobject_mesh generate_mesh(const Magnum::Vector2 position, const float radius) const;
+    [[nodiscard]] static Circleobject_mesh generate_mesh(const Magnum::Vector2 position, const float radius) ;
     void draw(Circleobject_mesh& mesh);
 
 private:

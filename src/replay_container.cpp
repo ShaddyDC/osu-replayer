@@ -1,7 +1,6 @@
 #include "replay_container.h"
 #include <Corrade/Utility/Resource.h>
 #include <imgui.h>
-#include <iostream>
 
 Replay_container::Replay_container(Api_manager& api_manager)
     : api_manager{api_manager}

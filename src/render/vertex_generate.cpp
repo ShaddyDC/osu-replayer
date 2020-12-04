@@ -210,7 +210,7 @@ std::vector<Line_vert> line_generate(const std::vector<Magnum::Vector2>& points,
 
     const auto multi_color = colors.size() >= points.size() - 1;
     const auto triangles_mesh = multi_color;
-    const auto color_at = [multi_color, &colors](const int i) {
+    const auto color_at = [multi_color, &colors](const std::size_t i) {
         if(multi_color) return colors[i];
         if(!colors.empty()) return colors[0];
         return Magnum::Color4::red();

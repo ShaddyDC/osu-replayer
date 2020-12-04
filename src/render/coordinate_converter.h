@@ -6,7 +6,7 @@
 class Coordinate_holder {
 public:
     void set_resolution(const Magnum::Vector2i resolution);
-    Magnum::Vector2i resolution() const;
+    [[nodiscard]] Magnum::Vector2i resolution() const;
 
 private:
     Magnum::Vector2i current_resolution;

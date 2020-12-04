@@ -4,7 +4,6 @@
 
 #include "api_manager.h"
 #include <Corrade/Utility/Debug.h>
-#include <Magnum/Magnum.h>
 
 Api_manager::Api_manager(const std::string& api_key) : api_key{api_key}
 {

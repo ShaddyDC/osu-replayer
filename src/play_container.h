@@ -22,7 +22,7 @@ struct Circle_meshtime {
 
 class Play_container {
 public:
-    Play_container(Api_manager& api_manager);
+    explicit Play_container(Api_manager& api_manager);
     void update(std::chrono::milliseconds time_passed);
     Magnum::GL::Texture2D draw();
 

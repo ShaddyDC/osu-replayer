@@ -6,7 +6,7 @@
 
 class Data_reader {
 public:
-    Data_reader(Api_manager& api_manager);
+    explicit Data_reader(Api_manager& api_manager);
 
     std::vector<Circle_object> circles_at(std::chrono::milliseconds time);
     std::vector<Slider_object> sliders_at(std::chrono::milliseconds time);

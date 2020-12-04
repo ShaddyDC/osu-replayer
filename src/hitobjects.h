@@ -3,9 +3,10 @@
 #include "slider.h"
 #include <Magnum/Math/Vector2.h>
 #include <chrono>
+#include <utility>
 
 struct Slider_object {
-    Slider_object(const Slider& slider, const std::chrono::milliseconds time) : slider{slider}, time{time} {};
+    Slider_object(Slider  slider, const std::chrono::milliseconds time) : slider{std::move(slider)}, time{time} {};
     Slider slider;
     std::chrono::milliseconds time;
 };
