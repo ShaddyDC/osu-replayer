@@ -1,10 +1,10 @@
 #pragma once
-#include "hitobjects.h"
 #include "api_manager.h"
-#include <string>
+#include "hitobjects.h"
 #include <osu_reader/beatmap.h>
+#include <string>
 
-class Data_reader{
+class Data_reader {
 public:
     Data_reader(Api_manager& api_manager);
 

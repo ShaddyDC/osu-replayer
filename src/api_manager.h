@@ -23,9 +23,9 @@ private:
     std::string api_request(std::string_view endpoint);
 
     static constexpr const inline auto api_base_url = "https://osutest.shaddy.dev";
-//    static constexpr const inline auto api_base_url = "http://localhost";
+    //    static constexpr const inline auto api_base_url = "http://localhost";
     const std::string& api_key;
 };
 
 
-#endif //SLIDER_DRAW_API_MANAGER_H
+#endif//SLIDER_DRAW_API_MANAGER_H

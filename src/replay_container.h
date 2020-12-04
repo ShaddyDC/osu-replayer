@@ -12,8 +12,9 @@ public:
 
     void replay_window();
     osu::Replay::Replay_frame frame_at(std::chrono::milliseconds time);
+
 private:
     Api_manager& api_manager;
 };
 
-#endif // SLIDER_DRAW_REPLAY_CONTAINER_H
+#endif// SLIDER_DRAW_REPLAY_CONTAINER_H

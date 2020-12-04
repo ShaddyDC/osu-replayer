@@ -2,11 +2,11 @@
 
 #include <string>
 
-struct Config{
+struct Config {
     std::string api_key;
 };
 
-class Config_manager{
+class Config_manager {
 public:
     Config_manager();
     void load();

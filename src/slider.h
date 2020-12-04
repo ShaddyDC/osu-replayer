@@ -1,8 +1,8 @@
 #pragma once
-#include <vector>
-#include <string_view>
-#include <optional>
 #include <Magnum/Math/Vector2.h>
+#include <optional>
+#include <string_view>
+#include <vector>
 
 using Slider_point = Magnum::Math::Vector2<float>;
 
@@ -10,7 +10,7 @@ using Slider_segment = std::vector<Slider_point>;
 
 using Slider = std::vector<Slider_segment>;
 
-enum class Slider_type : char{
+enum class Slider_type : char {
     bezier = 'B',
     catmull = 'C',
     perfect = 'P',

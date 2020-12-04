@@ -9,18 +9,18 @@
 #include <Magnum/GL/Texture.h>
 
 struct Slider_meshtime {
-    Slider_meshtime(Slider_mesh&& mesh, const std::chrono::milliseconds time): mesh{ std::move(mesh) }, time{ time } {};
+    Slider_meshtime(Slider_mesh&& mesh, const std::chrono::milliseconds time) : mesh{std::move(mesh)}, time{time} {};
     Slider_mesh mesh;
     std::chrono::milliseconds time;
 };
 
 struct Circle_meshtime {
-    Circle_meshtime(Circleobject_mesh&& mesh, const std::chrono::milliseconds time): mesh{ std::move(mesh) }, time{ time } {};
+    Circle_meshtime(Circleobject_mesh&& mesh, const std::chrono::milliseconds time) : mesh{std::move(mesh)}, time{time} {};
     Circleobject_mesh mesh;
     std::chrono::milliseconds time;
 };
 
-class Play_container{
+class Play_container {
 public:
     Play_container(Api_manager& api_manager);
     void update(std::chrono::milliseconds time_passed);
@@ -38,10 +38,10 @@ public:
     bool paused = false;
     float speed = 1.f;
 
-    const Magnum::Vector2i field_size = { 512, 384 };
-    const Magnum::Vector2i top_left{ 50, 50 };
-    const Magnum::Vector2i bottom_right{ top_left + field_size};
-    const Magnum::Vector2i size = { bottom_right + top_left };
+    const Magnum::Vector2i field_size = {512, 384};
+    const Magnum::Vector2i top_left{50, 50};
+    const Magnum::Vector2i bottom_right{top_left + field_size};
+    const Magnum::Vector2i size = {bottom_right + top_left};
     float size_scale = 1.f;
     Magnum::Vector2i scaling_size = static_cast<Magnum::Vector2i>(size_scale * size);
 
