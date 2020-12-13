@@ -4,6 +4,7 @@
 
 #include "api_manager.h"
 #include <Corrade/Utility/Debug.h>
+#include <Magnum/Magnum.h>
 
 Api_manager::Api_manager(const std::string& api_key) : api_key{api_key}
 {
@@ -19,7 +20,7 @@ std::string Api_manager::beatmap(std::string_view id)
 #include <emscripten.h>
 
 EM_JS(char*, js_api_request, (const char* url, const char* api_key), {
-    return Asyncify.handleAsync(async() = > {
+    return Asyncify.handleAsync(async function() {
         const response = await fetch(UTF8ToString(url), {
             headers: {
                 "api-key": UTF8ToString(api_key)
