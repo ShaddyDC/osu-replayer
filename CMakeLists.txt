@@ -8,6 +8,14 @@ find_package(Magnum REQUIRED GL Shaders)
 find_package(Corrade REQUIRED Utility)
 
 if (CORRADE_TARGET_EMSCRIPTEN)
+    # emscripten ships with a custom implementation of TEST_BIG_ENDIAN in TestBigEndian.cmake that xz requires to compile
+    list(INSERT CMAKE_MODULE_PATH 0 "${EMSCRIPTEN_PREFIX}/cmake/Modules")
+
+    # xz comes with methods to check physical memory and cpu cores that fail in our docker container.
+    # We can bypass it like this, and everything seems to be working fine
+    set(TUKLIB_PHYSMEM_FOUND TRUE)
+    set(TUKLIB_CPUCORES_FOUND TRUE)
+
     find_package(Magnum REQUIRED Sdl2Application)   # Todo: Move this to emscripten
     # find_package(Magnum REQUIRED EmscriptenApplication)
 else ()
