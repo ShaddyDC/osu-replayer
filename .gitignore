@@ -3,4 +3,5 @@
 build
 build-emscripten
 cmake-build-debug
+cmake-build-debug-emscripten
 imgui.ini
