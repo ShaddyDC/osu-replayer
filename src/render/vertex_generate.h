@@ -2,7 +2,8 @@
 
 #include <Magnum/Math/Color.h>
 #include <Magnum/Math/Vector3.h>
-#include <Magnum/Shaders/AbstractVector.h>
+#include <Magnum/Shaders/Vector.h>
+
 
 #include "../slider.h"
 
