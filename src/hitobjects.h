@@ -1,13 +1,13 @@
 #pragma once
 
-#include "slider.h"
 #include <Magnum/Math/Vector2.h>
 #include <chrono>
+#include <osu_reader/hitobject.h>
 #include <utility>
 
 struct Slider_object {
-    Slider_object(Slider  slider, const std::chrono::milliseconds time) : slider{std::move(slider)}, time{time} {};
-    Slider slider;
+    Slider_object(osu::Slider slider, const std::chrono::milliseconds time) : slider{std::move(slider)}, time{time} {};
+    osu::Slider slider;
     std::chrono::milliseconds time;
 };
 

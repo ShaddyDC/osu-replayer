@@ -43,10 +43,10 @@ void Play_container::update(std::chrono::milliseconds time_passed)
     }
 
     for(auto slider : data.sliders_at(current_time)) {
-        for(auto& segment : slider.slider) {
-            for(auto& point : segment) {
-                point = to_screen(point);
-            }
+        for(auto& point : slider.slider.points) {
+            const auto p = to_screen({point.x, point.y});
+            point.x = p.x();
+            point.y = p.y();
         }
         sliders.emplace_back(slider_renderer.generate_mesh(slider.slider, osu::cs_to_osupixel(data.map->cs)), slider.time);
     }

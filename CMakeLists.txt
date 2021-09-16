@@ -40,7 +40,6 @@ target_link_libraries(data_resources Corrade::Utility)
 add_executable(slider_draw
         src/main.cpp
         src/string_helpers.cpp
-        src/slider.cpp
         src/data_reader.cpp
         src/play_container.cpp
         src/render/vertex_generate.cpp

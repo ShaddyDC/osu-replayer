@@ -40,7 +40,7 @@ std::vector<Slider_object> Data_reader::sliders_at(std::chrono::milliseconds tim
     const auto late_window = std::chrono::milliseconds{static_cast<int>(osu::od_to_ms300(map->od))};
 
     const auto in_time = [time, early_window, late_window](const auto& obj) {
-        return (obj.time - early_window).count() < time.count() && (obj.time + late_window).count() > time.count();
+        return (obj.time - early_window).count() < time.count() && (obj.time + obj.slider.duration + late_window).count() > time.count();
     };
 
     std::copy_if(sliders.cbegin(), sliders.cend(), std::back_inserter(ret), in_time);
@@ -121,12 +121,7 @@ void Data_reader::init_map()
         }
 
         for(const auto& slider : map->sliders) {
-            Slider s{};
-            s.emplace_back();
-            for(const auto& p : slider.points) {
-                s.back().emplace_back(p.x, p.y);
-            }
-            sliders.emplace_back(s, slider.time);
+            sliders.emplace_back(slider, slider.time);
         }
     }
 }

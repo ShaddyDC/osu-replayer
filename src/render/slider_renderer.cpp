@@ -14,20 +14,15 @@ struct Vertex_2d {
     Magnum::Vector2 textureCoordinates;
 };
 
-Slider_mesh Slider_renderer::generate_mesh(const Slider& slider, const float radius)
+Slider_mesh Slider_renderer::generate_mesh(const osu::Slider& slider, const float radius)
 {
     Slider_mesh mesh;
 
-    mesh.head = circle_renderer.generate_mesh(slider.front().front(), radius);
+    std::vector<Magnum::Vector2> points;
+    std::transform(slider.points.cbegin(), slider.points.cend(), std::back_inserter(points), [](const auto p) { return Magnum::Vector2{p.x, p.y}; });
+    mesh.head = circle_renderer.generate_mesh(points.front(), radius);
 
-    const auto flatten_slider = [](const Slider& slider) {
-        Slider_segment out = slider.front();
-        for(std::size_t i = 1; i < slider.size(); ++i) {
-            std::copy(slider[i].begin() + 1, slider[i].end(), std::back_inserter(out));
-        }
-        return out;
-    };
-    const auto slider_verts = vertex_generate(flatten_slider(slider), radius);
+    const auto slider_verts = vertex_generate(points, radius);
 
     Magnum::GL::Buffer buffer;
     buffer.setData(slider_verts);

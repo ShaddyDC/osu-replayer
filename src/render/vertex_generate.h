@@ -3,9 +3,8 @@
 #include <Magnum/Math/Color.h>
 #include <Magnum/Math/Vector3.h>
 #include <Magnum/Shaders/Vector.h>
+#include <vector>
 
-
-#include "../slider.h"
 
 struct Slider_vert {
     Slider_vert(Magnum::Vector3 position, Magnum::Float side) : position{position}, side{side} {}
@@ -19,6 +18,6 @@ struct Line_vert {
     Magnum::Color4 color;
 };
 
-std::vector<Slider_vert> vertex_generate(const Slider_segment& slider, const float width);
+std::vector<Slider_vert> vertex_generate(const std::vector<Magnum::Vector2>& slider_points, const float width);
 
 std::vector<Line_vert> line_generate(const std::vector<Magnum::Vector2>& points, const float width, const std::vector<Magnum::Color4>& colors);

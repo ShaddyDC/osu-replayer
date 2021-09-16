@@ -13,7 +13,7 @@ inline bool counter_clockwise(const Magnum::Vector2 a, const Magnum::Vector2 b, 
     return signed_area(a, b, c) > 0;
 }
 
-std::vector<Slider_vert> vertex_generate(const Slider_segment& slider, const float width)
+std::vector<Slider_vert> vertex_generate(const std::vector<Magnum::Vector2>& slider_points, const float width)
 {
     using namespace Magnum::Math;
     using namespace Magnum::Math::Literals;
@@ -31,8 +31,8 @@ std::vector<Slider_vert> vertex_generate(const Slider_segment& slider, const flo
 
     // First segment
     {
-        const auto a = slider[0];
-        const auto b = lerp(slider[0], slider[1], 0.5f);
+        const auto a = slider_points[0];
+        const auto b = lerp(slider_points[0], slider_points[1], 0.5f);
 
         const auto direction = (b - a).normalized();
         const auto side = direction.perpendicular();
@@ -59,8 +59,8 @@ std::vector<Slider_vert> vertex_generate(const Slider_segment& slider, const flo
 
     // Last Segment
     {
-        const auto a = lerp(slider[slider.size() - 2], slider[slider.size() - 1], 0.5f);
-        const auto b = slider[slider.size() - 1];
+        const auto a = lerp(slider_points[slider_points.size() - 2], slider_points[slider_points.size() - 1], 0.5f);
+        const auto b = slider_points[slider_points.size() - 1];
 
         const auto direction = (b - a).normalized();
         const auto side = direction.perpendicular();
@@ -97,10 +97,10 @@ std::vector<Slider_vert> vertex_generate(const Slider_segment& slider, const flo
         }
     }
 
-    for(std::size_t i = 2; i < slider.size(); ++i) {
-        const auto a = lerp(slider[i - 2], slider[i - 1], 0.5);
-        const auto b = slider[i - 1];
-        const auto c = lerp(slider[i - 1], slider[i], 0.5);
+    for(std::size_t i = 2; i < slider_points.size(); ++i) {
+        const auto a = lerp(slider_points[i - 2], slider_points[i - 1], 0.5);
+        const auto b = slider_points[i - 1];
+        const auto c = lerp(slider_points[i - 1], slider_points[i], 0.5);
 
         const auto direction_a = (b - a).normalized();
         const auto direction_c = (c - b).normalized();

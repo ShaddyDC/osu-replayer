@@ -1,11 +1,11 @@
 #pragma once
-#include "../slider.h"
 #include "circleobject_renderer.h"
 #include "shaders/sliderbody_shader.h"
 #include "vertex_generate.h"
 #include <Magnum/GL/Framebuffer.h>// TODO: Investigate potentially fewer includes
 #include <Magnum/GL/Mesh.h>
 #include <Magnum/Shaders/FlatGL.h>
+#include <osu_reader/hitobject.h>
 
 
 using Sliderbody_mesh = Magnum::GL::Mesh;
@@ -17,7 +17,7 @@ struct Slider_mesh {
 
 class Slider_renderer {
 public:
-    Slider_mesh generate_mesh(const Slider& slider, const float radius);
+    Slider_mesh generate_mesh(const osu::Slider& slider, const float radius);
     void draw(Slider_mesh& mesh, Magnum::GL::Framebuffer& target);
     void draw(Sliderbody_mesh& mesh);
 
