@@ -4,6 +4,7 @@
 #include <Magnum/GL/Context.h>
 #include <Magnum/GL/Shader.h>
 #include <Magnum/GL/Version.h>
+#include <Magnum/Math/Color.h>
 
 Circleobject_shader::Circleobject_shader()
 {
@@ -27,4 +28,11 @@ Circleobject_shader::Circleobject_shader()
     CORRADE_INTERNAL_ASSERT_OUTPUT(link());
 
     setUniformBlockBinding(uniformBlockIndex("projection"), 0);
+
+    color_uniform = uniformLocation("circleColor");
+}
+
+void Circleobject_shader::set_color(Magnum::Color4 color)
+{
+    setUniform(color_uniform, color);
 }

@@ -8,4 +8,10 @@ public:
     using Local_position = Magnum::GL::Attribute<1, Magnum::Vector2>;
 
     explicit Circleobject_shader();
+
+
+    void set_color(Magnum::Color4 color);
+
+private:
+    Magnum::Int color_uniform;
 };

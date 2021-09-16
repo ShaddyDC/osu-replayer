@@ -5,7 +5,7 @@
 #include "vertex_generate.h"
 #include <Magnum/GL/Framebuffer.h>// TODO: Investigate potentially fewer includes
 #include <Magnum/GL/Mesh.h>
-#include <Magnum/Shaders/Flat.h>
+#include <Magnum/Shaders/FlatGL.h>
 
 
 using Sliderbody_mesh = Magnum::GL::Mesh;
@@ -24,5 +24,5 @@ public:
 private:
     Sliderbody_shader shader;
     Circleobject_renderer circle_renderer;
-    Magnum::Shaders::Flat2D flat_shader{Magnum::Shaders::Flat2D::Flag::Textured};
+    Magnum::Shaders::FlatGL2D flat_shader{Magnum::Shaders::FlatGL2D::Flag::Textured};
 };

@@ -5,7 +5,7 @@
 #include <Magnum/ImGuiIntegration/Context.hpp>
 #include <Magnum/Math/Color.h>
 #include <Magnum/Mesh.h>
-#include <Magnum/Shaders/VertexColor.h>
+#include <Magnum/Shaders/VertexColorGL.h>
 #ifndef CORRADE_TARGET_EMSCRIPTEN
 #include <Magnum/Platform/Sdl2Application.h>
 #else
@@ -47,7 +47,7 @@ private:
     Coordinate_holder coordinate_holder;
 
     GL::Mesh _mesh;
-    Shaders::VertexColor2D _shader;
+    Shaders::VertexColorGL2D _shader;
 
     ImGuiIntegration::Context _imgui{NoCreate};
 

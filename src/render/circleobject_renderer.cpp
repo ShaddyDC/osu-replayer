@@ -1,4 +1,5 @@
 #include "circleobject_renderer.h"
+#include <Magnum/Math/Color.h>
 #include <Magnum/Mesh.h>
 
 struct Circle_vertex {
@@ -29,5 +30,6 @@ Circleobject_mesh Circleobject_renderer::generate_mesh(const Magnum::Vector2 pos
 
 void Circleobject_renderer::draw(Circleobject_mesh& mesh)
 {
+    shader.set_color(Magnum::Color4{1});
     shader.draw(mesh);
 }
