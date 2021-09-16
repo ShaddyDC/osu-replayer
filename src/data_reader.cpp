@@ -3,6 +3,7 @@
 #include <Magnum/Magnum.h>
 #include <algorithm>
 #include <imgui.h>
+#include <osu_reader/beatmap_parser.h>
 #include <osu_reader/beatmap_util.h>
 
 using namespace std::chrono_literals;
@@ -107,7 +108,9 @@ void Data_reader::load_map(const int id)
 
 void Data_reader::init_map()
 {
-    map = osu::Beatmap::from_string(map_string);
+    osu::Beatmap_parser parser{};
+    parser.slider_paths = true;
+    map = parser.from_string(map_string);
 
     if(map && map->mode == osu::Gamemode::osu) {
         circles.clear();
@@ -119,11 +122,9 @@ void Data_reader::init_map()
 
         for(const auto& slider : map->sliders) {
             Slider s{};
-            for(const auto& segment : slider.points) {
-                s.emplace_back();
-                for(const auto p : segment) {
-                    s.back().emplace_back(p.x, p.y);
-                }
+            s.emplace_back();
+            for(const auto& p : slider.points) {
+                s.back().emplace_back(p.x, p.y);
             }
             sliders.emplace_back(s, slider.time);
         }

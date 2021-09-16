@@ -1,6 +1,7 @@
 #include "replay_container.h"
 #include <Corrade/Utility/Resource.h>
 #include <imgui.h>
+#include <osu_reader/replay_reader.h>
 
 Replay_container::Replay_container(Api_manager& api_manager)
     : api_manager{api_manager}
@@ -9,7 +10,10 @@ Replay_container::Replay_container(Api_manager& api_manager)
 
     const auto replay_data = rs.get("example.osr");
 
-    replay = osu::Replay::from_string(replay_data, true);
+    auto reader = osu::Replay_reader{};
+    reader.parse_frames = true;
+
+    replay = reader.from_string(replay_data);
 }
 void Replay_container::replay_window()
 {
