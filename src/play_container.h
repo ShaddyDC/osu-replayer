@@ -20,6 +20,12 @@ struct Circle_meshtime {
     std::chrono::milliseconds time;
 };
 
+struct Approach_meshtime {
+    Approach_meshtime(Circleobject_mesh&& mesh, const std::chrono::milliseconds time) : mesh{std::move(mesh)}, time{time} {};
+    Circleobject_mesh mesh;
+    std::chrono::milliseconds time;
+};
+
 class Play_container {
 public:
     explicit Play_container(Api_manager& api_manager);
@@ -31,6 +37,7 @@ public:
 
     std::vector<Slider_meshtime> sliders;
     std::vector<Circle_meshtime> circles;
+    std::vector<Approach_meshtime> approach_circles;
     std::optional<Circleobject_mesh> current_cursor;
 
     std::chrono::milliseconds current_time = std::chrono::milliseconds::zero();

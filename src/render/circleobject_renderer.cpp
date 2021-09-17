@@ -28,8 +28,9 @@ Circleobject_mesh Circleobject_renderer::generate_mesh(const Magnum::Vector2 pos
     return mesh;
 }
 
-void Circleobject_renderer::draw(Circleobject_mesh& mesh)
+void Circleobject_renderer::draw(Circleobject_mesh& mesh, Circle_draw_options options)
 {
-    shader.set_color(Magnum::Color4{1});
+    shader.set_color(options.color);
+    shader.set_circle_center(options.circle_center);
     shader.draw(mesh);
 }

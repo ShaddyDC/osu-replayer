@@ -35,11 +35,21 @@ void Play_container::update(std::chrono::milliseconds time_passed)
 
     circles.clear();
     sliders.clear();
+    approach_circles.clear();
+
+    const auto add_approach_circle = [this](auto pos, auto time) {
+        const auto early_window = std::chrono::milliseconds{static_cast<int>(osu::ar_to_ms(data.map->ar))};
+        const auto early_duration = time - current_time;
+        const auto progress = static_cast<float>(early_duration.count()) / early_window.count();
+        const auto radius = osu::cs_to_osupixel(data.map->cs) * (1.f + 2 * progress);
+        approach_circles.template emplace_back(Circleobject_renderer::generate_mesh(pos, radius), time);
+    };
 
     for(auto circle : data.circles_at(current_time)) {
         const auto position = to_screen(circle.position);
 
         circles.emplace_back(Circleobject_renderer::generate_mesh(position, osu::cs_to_osupixel(data.map->cs)), circle.time);
+        if(circle.time > current_time) add_approach_circle(position, circle.time);
     }
 
     for(auto slider : data.sliders_at(current_time)) {
@@ -49,7 +59,10 @@ void Play_container::update(std::chrono::milliseconds time_passed)
             point.y = p.y();
         }
         sliders.emplace_back(slider_renderer.generate_mesh(slider.slider, osu::cs_to_osupixel(data.map->cs)), slider.time);
+        if(slider.time > current_time) add_approach_circle(Magnum::Vector2{slider.slider.points.front().x, slider.slider.points.front().y}, slider.time);
     }
+
+    std::sort(approach_circles.begin(), approach_circles.end(), [](const auto& a, const auto& b) { return a.time < b.time; });
 
     if(replay_container.replay) {
         // TODO This is incorrect, not the replay but the map is flipped
@@ -59,7 +72,7 @@ void Play_container::update(std::chrono::milliseconds time_passed)
             pos.y() = 384.f - pos.y();
         }
         pos = to_screen(pos);
-        current_cursor = Circleobject_renderer::generate_mesh(pos, osu::cs_to_osupixel(data.map->cs + 3));
+        current_cursor = Circleobject_renderer::generate_mesh(pos, osu::cs_to_osupixel(data.map->cs) / 5);
     }
 
     last_time = current_time;
@@ -105,8 +118,12 @@ Magnum::GL::Texture2D Play_container::draw()
         }
     }
 
+    for(auto it = approach_circles.rbegin(); it != approach_circles.rend(); ++it) {
+        circle_renderer.draw(it->mesh, {.circle_center = Circleobject_shader::hollow});
+    }
+
     if(current_cursor)
-        circle_renderer.draw(*current_cursor);
+        circle_renderer.draw(*current_cursor, {.color = Magnum::Color4::yellow(), .circle_center = Circleobject_shader::filled});
 
     Magnum::GL::defaultFramebuffer.bind();
 

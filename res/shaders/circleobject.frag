@@ -5,6 +5,11 @@ out vec4 FragColor;
 in vec2 localPos;
 
 uniform vec4 circleColor;
+uniform uint circleCenter;
+
+const uint circleCenterGradient = 0u;
+const uint circleCenterFilled = 1u;
+const uint circleCenterHollow = 2u;
 
 void main()
 {
@@ -13,8 +18,14 @@ void main()
 
     if (dist > 1.f) discard;
     if (dist <= 0.95f){
-        color = vec4((1.f - dist) * 1.f / 3.f);
-        color.a = 0.7f;
+        if (circleCenter == circleCenterGradient){
+            color = vec4((1.f - dist) * 1.f / 3.f);
+            color.a = 0.7f;
+        } else if (circleCenter == circleCenterFilled){
+            // leave color at circleColor
+        } else if (circleCenter == circleCenterHollow){
+            discard;
+        }
     }
 
     FragColor = color;

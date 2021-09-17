@@ -30,9 +30,14 @@ Circleobject_shader::Circleobject_shader()
     setUniformBlockBinding(uniformBlockIndex("projection"), 0);
 
     color_uniform = uniformLocation("circleColor");
+    circle_center_uniform = uniformLocation("circleCenter");
 }
 
 void Circleobject_shader::set_color(Magnum::Color4 color)
 {
     setUniform(color_uniform, color);
+}
+void Circleobject_shader::set_circle_center(Circle_center center)
+{
+    setUniform(circle_center_uniform, (Magnum::UnsignedInt) center);
 }
