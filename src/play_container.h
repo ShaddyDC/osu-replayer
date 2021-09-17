@@ -38,6 +38,7 @@ public:
     std::vector<Slider_meshtime> sliders;
     std::vector<Circle_meshtime> circles;
     std::vector<Approach_meshtime> approach_circles;
+    std::vector<Circle_meshtime> slider_follow_circles;
     std::optional<Circleobject_mesh> current_cursor;
 
     std::chrono::milliseconds current_time = std::chrono::milliseconds::zero();
