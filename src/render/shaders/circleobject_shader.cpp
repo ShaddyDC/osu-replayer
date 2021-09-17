@@ -39,5 +39,5 @@ void Circleobject_shader::set_color(Magnum::Color4 color)
 }
 void Circleobject_shader::set_circle_center(Circle_center center)
 {
-    setUniform(circle_center_uniform, (Magnum::UnsignedInt) center);
+    setUniform(circle_center_uniform, static_cast<Magnum::UnsignedInt>(center));
 }

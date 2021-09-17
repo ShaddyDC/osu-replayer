@@ -79,8 +79,8 @@ void Slider_renderer::draw(Slider_mesh& mesh, Magnum::GL::Framebuffer& target)
     mesh_tmp.setCount(4)
             .setPrimitive(Magnum::MeshPrimitive::TriangleStrip)
             .addVertexBuffer(std::move(verts_tmp), 0,
-                             Magnum::Shaders::Flat2D::Position{},
-                             Magnum::Shaders::Flat2D::TextureCoordinates{});
+                             Magnum::Shaders::FlatGL2D::Position{},
+                             Magnum::Shaders::FlatGL2D::TextureCoordinates{});
 
     // Render rest
     target.bind();

@@ -95,8 +95,8 @@ TriangleExample::TriangleExample(const Arguments& arguments) : Platform::Applica
 
     _mesh.setCount(3)
             .addVertexBuffer(std::move(buffer), 0,
-                             Shaders::VertexColor2D::Position{},
-                             Shaders::VertexColor2D::Color3{});
+                             Shaders::VertexColorGL2D::Position{},
+                             Shaders::VertexColorGL2D::Color3{});
 
     _imgui = ImGuiIntegration::Context(Vector2{windowSize()} / dpiScaling(),
                                        windowSize(), framebufferSize());
