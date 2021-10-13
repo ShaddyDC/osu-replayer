@@ -46,7 +46,6 @@ public:
 private:
     Coordinate_holder coordinate_holder;
 
-    GL::Mesh _mesh;
     Shaders::VertexColorGL2D _shader;
 
     ImGuiIntegration::Context _imgui{NoCreate};
@@ -79,25 +78,6 @@ TriangleExample::TriangleExample(const Arguments& arguments) : Platform::Applica
 
     coordinate_holder.set_resolution(play_container.size);
 
-    struct TriangleVertex {
-        Vector2 position;
-        Color3 color;
-    };
-
-    const TriangleVertex data[]{
-            {{-0.5f, -0.5f}, 0xff0000_rgbf}, /* Left vertex, red color */
-            {{0.5f, -0.5f}, 0x00ff00_rgbf},  /* Right vertex, green color */
-            {{0.0f, 0.5f}, 0x0000ff_rgbf}    /* Top vertex, blue color */
-    };
-
-    GL::Buffer buffer;
-    buffer.setData(data);
-
-    _mesh.setCount(3)
-            .addVertexBuffer(std::move(buffer), 0,
-                             Shaders::VertexColorGL2D::Position{},
-                             Shaders::VertexColorGL2D::Color3{});
-
     _imgui = ImGuiIntegration::Context(Vector2{windowSize()} / dpiScaling(),
                                        windowSize(), framebufferSize());
 
@@ -126,8 +106,6 @@ void TriangleExample::drawEvent()
     GL::defaultFramebuffer.clear(GL::FramebufferClear::Color);
 
     _imgui.newFrame();
-
-    _shader.draw(_mesh);
 
     // Set playfield size
     if(ImGui::Begin("Playfield")) {

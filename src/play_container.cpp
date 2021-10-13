@@ -114,40 +114,6 @@ Magnum::GL::Texture2D Play_container::draw()
 
     for(auto& drawable : drawables) drawable->draw(framebuffer);
 
-    //    auto slider_it = sliders.rbegin();
-    //    auto circle_it = circles.rbegin();
-    //    auto follow_it = slider_follow_circles.rbegin();
-    //
-    //    while(slider_it != sliders.rend() || circle_it != circles.rend()) {
-    //        const auto draw_circle = [&]() {
-    //            circle_renderer.draw(circle_it->mesh);
-    //            ++circle_it;
-    //        };
-    //        const auto draw_slider = [&]() {
-    //            slider_renderer.draw(slider_it->mesh, framebuffer);
-    //
-    //            while(follow_it != slider_follow_circles.rend() && follow_it->time == slider_it->time) {// TODO: Bad check
-    //                circle_renderer.draw(follow_it->mesh, {.circle_center = Circleobject_shader::hollow});
-    //                ++follow_it;
-    //            }
-    //
-    //            ++slider_it;
-    //        };
-    //
-    //        if(slider_it == sliders.rend()) draw_circle();
-    //        else if(circle_it == circles.rend())
-    //            draw_slider();
-    //        else {
-    //            if(circle_it->time.count() > slider_it->time.count()) draw_circle();
-    //            else
-    //                draw_slider();
-    //        }
-    //    }
-    //
-    //    for(auto it = approach_circles.rbegin(); it != approach_circles.rend(); ++it) {
-    //        circle_renderer.draw(it->mesh, {.circle_center = Circleobject_shader::hollow});
-    //    }
-
     Magnum::GL::defaultFramebuffer.bind();
 
     Magnum::GL::Renderer::enable(Magnum::GL::Renderer::Feature::ScissorTest);
