@@ -3,17 +3,18 @@
 #include "../vector_util.h"
 #include "drawable.h"
 #include "drawable_circle.h"
+#include "playfield_coordinate_provider.h"
 #include "slider_renderer.h"
 
 class Drawable_slider : public Drawable {
 public:
     Drawable_slider(Slider_renderer& renderer, Circleobject_renderer& circle_renderer,
-                    Slider_object& slider, Magnum::Vector2 offset, float radius, std::chrono::milliseconds current_time)
+                    Slider_object& slider, const Playfield_coordinate_provider& coordinate_provider,
+                    float radius, std::chrono::milliseconds current_time)
         : renderer{renderer}
     {
         for(auto& point : slider.slider.points) {
-            point.x += offset.x();
-            point.y += offset.y();
+            point = vector_m2o(coordinate_provider.convert_point(vector_o2m(point)));
         }
         texture = renderer.generate_texture(slider.slider, radius);
 

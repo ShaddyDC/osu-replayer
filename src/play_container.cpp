@@ -35,6 +35,7 @@ void Play_container::update(std::chrono::milliseconds time_passed)
     current_time += duration_cast<std::chrono::milliseconds>(speed * time_passed);//Todo: Handle fractions better
     if(current_time.count() >= data.time_range().y().count()) current_time = std::chrono::milliseconds::zero();
 
+    const Playfield_coordinate_provider coordinate_provider{static_cast<Magnum::Vector2>(top_left), (replay_container.replay->mods & 16) > 0};
 
     drawables.clear();
     Drawables approach_circles{};
@@ -47,16 +48,16 @@ void Play_container::update(std::chrono::milliseconds time_passed)
         approach_circles.push_back(std::make_unique<Drawable_circle>(circle_renderer, pos, radius, Circle_draw_options{.circle_center = Circleobject_shader::hollow}));
     };
 
-    const auto draw_circle = [this, &add_approach_circle](auto& circle) {
-        const auto position = to_screen(circle.position);
+    const auto draw_circle = [this, &add_approach_circle, &coordinate_provider](auto& circle) {
+        const auto position = coordinate_provider.convert_point(circle.position);
 
         drawables.push_back(std::make_unique<Drawable_circle>(circle_renderer, position, osu::cs_to_osupixel(data.map->cs), Circle_draw_options{}));
         if(circle.time > current_time) add_approach_circle(position, circle.time);
     };
 
-    const auto draw_slider = [this, &add_approach_circle](auto& slider) {
-        if(slider.time > current_time) add_approach_circle(to_screen(vector_o2m(slider.slider.points.front())), slider.time);
-        drawables.push_back(std::make_unique<Drawable_slider>(slider_renderer, circle_renderer, slider, static_cast<Magnum::Vector2>(top_left),
+    const auto draw_slider = [this, &add_approach_circle, &coordinate_provider](auto& slider) {
+        if(slider.time > current_time) add_approach_circle(coordinate_provider.convert_point(vector_o2m(slider.slider.points.front())), slider.time);
+        drawables.push_back(std::make_unique<Drawable_slider>(slider_renderer, circle_renderer, slider, coordinate_provider,
                                                               osu::cs_to_osupixel(data.map->cs), current_time));
     };
 
@@ -76,12 +77,8 @@ void Play_container::update(std::chrono::milliseconds time_passed)
     drawables.insert(drawables.end(), std::make_move_iterator(approach_circles.begin()), std::make_move_iterator(approach_circles.end()));
 
     if(replay_container.replay) {
-        // TODO This is incorrect, not the replay but the map is flipped
         const auto current_frame = replay_container.frame_at(current_time);
         auto pos = Magnum::Vector2{current_frame.x, current_frame.y};
-        if((replay_container.replay->mods & 16) > 0) {
-            pos.y() = 384.f - pos.y();
-        }
         pos = to_screen(pos);
         drawables.push_back(std::make_unique<Drawable_circle>(circle_renderer,
                                                               pos,
