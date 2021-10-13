@@ -17,12 +17,12 @@ Data_reader::Data_reader(Api_manager& api_manager) : api_manager{api_manager}
     init_map();
 }
 
-std::vector<Circle_object> Data_reader::circles_at(std::chrono::milliseconds time)
+std::vector<Circle_object> Data_reader::circles_at(std::chrono::milliseconds time, const Beatmap_info_provider& info_provider)
 {
     std::vector<Circle_object> ret;
 
-    const auto early_window = std::chrono::milliseconds{static_cast<int>(osu::ar_to_ms(map->ar))};
-    const auto late_window = std::chrono::milliseconds{static_cast<int>(osu::od_to_ms300(map->od))};
+    const auto early_window = std::chrono::milliseconds{static_cast<int>(osu::ar_to_ms(info_provider.ar()))};
+    const auto late_window = std::chrono::milliseconds{static_cast<int>(osu::od_to_ms300(info_provider.od()))};
 
     const auto in_time = [time, early_window, late_window](const auto& obj) {
         return (obj.time - early_window).count() < time.count() && (obj.time + late_window).count() > time.count();
@@ -32,12 +32,12 @@ std::vector<Circle_object> Data_reader::circles_at(std::chrono::milliseconds tim
     return ret;
 }
 
-std::vector<Slider_object> Data_reader::sliders_at(std::chrono::milliseconds time)
+std::vector<Slider_object> Data_reader::sliders_at(std::chrono::milliseconds time, const Beatmap_info_provider& info_provider)
 {
     std::vector<Slider_object> ret;
 
-    const auto early_window = std::chrono::milliseconds{static_cast<int>(osu::ar_to_ms(map->ar))};
-    const auto late_window = std::chrono::milliseconds{static_cast<int>(osu::od_to_ms300(map->od))};
+    const auto early_window = std::chrono::milliseconds{static_cast<int>(osu::ar_to_ms(info_provider.ar()))};
+    const auto late_window = std::chrono::milliseconds{static_cast<int>(osu::od_to_ms300(info_provider.od()))};
 
     const auto in_time = [time, early_window, late_window](const auto& obj) {
         return (obj.time - early_window).count() < time.count() && (obj.time + obj.slider.duration + late_window).count() > time.count();

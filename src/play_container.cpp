@@ -1,5 +1,6 @@
 #include "play_container.h"
 
+#include "beatmap_info_provider.h"
 #include "render/drawable_circle.h"
 #include <Magnum/GL/DefaultFramebuffer.h>
 #include <Magnum/GL/Renderbuffer.h>
@@ -36,33 +37,35 @@ void Play_container::update(std::chrono::milliseconds time_passed)
     if(current_time.count() >= data.time_range().y().count()) current_time = std::chrono::milliseconds::zero();
 
     const Playfield_coordinate_provider coordinate_provider{static_cast<Magnum::Vector2>(top_left), (replay_container.replay->mods & 16) > 0};
+    const auto mods = replay_container.replay ? replay_container.replay->mods : osu::Mods{};
+    const Beatmap_info_provider info_provider{*data.map, mods};
 
     drawables.clear();
     Drawables approach_circles{};
 
-    const auto add_approach_circle = [this, &approach_circles](auto pos, auto time) {
-        const auto early_window = std::chrono::milliseconds{static_cast<int>(osu::ar_to_ms(data.map->ar))};
+    const auto add_approach_circle = [this, &approach_circles, &info_provider](auto pos, auto time) {
+        const auto early_window = std::chrono::milliseconds{static_cast<int>(osu::ar_to_ms(info_provider.ar()))};
         const auto early_duration = time - current_time;
         const auto progress = static_cast<float>(early_duration.count()) / early_window.count();
-        const auto radius = osu::cs_to_osupixel(data.map->cs) * (1.f + 2 * progress);
+        const auto radius = osu::cs_to_osupixel(info_provider.cs()) * (1.f + 2 * progress);
         approach_circles.push_back(std::make_unique<Drawable_circle>(circle_renderer, pos, radius, Circle_draw_options{.circle_center = Circleobject_shader::hollow}));
     };
 
-    const auto draw_circle = [this, &add_approach_circle, &coordinate_provider](auto& circle) {
+    const auto draw_circle = [this, &add_approach_circle, &coordinate_provider, &info_provider](auto& circle) {
         const auto position = coordinate_provider.convert_point(circle.position);
 
-        drawables.push_back(std::make_unique<Drawable_circle>(circle_renderer, position, osu::cs_to_osupixel(data.map->cs), Circle_draw_options{}));
+        drawables.push_back(std::make_unique<Drawable_circle>(circle_renderer, position, osu::cs_to_osupixel(info_provider.cs()), Circle_draw_options{}));
         if(circle.time > current_time) add_approach_circle(position, circle.time);
     };
 
-    const auto draw_slider = [this, &add_approach_circle, &coordinate_provider](auto& slider) {
+    const auto draw_slider = [this, &add_approach_circle, &coordinate_provider, &info_provider](auto& slider) {
         if(slider.time > current_time) add_approach_circle(coordinate_provider.convert_point(vector_o2m(slider.slider.points.front())), slider.time);
         drawables.push_back(std::make_unique<Drawable_slider>(slider_renderer, circle_renderer, slider, coordinate_provider,
-                                                              osu::cs_to_osupixel(data.map->cs), current_time));
+                                                              osu::cs_to_osupixel(info_provider.cs()), current_time));
     };
 
-    auto circles = data.circles_at(current_time);
-    auto sliders = data.sliders_at(current_time);
+    auto circles = data.circles_at(current_time, info_provider);
+    auto sliders = data.sliders_at(current_time, info_provider);
 
     auto circles_it = circles.begin();
     auto sliders_it = sliders.begin();
@@ -82,7 +85,7 @@ void Play_container::update(std::chrono::milliseconds time_passed)
         pos = to_screen(pos);
         drawables.push_back(std::make_unique<Drawable_circle>(circle_renderer,
                                                               pos,
-                                                              osu::cs_to_osupixel(data.map->cs) / 5,
+                                                              osu::cs_to_osupixel(info_provider.cs()) / 5,
                                                               Circle_draw_options{
                                                                       .color = Magnum::Color4::yellow(),
                                                                       .circle_center = Circleobject_shader::filled}));
