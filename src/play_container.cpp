@@ -1,11 +1,13 @@
 #include "play_container.h"
 
+#include "render/drawable_circle.h"
 #include <Magnum/GL/DefaultFramebuffer.h>
 #include <Magnum/GL/Renderbuffer.h>
 #include <Magnum/GL/RenderbufferFormat.h>
 #include <Magnum/GL/Renderer.h>
 #include <Magnum/GL/TextureFormat.h>
 #include <osu_reader/beatmap_util.h>
+#include <render/drawable_slider.h>
 
 Play_container::Play_container(Api_manager& api_manager) : data{api_manager}, replay_container{api_manager}
 {
@@ -33,79 +35,45 @@ void Play_container::update(std::chrono::milliseconds time_passed)
     current_time += duration_cast<std::chrono::milliseconds>(speed * time_passed);//Todo: Handle fractions better
     if(current_time.count() >= data.time_range().y().count()) current_time = std::chrono::milliseconds::zero();
 
-    circles.clear();
-    sliders.clear();
-    approach_circles.clear();
-    slider_follow_circles.clear();
 
-    const auto add_approach_circle = [this](auto pos, auto time) {
+    drawables.clear();
+    Drawables approach_circles{};
+
+    const auto add_approach_circle = [this, &approach_circles](auto pos, auto time) {
         const auto early_window = std::chrono::milliseconds{static_cast<int>(osu::ar_to_ms(data.map->ar))};
         const auto early_duration = time - current_time;
         const auto progress = static_cast<float>(early_duration.count()) / early_window.count();
         const auto radius = osu::cs_to_osupixel(data.map->cs) * (1.f + 2 * progress);
-        approach_circles.emplace_back(Circleobject_renderer::generate_mesh(pos, radius), time);
+        approach_circles.push_back(std::make_unique<Drawable_circle>(circle_renderer, pos, radius, Circle_draw_options{.circle_center = Circleobject_shader::hollow}));
     };
 
-    for(auto circle : data.circles_at(current_time)) {
+    const auto draw_circle = [this, &add_approach_circle](auto& circle) {
         const auto position = to_screen(circle.position);
 
-        circles.emplace_back(Circleobject_renderer::generate_mesh(position, osu::cs_to_osupixel(data.map->cs)), circle.time);
+        drawables.push_back(std::make_unique<Drawable_circle>(circle_renderer, position, osu::cs_to_osupixel(data.map->cs), Circle_draw_options{}));
         if(circle.time > current_time) add_approach_circle(position, circle.time);
+    };
+
+    const auto draw_slider = [this, &add_approach_circle](auto& slider) {
+        if(slider.time > current_time) add_approach_circle(to_screen(vector_o2m(slider.slider.points.front())), slider.time);
+        drawables.push_back(std::make_unique<Drawable_slider>(slider_renderer, circle_renderer, slider, static_cast<Magnum::Vector2>(top_left),
+                                                              osu::cs_to_osupixel(data.map->cs), current_time));
+    };
+
+    auto circles = data.circles_at(current_time);
+    auto sliders = data.sliders_at(current_time);
+
+    auto circles_it = circles.begin();
+    auto sliders_it = sliders.begin();
+
+    while(circles_it != circles.end() || sliders_it != sliders.end()) {
+        if(circles_it == circles.end() || (sliders_it != sliders.end() && circles_it->time >= sliders_it->time)) draw_slider(*sliders_it++);
+        else
+            draw_circle(*circles_it++);
     }
 
-    for(auto slider : data.sliders_at(current_time)) {
-        for(auto& point : slider.slider.points) {
-            const auto p = to_screen({point.x, point.y});
-            point.x = p.x();
-            point.y = p.y();
-        }
-        sliders.emplace_back(slider_renderer.generate_mesh(slider.slider, osu::cs_to_osupixel(data.map->cs)), slider.time);
-        if(slider.time > current_time) add_approach_circle(Magnum::Vector2{slider.slider.points.front().x, slider.slider.points.front().y}, slider.time);
-
-        //        if(slider.time + slider.slider.duration >= current_time)
-        {// Follow circle
-            const auto radius = osu::cs_to_osupixel(data.map->cs) * 2.4f;
-
-            const auto progress = static_cast<float>((current_time - slider.time).count()) / slider.slider.duration.count();
-            const auto internal_progress = std::clamp(progress, 0.f, 1.f);
-            const auto extended_progress = (internal_progress * slider.slider.repeat);
-            const auto current_repeat = static_cast<int>(extended_progress);
-            const auto uneven_repeat = current_repeat % 2;
-
-            if(progress >= 0 && progress <= 1) {
-                const auto current_progress = extended_progress - current_repeat;
-                const auto direction_progress = uneven_repeat == 0 ? current_progress : 1 - current_progress;
-                const auto pixel_progress = direction_progress * slider.slider.length;
-                const auto current_pos_it = std::find_if(slider.slider.distances.cbegin(), slider.slider.distances.cend(),
-                                                         [pixel_progress](const auto dist) { return dist >= pixel_progress; });
-                auto pos = slider.slider.points.front();
-                if(current_pos_it != slider.slider.distances.cend()) {
-                    const auto pos_index = std::distance(slider.slider.distances.cbegin(), current_pos_it);
-                    pos = slider.slider.points[pos_index];
-                    if(current_pos_it != slider.slider.distances.cbegin() && *current_pos_it != pixel_progress) {
-                        const auto lerp_value = (pixel_progress - *(current_pos_it - 1)) / (*current_pos_it - *(current_pos_it - 1));
-                        pos = lerp(slider.slider.points[pos_index - 1], slider.slider.points[pos_index], lerp_value);
-                    }
-                }
-
-                slider_follow_circles.emplace_back(Circleobject_renderer::generate_mesh({pos.x, pos.y}, radius), slider.time);
-            }
-
-            if(current_repeat < slider.slider.repeat - 1) {
-                const auto repeat_point_radius = osu::cs_to_osupixel(data.map->cs) / 3;
-
-                auto pos = uneven_repeat == 0 ? slider.slider.points.back() : slider.slider.points.front();
-                slider_follow_circles.emplace_back(Circleobject_renderer::generate_mesh({pos.x, pos.y}, repeat_point_radius), slider.time);
-
-                if(current_repeat < slider.slider.repeat - 2) {
-                    pos = uneven_repeat == 0 ? slider.slider.points.front() : slider.slider.points.back();
-                    slider_follow_circles.emplace_back(Circleobject_renderer::generate_mesh({pos.x, pos.y}, repeat_point_radius), slider.time);
-                }
-            }
-        }
-    }
-
-    std::sort(approach_circles.begin(), approach_circles.end(), [](const auto& a, const auto& b) { return a.time < b.time; });
+    std::reverse(drawables.begin(), drawables.end());
+    drawables.insert(drawables.end(), std::make_move_iterator(approach_circles.begin()), std::make_move_iterator(approach_circles.end()));
 
     if(replay_container.replay) {
         // TODO This is incorrect, not the replay but the map is flipped
@@ -115,7 +83,12 @@ void Play_container::update(std::chrono::milliseconds time_passed)
             pos.y() = 384.f - pos.y();
         }
         pos = to_screen(pos);
-        current_cursor = Circleobject_renderer::generate_mesh(pos, osu::cs_to_osupixel(data.map->cs) / 5);
+        drawables.push_back(std::make_unique<Drawable_circle>(circle_renderer,
+                                                              pos,
+                                                              osu::cs_to_osupixel(data.map->cs) / 5,
+                                                              Circle_draw_options{
+                                                                      .color = Magnum::Color4::yellow(),
+                                                                      .circle_center = Circleobject_shader::filled}));
     }
 
     last_time = current_time;
@@ -128,6 +101,7 @@ Magnum::GL::Texture2D Play_container::draw()
     texture.setStorage(1, Magnum::GL::TextureFormat::RGBA8, scaling_size);
 
     Magnum::GL::Framebuffer framebuffer{{{}, scaling_size}};
+    framebuffer.bind();
     framebuffer.attachTexture(Magnum::GL::Framebuffer::ColorAttachment{0}, texture, 0);
 
     framebuffer.clearColor(0, Magnum::Color4{0, 0, 0, 0});
@@ -138,42 +112,41 @@ Magnum::GL::Texture2D Play_container::draw()
 
     line_renderer.draw(border_mesh);
 
-    auto slider_it = sliders.rbegin();
-    auto circle_it = circles.rbegin();
-    auto follow_it = slider_follow_circles.rbegin();
+    for(auto& drawable : drawables) drawable->draw(framebuffer);
 
-    while(slider_it != sliders.rend() || circle_it != circles.rend()) {
-        const auto draw_circle = [&]() {
-            circle_renderer.draw(circle_it->mesh);
-            ++circle_it;
-        };
-        const auto draw_slider = [&]() {
-            slider_renderer.draw(slider_it->mesh, framebuffer);
-
-            while(follow_it != slider_follow_circles.rend() && follow_it->time == slider_it->time) {// TODO: Bad check
-                circle_renderer.draw(follow_it->mesh, {.circle_center = Circleobject_shader::hollow});
-                ++follow_it;
-            }
-
-            ++slider_it;
-        };
-
-        if(slider_it == sliders.rend()) draw_circle();
-        else if(circle_it == circles.rend())
-            draw_slider();
-        else {
-            if(circle_it->time.count() > slider_it->time.count()) draw_circle();
-            else
-                draw_slider();
-        }
-    }
-
-    for(auto it = approach_circles.rbegin(); it != approach_circles.rend(); ++it) {
-        circle_renderer.draw(it->mesh, {.circle_center = Circleobject_shader::hollow});
-    }
-
-    if(current_cursor)
-        circle_renderer.draw(*current_cursor, {.color = Magnum::Color4::yellow(), .circle_center = Circleobject_shader::filled});
+    //    auto slider_it = sliders.rbegin();
+    //    auto circle_it = circles.rbegin();
+    //    auto follow_it = slider_follow_circles.rbegin();
+    //
+    //    while(slider_it != sliders.rend() || circle_it != circles.rend()) {
+    //        const auto draw_circle = [&]() {
+    //            circle_renderer.draw(circle_it->mesh);
+    //            ++circle_it;
+    //        };
+    //        const auto draw_slider = [&]() {
+    //            slider_renderer.draw(slider_it->mesh, framebuffer);
+    //
+    //            while(follow_it != slider_follow_circles.rend() && follow_it->time == slider_it->time) {// TODO: Bad check
+    //                circle_renderer.draw(follow_it->mesh, {.circle_center = Circleobject_shader::hollow});
+    //                ++follow_it;
+    //            }
+    //
+    //            ++slider_it;
+    //        };
+    //
+    //        if(slider_it == sliders.rend()) draw_circle();
+    //        else if(circle_it == circles.rend())
+    //            draw_slider();
+    //        else {
+    //            if(circle_it->time.count() > slider_it->time.count()) draw_circle();
+    //            else
+    //                draw_slider();
+    //        }
+    //    }
+    //
+    //    for(auto it = approach_circles.rbegin(); it != approach_circles.rend(); ++it) {
+    //        circle_renderer.draw(it->mesh, {.circle_center = Circleobject_shader::hollow});
+    //    }
 
     Magnum::GL::defaultFramebuffer.bind();
 

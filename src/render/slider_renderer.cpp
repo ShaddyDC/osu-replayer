@@ -14,30 +14,8 @@ struct Vertex_2d {
     Magnum::Vector2 textureCoordinates;
 };
 
-Slider_mesh Slider_renderer::generate_mesh(const osu::Slider& slider, const float radius)
-{
-    Slider_mesh mesh;
-
-    std::vector<Magnum::Vector2> points;
-    std::transform(slider.points.cbegin(), slider.points.cend(), std::back_inserter(points), [](const auto p) { return Magnum::Vector2{p.x, p.y}; });
-    mesh.head = circle_renderer.generate_mesh(points.front(), radius);
-
-    const auto slider_verts = vertex_generate(points, radius);
-
-    Magnum::GL::Buffer buffer;
-    buffer.setData(slider_verts);
-
-    mesh.body.setCount(slider_verts.size())
-            .setPrimitive(Magnum::MeshPrimitive::Triangles)
-            .addVertexBuffer(std::move(buffer), 0,
-                             Sliderbody_shader::Position{},
-                             Sliderbody_shader::Side{});
-
-    return mesh;
-}
-
 static inline Magnum::GL::Texture2D create_texture(
-        Slider_renderer& slider_renderer, Circleobject_renderer& circle_renderer, Slider_mesh& mesh)
+        Slider_renderer& slider_renderer, Circleobject_renderer& circle_renderer, Magnum::GL::Mesh& body, Magnum::GL::Mesh& head)
 {
     Magnum::GL::Texture2D texture;
     const auto size = Magnum::GL::defaultFramebuffer.viewport().size();
@@ -55,19 +33,39 @@ static inline Magnum::GL::Texture2D create_texture(
 
     Magnum::GL::Renderer::disable(Magnum::GL::Renderer::Feature::Blending);
     Magnum::GL::Renderer::enable(Magnum::GL::Renderer::Feature::DepthTest);
-    circle_renderer.draw(mesh.head);
-    slider_renderer.draw(mesh.body);
+    circle_renderer.draw(head);
+    slider_renderer.draw(body);
     Magnum::GL::Renderer::disable(Magnum::GL::Renderer::Feature::DepthTest);
     Magnum::GL::Renderer::enable(Magnum::GL::Renderer::Feature::Blending);
 
     return texture;
 }
 
-void Slider_renderer::draw(Slider_mesh& mesh, Magnum::GL::Framebuffer& target)
+Magnum::GL::Texture2D Slider_renderer::generate_texture(const osu::Slider& slider, const float radius)
 {
-    auto texture = create_texture(*this, circle_renderer, mesh);
+    std::vector<Magnum::Vector2> points;
+    std::transform(slider.points.cbegin(), slider.points.cend(), std::back_inserter(points), [](const auto p) { return Magnum::Vector2{p.x, p.y}; });
+    auto head = circle_renderer.generate_mesh(points.front(), radius);
 
-    Vertex_2d verts[] = {
+    const auto slider_verts = vertex_generate(points, radius);
+
+    Magnum::GL::Buffer buffer;
+    buffer.setData(slider_verts);
+
+    Magnum::GL::Mesh body;
+    body.setCount(slider_verts.size())
+            .setPrimitive(Magnum::MeshPrimitive::Triangles)
+            .addVertexBuffer(std::move(buffer), 0,
+                             Sliderbody_shader::Position{},
+                             Sliderbody_shader::Side{});
+
+
+    return create_texture(*this, circle_renderer, body, head);
+}
+
+void Slider_renderer::draw(Magnum::GL::Texture2D& texture, Magnum::GL::Framebuffer& target)
+{
+    static const constexpr Vertex_2d verts[] = {
             {{-1.f, -1.f}, {0.f, 0.f}},
             {{-1.f, 1.f}, {0.f, 1.f}},
             {{1.f, -1.f}, {1.f, 0.f}},
