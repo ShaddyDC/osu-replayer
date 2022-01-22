@@ -36,7 +36,8 @@ void Play_container::update(std::chrono::milliseconds time_passed)
     current_time += duration_cast<std::chrono::milliseconds>(speed * time_passed);//Todo: Handle fractions better
     if(current_time.count() >= data.time_range().y().count()) current_time = std::chrono::milliseconds::zero();
 
-    const Playfield_coordinate_provider coordinate_provider{static_cast<Magnum::Vector2>(top_left), (replay_container.replay->mods & 16) > 0};
+    const Playfield_coordinate_provider coordinate_provider{static_cast<Magnum::Vector2>(top_left),
+                                                            (osu::has_mods(replay_container.replay->mods, osu::Mods::HardRock))};
     const auto mods = replay_container.replay ? replay_container.replay->mods : osu::Mods{};
     const Beatmap_info_provider info_provider{*data.map, mods};
 

@@ -28,12 +28,14 @@ void Replay_container::replay_window()
 
     if(ImGui::Begin("Replay")) {
         if(replay) {
+            // Handle non-integer types below 64-bit. Fine since this is readonly anyway.
             const auto label_ints = [](const auto label, auto value) {
                 auto v = static_cast<int>(value);
                 ImGui::InputInt(label, &v, ImGuiInputTextFlags_ReadOnly);
             };
 
-            ImGui::InputInt("Game Version", &replay->game_version, ImGuiInputTextFlags_ReadOnly);
+            ImGui::BeginDisabled();
+            label_ints("Game Version", replay->game_version);
             ImGui::LabelText("Player", "%s", replay->player_name.c_str());
             ImGui::LabelText("Map hash", "%s", replay->map_hash.c_str());
             ImGui::LabelText("Replay hash", "%s", replay->replay_hash.c_str());
@@ -43,11 +45,12 @@ void Replay_container::replay_window()
             label_ints("Count Geki", replay->count_geki);
             label_ints("Count Katsu", replay->count_katsu);
             label_ints("Count Miss", replay->count_miss);
-            ImGui::InputInt("Score", &replay->score, ImGuiInputTextFlags_ReadOnly);
+            label_ints("Score", replay->score);
             label_ints("Max combo", replay->max_combo);
             ImGui::Checkbox("FC", &replay->full_combo);
-            ImGui::InputInt("Mods", &replay->mods, ImGuiInputTextFlags_ReadOnly);
-            label_ints("Score ID", replay->score_id);// TODO: Handle this better
+            label_ints("Mods", replay->mods);
+            ImGui::InputScalar("Score ID", ImGuiDataType_U64, &replay->score_id);
+            ImGui::EndDisabled();
         } else {
             ImGui::Text("Failed loading Replay");
         }
