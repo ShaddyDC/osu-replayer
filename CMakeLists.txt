@@ -52,11 +52,12 @@ add_executable(slider_draw
         src/render/slider_renderer.cpp
         src/render/line_renderer.cpp
         src/config_manager.cpp
+        src/replay_container.cpp
+        src/notification_manager.cpp
         ${CMAKE_CURRENT_BINARY_DIR}/version.cpp
 
         $<TARGET_OBJECTS:shaders_resources>
-        $<TARGET_OBJECTS:data_resources>
-        src/replay_container.cpp src/replay_container.h)
+        $<TARGET_OBJECTS:data_resources>)
 
 # allow inclusion of headers from other folders (version.cpp)
 target_include_directories(slider_draw PRIVATE src)

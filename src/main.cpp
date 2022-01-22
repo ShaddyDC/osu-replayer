@@ -21,6 +21,7 @@
 #include <Magnum/Timeline.h>
 
 #include "api_manager.h"
+#include "notification_manager.h"
 #include "version.h"
 
 using namespace Magnum;
@@ -106,6 +107,8 @@ void TriangleExample::drawEvent()
     GL::defaultFramebuffer.clear(GL::FramebufferClear::Color);
 
     _imgui.newFrame();
+
+    Notification_manager{}.draw();
 
     // Set playfield size
     if(ImGui::Begin("Playfield")) {

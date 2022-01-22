@@ -101,7 +101,12 @@ void Data_reader::map_window()
 
 void Data_reader::load_map(const int id)
 {
-    map_string = api_manager.beatmap(std::to_string(id));
+    auto bm = api_manager.beatmap(std::to_string(id));
+    if(!bm) {
+        Corrade::Utility::Debug() << "Couldn't load map";
+        return;
+    }
+    map_string = std::move(*bm);
 
     init_map();
 }
