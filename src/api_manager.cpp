@@ -63,14 +63,16 @@ std::optional<std::string> Api_manager::api_request_impl(std::string_view endpoi
             {"api-key", api_key.c_str()}};
 
     const auto response = client.Get(endpoint.data(), headers);
-    Corrade::Utility::Debug() << "Error " << response.error();
 
     if(response) {
         status = response->status;
-        if(status != 200) return std::nullopt;
+        if(status != 200) {
+            Corrade::Utility::Debug() << "Error " << response.error() << response->status << response->body.c_str();
+            return std::nullopt;
+        }
         return response->body;
     }
-    Corrade::Utility::Debug() << "Bad error, no response";
+    Corrade::Utility::Debug() << "Bad error, no response" << response.error();
     return std::nullopt;
 }
 
