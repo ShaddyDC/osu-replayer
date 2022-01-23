@@ -37,7 +37,8 @@ corrade_add_resource(DataResources res/data.conf)
 add_library(data_resources OBJECT ${DataResources})
 target_link_libraries(data_resources Corrade::Utility)
 
-add_executable(slider_draw
+
+set(SOURCES
         src/main.cpp
         src/string_helpers.cpp
         src/data_reader.cpp
@@ -54,6 +55,9 @@ add_executable(slider_draw
         src/config_manager.cpp
         src/replay_container.cpp
         src/notification_manager.cpp
+        )
+add_executable(slider_draw
+        ${SOURCES}
         ${CMAKE_CURRENT_BINARY_DIR}/version.cpp
 
         $<TARGET_OBJECTS:shaders_resources>
@@ -150,3 +154,10 @@ endif ()
 
 # Make the executable a default target to build & run in Visual Studio
 set_property(DIRECTORY ${PROJECT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT slider_draw)
+
+set(CMAKE_CXX_CLANG_TIDY clang-tidy)
+add_custom_target(
+        clang-tidy-check clang-tidy --config-file=.clang-tidy -p ${CMAKE_BINARY_DIR}/compile_commands.json -header-filter=${CMAKE_SOURCE_DIR}/src/.* ${SOURCES}
+        DEPENDS ${SOURCES}
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+)

@@ -1,0 +1,8 @@
+Checks: '*,-llvmlibc-callee-namespace,-altera-struct-pack-align,-modernize-use-trailing-return-type,-llvmlibc-restrict-system-libc-headers,llvm-header-guard,-altera-id-dependent-backward-branch,-altera-unroll-loops,-llvm-header-guard,-llvmlibc-implementation-in-namespace,-google-readability-braces-around-statements,-hicpp-braces-around-statements,-readability-braces-around-statements,-fuchsia-default-arguments-calls,-misc-non-private-member-variables-in-classes,-hicpp-uppercase-literal-suffix,-readability-uppercase-literal-suffix,-google-build-using-namespace,-cppcoreguidelines-pro-type-vararg,-hicpp-vararg,-google-readability-todo,-readability-implicit-bool-conversion,-concurrency-mt-unsafe,-fuchsia-default-arguments-declarations,'
+FormatStyle: file
+HeaderFilterRegex: 'src/.*'
+CheckOptions:
+  - key: cppcoreguidelines-avoid-magic-numbers.IgnoredFloatingPointValues
+    value: '1.0;100.0;2.0;'
+  - key: readability-magic-numbers.IgnoredFloatingPointValues
+    value: '1.0;100.0;2.0;'
