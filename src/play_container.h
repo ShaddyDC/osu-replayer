@@ -19,8 +19,8 @@ public:
     // Disable moves
     Play_container(const Play_container&) = delete;
     Play_container& operator=(const Play_container&) = delete;
-    Play_container(Play_container&&) = default;
-    Play_container& operator=(Play_container&&) = default;
+    Play_container(Play_container&&) = delete;
+    Play_container& operator=(Play_container&&) = delete;
 
     ~Play_container() override = default;
 
