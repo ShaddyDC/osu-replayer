@@ -13,17 +13,6 @@
 
 Play_container::Play_container(Api_manager& api_manager) : data{api_manager}, replay_container{api_manager}
 {
-    constexpr const auto border_width = 5.f;
-    std::vector<Magnum::Vector2> points{
-            //Todo: Fix top left corner
-            Magnum::Vector2{top_left},
-            Magnum::Vector2{static_cast<float>(bottom_right.x()), static_cast<float>(top_left.y())},
-            Magnum::Vector2{bottom_right},
-            Magnum::Vector2{static_cast<float>(top_left.x()), static_cast<float>(bottom_right.y())},
-            Magnum::Vector2{top_left},
-    };
-
-    border_mesh = line_renderer.generate_mesh(points, border_width, {Magnum::Color4{1}});
 }
 
 void Play_container::update(std::chrono::milliseconds time_passed)
@@ -126,7 +115,7 @@ Magnum::GL::Texture2D Play_container::generate_playfield_texture()
     //Todo: Better to set viewport accordingly
     Magnum::GL::Renderer::disable(Magnum::GL::Renderer::Feature::ScissorTest);
 
-    line_renderer.draw(border_mesh);
+    border.draw(framebuffer);
 
     for(auto& drawable : drawables) drawable->draw(framebuffer);
 

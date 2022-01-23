@@ -1,12 +1,12 @@
 #pragma once
 
+#include "component.h"
 #include "data_reader.h"
+#include "playfield/border.h"
 #include "render/circleobject_renderer.h"
 #include "render/drawable.h"
-#include "render/line_renderer.h"
 #include "render/slider_renderer.h"
 #include "replay_container.h"
-#include "component.h"
 
 #include <Magnum/GL/Texture.h>
 
@@ -51,14 +51,13 @@ public:
     float size_scale = 1.f;
     Magnum::Vector2i scaling_size = static_cast<Magnum::Vector2i>(size_scale * size_unscaled);
 
-    Line_mesh border_mesh;
-
 private:
     Magnum::GL::Texture2D generate_playfield_texture();
     Magnum::Vector2 to_screen(Magnum::Vector2 point);
 
+    Playfield_border border{top_left, bottom_right};
+
     Magnum::GL::Texture2D playfield;
     Circleobject_renderer circle_renderer;
     Slider_renderer slider_renderer;
-    Line_renderer line_renderer;
 };
