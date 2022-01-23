@@ -161,3 +161,9 @@ add_custom_target(
         DEPENDS ${SOURCES}
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
 )
+
+add_custom_target(
+        clang-format-check clang-format -i --style=file ${SOURCES} ./src/*.h
+        DEPENDS ${SOURCES}
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+)
