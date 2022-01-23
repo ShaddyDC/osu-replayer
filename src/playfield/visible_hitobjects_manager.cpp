@@ -31,15 +31,19 @@ void Visible_hitobjects_manager::update(std::chrono::milliseconds /*time_passed*
     approach_circles.clear();
 
     if(replay.replay) {
-        constexpr const auto ratio_cursor_cs = 5;
         const auto current_frame = replay.frame_at(player.get_current_time());
+
         auto pos = Magnum::Vector2{current_frame.x, current_frame.y};
         pos = coordinate_provider.convert_point(pos, true);
+
+        constexpr const auto ratio_cursor_cs = 5;
+        const auto color = (current_frame.state > 0) ? Magnum::Color4::red() : Magnum::Color4::yellow();
+
         drawables.push_back(std::make_unique<Drawable_circle>(circle_renderer,
                                                               pos,
                                                               osu::cs_to_osupixel(info_provider.cs()) / ratio_cursor_cs,
                                                               Circle_draw_options{
-                                                                      .color = Magnum::Color4::yellow(),
+                                                                      .color = color,
                                                                       .circle_center = Circleobject_shader::filled}));
     }
 }
