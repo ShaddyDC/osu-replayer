@@ -105,7 +105,7 @@ void Config_manager::save()
 
     std::ofstream file{config_file};
     if(!file) {
-        const auto error = strerror(errno);
+        auto* const error = strerror(errno);
         Magnum::Debug() << "Couldn't write to config file \"" << config_file.c_str() << "\": " << error;
         save_status = error;
     }

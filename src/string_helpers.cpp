@@ -3,8 +3,8 @@
 std::vector<std::string_view> split(const std::string_view s, const char delim)
 {
     std::vector<std::string_view> ret;
-    auto it = std::find(s.begin(), s.end(), delim);
-    auto it_start = s.begin();
+    const auto* it = std::find(s.begin(), s.end(), delim);
+    const auto* it_start = s.begin();
 
     const auto add_if_not_empty = [&] {
         if(it != it_start) {
