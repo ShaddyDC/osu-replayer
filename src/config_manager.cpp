@@ -2,11 +2,11 @@
 
 #include <Magnum/ImGuiIntegration/Context.hpp>
 #include <array>
+#include <cstdlib>
 #include <filesystem>
 #include <fstream>
 #include <misc/cpp/imgui_stdlib.h>
 #include <nlohmann/json.hpp>
-#include <cstdlib>
 
 #include "version.h"
 
