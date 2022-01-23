@@ -124,15 +124,15 @@ void TriangleExample::drawEvent()
         component->update(time_passed);
     }
 
-    for(auto& component : components) {
-        component->draw();
-    }
-
     /* Enable text input, if needed */
     if(ImGui::GetIO().WantTextInput && !isTextInputActive())
         startTextInput();
     else if(!ImGui::GetIO().WantTextInput && isTextInputActive())
         stopTextInput();
+
+    for(auto& component : components) {
+        component->draw();
+    }
 
     config_manager.config_window();
 
