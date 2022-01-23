@@ -13,7 +13,7 @@ struct Circle_draw_options {
 
 class Circleobject_renderer {
 public:
-    [[nodiscard]] static Circleobject_mesh generate_mesh(const Magnum::Vector2 position, const float radius);
+    [[nodiscard]] static Circleobject_mesh generate_mesh(Magnum::Vector2 position, float radius);
     void draw(Circleobject_mesh& mesh, Circle_draw_options options = Circle_draw_options{});
 
 private:

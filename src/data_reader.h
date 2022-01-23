@@ -14,7 +14,7 @@ public:
     Magnum::Math::Vector2<std::chrono::milliseconds> time_range();
 
     void map_window();
-    void load_map(const int id);
+    void load_map(int id);
 
     int current_id = 0;
     std::string map_string = "Not loaded";

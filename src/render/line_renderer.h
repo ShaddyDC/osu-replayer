@@ -7,7 +7,7 @@ using Line_mesh = Magnum::GL::Mesh;
 
 class Line_renderer {
 public:
-    static Line_mesh generate_mesh(const std::vector<Magnum::Vector2>& line, const float width, const std::vector<Magnum::Color4>& colors);
+    static Line_mesh generate_mesh(const std::vector<Magnum::Vector2>& line, float width, const std::vector<Magnum::Color4>& colors);
     void draw(Line_mesh& mesh);
 
 private:

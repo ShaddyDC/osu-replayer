@@ -53,7 +53,7 @@ public:
     Line_mesh border_mesh;
 
 private:
-    Magnum::Vector2 to_screen(const Magnum::Vector2 point);
+    Magnum::Vector2 to_screen(Magnum::Vector2 point);
 
     Circleobject_renderer circle_renderer;
     Slider_renderer slider_renderer;

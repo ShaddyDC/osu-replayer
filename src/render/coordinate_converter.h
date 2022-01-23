@@ -5,7 +5,7 @@
 
 class Coordinate_holder {
 public:
-    void set_resolution(const Magnum::Vector2i resolution);
+    void set_resolution(Magnum::Vector2i resolution);
     [[nodiscard]] Magnum::Vector2i resolution() const;
 
 private:

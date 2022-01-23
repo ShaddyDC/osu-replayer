@@ -18,6 +18,6 @@ struct Line_vert {
     Magnum::Color4 color;
 };
 
-std::vector<Slider_vert> vertex_generate(const std::vector<Magnum::Vector2>& slider_points, const float width);
+std::vector<Slider_vert> vertex_generate(const std::vector<Magnum::Vector2>& slider_points, float width);
 
-std::vector<Line_vert> line_generate(const std::vector<Magnum::Vector2>& points, const float width, const std::vector<Magnum::Color4>& colors);
+std::vector<Line_vert> line_generate(const std::vector<Magnum::Vector2>& points, float width, const std::vector<Magnum::Color4>& colors);
