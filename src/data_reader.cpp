@@ -109,6 +109,10 @@ void Beatmap_manager::load_map(const int id)
     }
     map_string = std::move(*bm);
 
+    if(map_string.empty()){
+        Corrade::Utility::Debug() << "Warning, empty map string";
+    }
+
     init_map();
 }
 
