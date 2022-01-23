@@ -1,6 +1,8 @@
 #pragma once
 
 #include <Magnum/GL/Framebuffer.h>
+#include <memory>
+#include <vector>
 
 class Drawable {
 public:
