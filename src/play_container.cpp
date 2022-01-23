@@ -8,13 +8,12 @@
 #include <Magnum/GL/Renderer.h>
 #include <Magnum/GL/TextureFormat.h>
 #include <imgui.h>
-#include <osu_reader/beatmap_util.h>
 #include <render/drawable_slider.h>
 
 Play_container::Play_container(Api_manager& api_manager)
     : beatmap_container{api_manager}, replay_container{api_manager}, player{beatmap_container},
       coordinate_provider{static_cast<Magnum::Vector2>(size_manager.get_top_left()), replay_container.replay},
-      hitobjects_manager{beatmap_container, replay_container, coordinate_provider, player}
+      objects_manager{beatmap_container, replay_container, coordinate_provider, player}
 {
 }
 
@@ -23,12 +22,12 @@ void Play_container::update(std::chrono::milliseconds time_passed)
     player.update(time_passed);
     size_manager.update(time_passed);
     coordinate_provider.update(time_passed);
-    hitobjects_manager.update(time_passed);
+    objects_manager.update(time_passed);
 }
 
 Magnum::GL::Texture2D Play_container::generate_playfield_texture()
 {
-    // Prepare Texture
+    // Prepare Texture and fresh framebuffer
     Magnum::GL::Texture2D texture;
     texture.setStorage(1, Magnum::GL::TextureFormat::RGBA8, size_manager.get_size());
 
@@ -42,12 +41,12 @@ Magnum::GL::Texture2D Play_container::generate_playfield_texture()
     //Todo: Better to set viewport accordingly
     Magnum::GL::Renderer::disable(Magnum::GL::Renderer::Feature::ScissorTest);
 
+    // Actual drawing
     border.draw(framebuffer);
+    objects_manager.draw(framebuffer);
 
-    hitobjects_manager.draw(framebuffer);
-
+    // Reset stuff
     Magnum::GL::defaultFramebuffer.bind();
-
     Magnum::GL::Renderer::enable(Magnum::GL::Renderer::Feature::ScissorTest);
 
     return texture;
