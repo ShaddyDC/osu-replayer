@@ -60,9 +60,9 @@ private:
 
     Magnum::GL::Texture2D playtext;
 
-    Config_manager config_manager;
+    Config_manager* config_manager = nullptr;
     Notification_manager* notification_manager = nullptr;
-    Api_manager api_manager{config_manager.config.api_key};
+    Api_manager api_manager{config_manager->config.api_key};
     Play_container* play_container = nullptr;
 };
 
@@ -80,7 +80,10 @@ TriangleExample::TriangleExample(const Arguments& arguments) : Platform::Applica
 
     Corrade::Utility::Arguments args{"replayer"};
     args.addOption("apikey").parse(arguments.argc, arguments.argv);
-    config_manager.update_api_key(args.value("apikey"));
+
+    config_manager = dynamic_cast<Config_manager*>(components.emplace_back(std::make_unique<Config_manager>()).get());
+
+    config_manager->update_api_key(args.value("apikey")); // TODO: This isn't clean
 
     components.emplace_back(std::make_unique<Notification_manager>());
     play_container = dynamic_cast<Play_container*>(components.emplace_back(std::make_unique<Play_container>(api_manager)).get());
@@ -133,8 +136,6 @@ void TriangleExample::drawEvent()
     for(auto& component : components) {
         component->draw();
     }
-
-    config_manager.config_window();
 
     ImGui::ShowMetricsWindow();
 

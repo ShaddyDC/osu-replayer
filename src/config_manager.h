@@ -1,17 +1,19 @@
 #pragma once
 
 #include <string>
+#include "component.h"
 
 struct Config {
     std::string api_key;
 };
 
-class Config_manager {
+class Config_manager : public Component{
 public:
     Config_manager();
     void load();
     void save();
-    void config_window();
+
+    void draw() override;
 
     void update_api_key(std::string api_key);
 
@@ -22,8 +24,10 @@ public:
     Config_manager(Config_manager&&) = delete;
     Config_manager& operator=(const Config_manager&) = delete;
     Config_manager& operator=(Config_manager&&) = delete;
-    ~Config_manager() = default;
+    ~Config_manager() override = default;
 
 private:
+    void config_window();
+
     std::string cli_updated_api_key;
 };

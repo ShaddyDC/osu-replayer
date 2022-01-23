@@ -160,3 +160,7 @@ void Config_manager::update_api_key(std::string api_key)
 {
     cli_updated_api_key = std::move(api_key);
 }
+void Config_manager::draw()
+{
+    config_window();
+}
