@@ -13,7 +13,10 @@ void Notification_manager::draw()
 {
     if(ImGui::BeginPopup("Notification")) {
         ImGui::Text("%s", stored_notification.c_str());
-        if(ImGui::Button("Ok")) stored_notification.clear();
+        if(ImGui::Button("Ok")) {
+            stored_notification.clear();
+            ImGui::CloseCurrentPopup();
+        }
         ImGui::End();
     }
     id = ImGui::GetID("Notification");
