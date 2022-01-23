@@ -59,6 +59,8 @@ set(SOURCES
         src/playfield/playback_logic.cpp
         src/playfield/playfield_size_manager.cpp
         src/playfield/playfield_coordinate_provider.cpp
+        src/playfield/visible_hitobjects_manager.cpp
+
         )
 
 

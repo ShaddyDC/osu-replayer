@@ -5,6 +5,7 @@
 #include "drawable_circle.h"
 #include "playfield/playfield_coordinate_provider.h"
 #include "slider_renderer.h"
+#include <Magnum/GL/Texture.h>
 
 class Drawable_slider : public Drawable {
 public:

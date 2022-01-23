@@ -8,7 +8,7 @@
 
 using namespace std::chrono_literals;
 
-Data_reader::Data_reader(Api_manager& api_manager) : api_manager{api_manager}
+Beatmap_manager::Beatmap_manager(Api_manager& api_manager) : api_manager{api_manager}
 {
     const Corrade::Utility::Resource rs{"data"};
 
@@ -17,7 +17,7 @@ Data_reader::Data_reader(Api_manager& api_manager) : api_manager{api_manager}
     init_map();
 }
 
-std::vector<Circle_object> Data_reader::circles_at(std::chrono::milliseconds time, const Beatmap_info_provider& info_provider)
+std::vector<Circle_object> Beatmap_manager::circles_at(std::chrono::milliseconds time, const Beatmap_info_provider& info_provider) const
 {
     std::vector<Circle_object> ret;
 
@@ -32,7 +32,7 @@ std::vector<Circle_object> Data_reader::circles_at(std::chrono::milliseconds tim
     return ret;
 }
 
-std::vector<Slider_object> Data_reader::sliders_at(std::chrono::milliseconds time, const Beatmap_info_provider& info_provider)
+std::vector<Slider_object> Beatmap_manager::sliders_at(std::chrono::milliseconds time, const Beatmap_info_provider& info_provider) const
 {
     std::vector<Slider_object> ret;
 
@@ -48,14 +48,14 @@ std::vector<Slider_object> Data_reader::sliders_at(std::chrono::milliseconds tim
 }
 
 
-Magnum::Math::Vector2<std::chrono::milliseconds> Data_reader::time_range() const
+Magnum::Math::Vector2<std::chrono::milliseconds> Beatmap_manager::time_range() const
 {
     const auto start = min(sliders.front().time, circles.front().time);//Todo: Bounds Check
     const auto end = max(sliders.back().time, circles.back().time);
     return {start - 5s, end + 5s};
 }
 
-void Data_reader::map_window()
+void Beatmap_manager::map_window()
 {
     if(ImGui::Begin("Load Map")) {
         ImGui::InputInt("id", &current_id);
@@ -100,7 +100,7 @@ void Data_reader::map_window()
     ImGui::End();
 }
 
-void Data_reader::load_map(const int id)
+void Beatmap_manager::load_map(const int id)
 {
     auto bm = api_manager.beatmap(std::to_string(id));
     if(!bm) {
@@ -112,7 +112,7 @@ void Data_reader::load_map(const int id)
     init_map();
 }
 
-void Data_reader::init_map()
+void Beatmap_manager::init_map()
 {
     osu::Beatmap_parser parser{};
     parser.slider_paths = true;

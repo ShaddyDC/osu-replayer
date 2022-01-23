@@ -12,7 +12,7 @@ void Playback_logic::update(std::chrono::milliseconds time_passed)
 
     last_time = current_time;
 }
-std::chrono::milliseconds Playback_logic::get_current_time()
+std::chrono::milliseconds Playback_logic::get_current_time() const
 {
     return current_time;
 }
@@ -29,6 +29,6 @@ void Playback_logic::draw()
     }
     ImGui::End();
 }
-Playback_logic::Playback_logic(const Data_reader& data) : data{data}
+Playback_logic::Playback_logic(const Beatmap_manager& data) : data{data}
 {
 }

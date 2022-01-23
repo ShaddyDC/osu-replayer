@@ -12,7 +12,7 @@ public:
 
     void update(std::chrono::milliseconds time_passed);
 
-    [[nodiscard]] Magnum::Vector2 convert_point(Magnum::Vector2 point) const;
+    [[nodiscard]] Magnum::Vector2 convert_point(Magnum::Vector2 point, bool no_flip = false) const;
 
 private:
     Magnum::Vector2 offset;

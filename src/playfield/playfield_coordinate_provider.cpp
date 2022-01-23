@@ -8,9 +8,9 @@ void Playfield_coordinate_provider::update(std::chrono::milliseconds /*passed_ti
 Playfield_coordinate_provider::Playfield_coordinate_provider(Magnum::Vector2 offset, const std::optional<osu::Replay>& replay)
     : offset{offset}, replay(replay), invert_y{false} {}
 
-Magnum::Vector2 Playfield_coordinate_provider::convert_point(Magnum::Vector2 point) const
+Magnum::Vector2 Playfield_coordinate_provider::convert_point(Magnum::Vector2 point, bool no_flip) const
 {
     constexpr const auto playfield_height = 384.f;
-    if(invert_y) point.y() = playfield_height - point.y();
+    if(invert_y && !no_flip) point.y() = playfield_height - point.y();
     return point + offset;
 }

@@ -5,9 +5,7 @@
 #include "playfield/playback_logic.h"
 #include "playfield/playfield_coordinate_provider.h"
 #include "playfield/playfield_size_manager.h"
-#include "render/circleobject_renderer.h"
-#include "render/drawable.h"
-#include "render/slider_renderer.h"
+#include "playfield/visible_hitobjects_manager.h"
 
 #include <Magnum/GL/Texture.h>
 
@@ -36,23 +34,29 @@ public:
     void draw() override;
     Magnum::Vector2i get_size();
 
-private:
-    Drawables drawables;
+    // Disable moves
+    Play_container(const Play_container&) = delete;
+    Play_container& operator=(const Play_container&) = delete;
+    Play_container(Play_container&&) = default;
+    Play_container& operator=(Play_container&&) = default;
 
+    ~Play_container() override = default;
+
+private:
     Magnum::GL::Texture2D generate_playfield_texture();
     Magnum::Vector2 to_screen(Magnum::Vector2 point);
 
-    Data_reader data;
-    Replay_container replay_container;
+    Beatmap_manager beatmap_container;
+    Replay_manager replay_container;
+
 
     Playback_logic player;
     Playfield_size_manager size_manager;
     Playfield_coordinate_provider coordinate_provider;
 
+    Visible_hitobjects_manager hitobjects_manager;
 
     Playfield_border border{size_manager.get_top_left(), size_manager.get_bottom_right()};
 
     Magnum::GL::Texture2D playfield;
-    Circleobject_renderer circle_renderer;
-    Slider_renderer slider_renderer;
 };
