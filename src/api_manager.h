@@ -19,6 +19,7 @@ public:
     Api_manager(Api_manager&&) = delete;
     Api_manager& operator=(const Api_manager&) = delete;
     Api_manager& operator=(Api_manager&&) = delete;
+    ~Api_manager() = default;
 
 private:
     std::optional<std::string> api_request(std::string_view endpoint);

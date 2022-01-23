@@ -22,6 +22,7 @@ public:
     Config_manager(Config_manager&&) = delete;
     Config_manager& operator=(const Config_manager&) = delete;
     Config_manager& operator=(Config_manager&&) = delete;
+    ~Config_manager() = default;
 
 private:
     std::string cli_updated_api_key;
