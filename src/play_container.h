@@ -6,6 +6,7 @@
 #include "render/line_renderer.h"
 #include "render/slider_renderer.h"
 #include "replay_container.h"
+#include "component.h"
 
 #include <Magnum/GL/Texture.h>
 
@@ -27,11 +28,11 @@ struct Approach_meshtime {
     std::chrono::milliseconds time;
 };
 
-class Play_container {
+class Play_container : public Component {
 public:
     explicit Play_container(Api_manager& api_manager);
-    void update(std::chrono::milliseconds time_passed);
-    Magnum::GL::Texture2D draw();
+    void update(std::chrono::milliseconds time_passed) override;
+    void draw() override;
 
     Data_reader data;
     Replay_container replay_container;
@@ -46,15 +47,17 @@ public:
     const Magnum::Vector2i field_size = {512, 384};
     const Magnum::Vector2i top_left{50, 50};
     const Magnum::Vector2i bottom_right{top_left + field_size};
-    const Magnum::Vector2i size = {bottom_right + top_left};
+    const Magnum::Vector2i size_unscaled = {bottom_right + top_left};
     float size_scale = 1.f;
-    Magnum::Vector2i scaling_size = static_cast<Magnum::Vector2i>(size_scale * size);
+    Magnum::Vector2i scaling_size = static_cast<Magnum::Vector2i>(size_scale * size_unscaled);
 
     Line_mesh border_mesh;
 
 private:
+    Magnum::GL::Texture2D generate_playfield_texture();
     Magnum::Vector2 to_screen(Magnum::Vector2 point);
 
+    Magnum::GL::Texture2D playfield;
     Circleobject_renderer circle_renderer;
     Slider_renderer slider_renderer;
     Line_renderer line_renderer;

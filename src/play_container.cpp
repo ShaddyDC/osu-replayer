@@ -9,6 +9,7 @@
 #include <Magnum/GL/TextureFormat.h>
 #include <osu_reader/beatmap_util.h>
 #include <render/drawable_slider.h>
+#include <imgui.h>
 
 Play_container::Play_container(Api_manager& api_manager) : data{api_manager}, replay_container{api_manager}
 {
@@ -27,11 +28,23 @@ Play_container::Play_container(Api_manager& api_manager) : data{api_manager}, re
 
 void Play_container::update(std::chrono::milliseconds time_passed)
 {
+    // Set playfield size
+    if(ImGui::Begin("Playfield")) {
+        const auto window_size = ImGui::GetWindowSize();
+        constexpr auto bottom_offset = 20.f;// Prevent scrollbar from appearing
+        const float scale = std::min((window_size.y - bottom_offset) / static_cast<float>(size_unscaled.y()),
+                                     window_size.x / static_cast<float>(size_unscaled.x()));
+        size_scale = scale;
+    }
+    ImGui::End();
+
+    // TODO: This is doing too much
+
     if(paused) time_passed = std::chrono::milliseconds::zero();
     if(last_time == current_time && time_passed == std::chrono::milliseconds::zero()) return;
 
     // Size stuff
-    scaling_size = static_cast<Magnum::Vector2i>(size_scale * size);
+    scaling_size = static_cast<Magnum::Vector2i>(size_scale * size_unscaled);
 
     // Hitobject stuff
     current_time += duration_cast<std::chrono::milliseconds>(speed * time_passed);//Todo: Handle fractions better
@@ -97,7 +110,7 @@ void Play_container::update(std::chrono::milliseconds time_passed)
     last_time = current_time;
 }
 
-Magnum::GL::Texture2D Play_container::draw()
+Magnum::GL::Texture2D Play_container::generate_playfield_texture()
 {
     // Prepare Texture
     Magnum::GL::Texture2D texture;
@@ -127,4 +140,30 @@ Magnum::GL::Texture2D Play_container::draw()
 Magnum::Vector2 Play_container::to_screen(const Magnum::Vector2 point)
 {
     return point + static_cast<Magnum::Vector2>(top_left);
+}
+void Play_container::draw()
+{
+    if(ImGui::Begin("Playfield")) {
+        ImVec2 image_size = {static_cast<float>(scaling_size.x()), static_cast<float>(scaling_size.y())};
+        ImVec2 pos = {(ImGui::GetWindowSize().x - image_size.x) / 2, (ImGui::GetWindowSize().y - image_size.y) / 2};
+        ImGui::SetCursorPos(pos);
+        playfield = generate_playfield_texture();
+        ImGui::Image(static_cast<void*>(&playfield), image_size, {0, 1}, {1, 0});
+    }
+    ImGui::End();
+
+    if(ImGui::Begin("Controls")) {
+        const auto range = data.time_range();
+
+        auto time = static_cast<int>(current_time.count());
+        ImGui::SliderInt("Time", &time, static_cast<int>(range.x().count()), static_cast<int>(range.y().count()));
+        current_time = std::chrono::milliseconds{time};
+        ImGui::InputFloat("Speed", &speed);
+        ImGui::Checkbox("Paused", &paused);
+        ImGui::InputFloat("Size", &size_scale);
+    }
+    ImGui::End();
+
+    data.map_window();
+    replay_container.replay_window();
 }

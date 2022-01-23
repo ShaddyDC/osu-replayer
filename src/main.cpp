@@ -21,6 +21,7 @@
 #include <Magnum/Timeline.h>
 
 #include "api_manager.h"
+#include "component.h"
 #include "notification_manager.h"
 #include "version.h"
 
@@ -48,6 +49,7 @@ public:
     void textInputEvent(TextInputEvent& event) override;
 
 private:
+    Container components;
     Coordinate_holder coordinate_holder;
 
     Shaders::VertexColorGL2D _shader;
@@ -55,20 +57,19 @@ private:
     ImGuiIntegration::Context _imgui{NoCreate};
 
     Magnum::Timeline timer;
-    Play_container play_container;
 
     Magnum::GL::Texture2D playtext;
 
     Config_manager config_manager;
     Api_manager api_manager{config_manager.config.api_key};
+    Play_container* play_container = nullptr;
 };
 
 TriangleExample::TriangleExample(const Arguments& arguments) : Platform::Application{arguments,
                                                                                      Configuration{}
                                                                                              .setTitle("Magnum Triangle Example")
                                                                                              .setSize({default_window_width, default_window_height})
-                                                                                             .setWindowFlags(Configuration::WindowFlag::Resizable)},
-                                                               play_container{api_manager}
+                                                                                             .setWindowFlags(Configuration::WindowFlag::Resizable)}
 {
     using namespace Math::Literals;
 
@@ -80,7 +81,9 @@ TriangleExample::TriangleExample(const Arguments& arguments) : Platform::Applica
     args.addOption("apikey").parse(arguments.argc, arguments.argv);
     config_manager.update_api_key(args.value("apikey"));
 
-    coordinate_holder.set_resolution(play_container.size);
+    play_container = dynamic_cast<Play_container*>(components.emplace_back(std::make_unique<Play_container>(api_manager)).get());
+
+    coordinate_holder.set_resolution(play_container->size_unscaled);
 
     _imgui = ImGuiIntegration::Context(Vector2{windowSize()} / dpiScaling(),
                                        windowSize(), framebufferSize());
@@ -111,20 +114,19 @@ void TriangleExample::drawEvent()
 
     _imgui.newFrame();
 
-    Notification_manager{}.draw();
-
-    // Set playfield size
-    if(ImGui::Begin("Playfield")) {
-        const auto size = ImGui::GetWindowSize();
-        constexpr auto bottom_offset = 20.f;// Prevent scrollbar from appearing
-        const float scale = std::min((size.y - bottom_offset) / static_cast<float>(play_container.size.y()),
-                                     size.x / static_cast<float>(play_container.size.x()));
-        play_container.size_scale = scale;
-    }
-    ImGui::End();
-
     constexpr const auto ms_in_s = 1000;
-    play_container.update(std::chrono::milliseconds{static_cast<int>(timer.previousFrameDuration() * ms_in_s)});//Todo: Handle fractions better
+    //Todo: Handle fractions better
+    const auto time_passed = std::chrono::milliseconds{static_cast<int>(timer.previousFrameDuration() * ms_in_s)};
+
+    for(auto& component : components) {
+        component->update(time_passed);
+    }
+
+    for(auto& component : components) {
+        component->draw();
+    }
+
+    Notification_manager{}.draw();
 
     /* Enable text input, if needed */
     if(ImGui::GetIO().WantTextInput && !isTextInputActive())
@@ -132,30 +134,6 @@ void TriangleExample::drawEvent()
     else if(!ImGui::GetIO().WantTextInput && isTextInputActive())
         stopTextInput();
 
-    if(ImGui::Begin("Playfield")) {
-        ImVec2 image_size = {static_cast<float>(play_container.scaling_size.x()), static_cast<float>(play_container.scaling_size.y())};
-        ImVec2 pos = {(ImGui::GetWindowSize().x - image_size.x) / 2, (ImGui::GetWindowSize().y - image_size.y) / 2};
-        ImGui::SetCursorPos(pos);
-        playtext = play_container.draw();
-        ImGui::Image(static_cast<void*>(&playtext), image_size, {0, 1}, {1, 0});
-        // ImGui::GetWindowDrawList()->AddImage
-    }
-    ImGui::End();
-
-    if(ImGui::Begin("Controls")) {
-        const auto range = play_container.data.time_range();
-
-        auto time = static_cast<int>(play_container.current_time.count());
-        ImGui::SliderInt("Time", &time, static_cast<int>(range.x().count()), static_cast<int>(range.y().count()));
-        play_container.current_time = std::chrono::milliseconds{time};
-        ImGui::InputFloat("Speed", &play_container.speed);
-        ImGui::Checkbox("Paused", &play_container.paused);
-        ImGui::InputFloat("Size", &play_container.size_scale);
-    }
-    ImGui::End();
-
-    play_container.data.map_window();
-    play_container.replay_container.replay_window();
     config_manager.config_window();
 
     ImGui::ShowMetricsWindow();
@@ -177,7 +155,7 @@ void TriangleExample::viewportEvent(ViewportEvent& event)
     _imgui.relayout(Vector2{event.windowSize()} / event.dpiScaling(),
                     event.windowSize(), event.framebufferSize());
 
-    coordinate_holder.set_resolution(play_container.size);//Todo: Rework class
+    coordinate_holder.set_resolution(play_container->size_unscaled);//Todo: Rework class
 }
 
 void TriangleExample::keyPressEvent(KeyEvent& event)
