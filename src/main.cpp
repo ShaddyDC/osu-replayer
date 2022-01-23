@@ -27,6 +27,9 @@
 using namespace Magnum;
 using namespace Math::Literals;
 
+constexpr const auto default_window_height = 900;
+constexpr const auto default_window_width = 1600;
+
 class TriangleExample : public Platform::Application {
 public:
     explicit TriangleExample(const Arguments& arguments);
@@ -63,7 +66,7 @@ private:
 TriangleExample::TriangleExample(const Arguments& arguments) : Platform::Application{arguments,
                                                                                      Configuration{}
                                                                                              .setTitle("Magnum Triangle Example")
-                                                                                             .setSize({1600, 900})
+                                                                                             .setSize({default_window_width, default_window_height})
                                                                                              .setWindowFlags(Configuration::WindowFlag::Resizable)},
                                                                play_container{api_manager}
 {
@@ -120,7 +123,8 @@ void TriangleExample::drawEvent()
     }
     ImGui::End();
 
-    play_container.update(std::chrono::milliseconds{static_cast<int>(timer.previousFrameDuration() * 1000.f)});//Todo: Handle fractions better
+    constexpr const auto ms_in_s = 1000;
+    play_container.update(std::chrono::milliseconds{static_cast<int>(timer.previousFrameDuration() * ms_in_s)});//Todo: Handle fractions better
 
     /* Enable text input, if needed */
     if(ImGui::GetIO().WantTextInput && !isTextInputActive())

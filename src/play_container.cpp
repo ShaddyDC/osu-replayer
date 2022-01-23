@@ -12,6 +12,7 @@
 
 Play_container::Play_container(Api_manager& api_manager) : data{api_manager}, replay_container{api_manager}
 {
+    constexpr const auto border_width = 5.f;
     std::vector<Magnum::Vector2> points{
             //Todo: Fix top left corner
             Magnum::Vector2{top_left},
@@ -21,7 +22,7 @@ Play_container::Play_container(Api_manager& api_manager) : data{api_manager}, re
             Magnum::Vector2{top_left},
     };
 
-    border_mesh = line_renderer.generate_mesh(points, 5.f, {Magnum::Color4{1}});
+    border_mesh = line_renderer.generate_mesh(points, border_width, {Magnum::Color4{1}});
 }
 
 void Play_container::update(std::chrono::milliseconds time_passed)
@@ -81,12 +82,13 @@ void Play_container::update(std::chrono::milliseconds time_passed)
     drawables.insert(drawables.end(), std::make_move_iterator(approach_circles.begin()), std::make_move_iterator(approach_circles.end()));
 
     if(replay_container.replay) {
+        constexpr const auto ratio_cursor_cs = 5;
         const auto current_frame = replay_container.frame_at(current_time);
         auto pos = Magnum::Vector2{current_frame.x, current_frame.y};
         pos = to_screen(pos);
         drawables.push_back(std::make_unique<Drawable_circle>(circle_renderer,
                                                               pos,
-                                                              osu::cs_to_osupixel(info_provider.cs()) / 5,
+                                                              osu::cs_to_osupixel(info_provider.cs()) / ratio_cursor_cs,
                                                               Circle_draw_options{
                                                                       .color = Magnum::Color4::yellow(),
                                                                       .circle_center = Circleobject_shader::filled}));

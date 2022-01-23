@@ -68,19 +68,18 @@ void Data_reader::map_window()
 
     if(ImGui::Begin("Beatmap")) {
         if(map) {
-            const auto label_text = [](const auto label, auto value) {
-                char value_string[32];
-                sprintf(value_string, "%lu", static_cast<long unsigned int>(value));
-                ImGui::LabelText(label, "%s", value_string);
+            // This is okay since this is all read-only
+            const auto input_int = [](const auto label, auto value) {
+                int v = value;
+                ImGui::InputInt(label, &v);
             };
-
             ImGui::LabelText("Title", "%s", map->title.c_str());
             ImGui::LabelText("Artist", "%s", map->artist.c_str());
             ImGui::LabelText("Creator", "%s", map->creator.c_str());
             ImGui::LabelText("Difficulty", "%s", map->difficulty_name.c_str());
             ImGui::LabelText("Source", "%s", map->source.c_str());
-            label_text("Set ID", map->beatmap_set_id);
-            label_text("Map ID", map->beatmap_id);
+            ImGui::InputInt("Set ID", &map->beatmap_set_id);
+            ImGui::InputInt("Map ID", &map->beatmap_id);
             ImGui::Text("[Difficulty]");
             ImGui::InputFloat("HP", &map->hp);
             ImGui::InputFloat("CS", &map->cs);
@@ -89,9 +88,11 @@ void Data_reader::map_window()
             ImGui::InputFloat("Slider Multiplier", &map->slider_multiplier);
             ImGui::InputFloat("Slider Tickrate", &map->slider_tick_rate);
             ImGui::Text("[Hitobjects]");
-            label_text("Circles", circles.size());
-            label_text("Sliders", sliders.size());
-            label_text("Spinners", -1);
+            ImGui::BeginDisabled();
+            input_int("Circles", circles.size());
+            input_int("Sliders", sliders.size());
+            input_int("Spinners", -1);
+            ImGui::EndDisabled();
         } else {
             ImGui::Text("Failed loading map");
         }

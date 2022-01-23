@@ -8,7 +8,8 @@ public:
 
     [[nodiscard]] inline Magnum::Vector2 convert_point(Magnum::Vector2 point) const
     {
-        if(invert_y) point.y() = 384.f - point.y();
+        constexpr const auto playfield_height = 384.f;
+        if(invert_y) point.y() = playfield_height - point.y();
         return point + offset;
     }
 

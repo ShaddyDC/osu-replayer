@@ -3,6 +3,9 @@
 #include "notification_manager.h"
 #include <Corrade/Utility/Debug.h>
 
+static constexpr const auto status_success = 200;
+static constexpr const auto status_forbidden = 401;
+
 Api_manager::Api_manager(const std::string& api_key) : api_key{api_key}
 {
 }
@@ -40,7 +43,7 @@ std::optional<std::string> Api_manager::api_request_impl(std::string_view endpoi
 
     Corrade::Utility::Debug() << "web req result" << status << text;
 
-    if(status == 200) {
+    if(status == status_success) {
         std::string s{text};
         delete text;
         return s;
@@ -66,7 +69,7 @@ std::optional<std::string> Api_manager::api_request_impl(std::string_view endpoi
 
     if(response) {
         status = response->status;
-        if(status != 200) {
+        if(status != status_success) {
             Corrade::Utility::Debug() << "Error " << response.error() << response->status << response->body.c_str();
             return std::nullopt;
         }
@@ -83,7 +86,7 @@ std::optional<std::string> Api_manager::api_request(std::string_view endpoint)
     int status = 0;
     auto res = api_request_impl(endpoint, status);
 
-    if(status == 401) {
+    if(status == status_forbidden) {
         Corrade::Utility::Debug() << "Resource needs Authentication";
         Notification_manager{}.add_notification("auth_req",
                                                 "You need to be authenticated to get this resource.\n"
