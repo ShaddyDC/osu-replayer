@@ -17,7 +17,7 @@ Line_mesh Line_renderer::generate_mesh(const std::vector<Magnum::Vector2>& line,
                                    : Magnum::MeshPrimitive::Triangles;
 
     Magnum::GL::Mesh mesh;
-    mesh.setCount(line_verts.size())
+    mesh.setCount(static_cast<int>(line_verts.size()))
             .setPrimitive(primitive)
             .addVertexBuffer(std::move(buffer), 0,
                              Minimal_shader::Position{},

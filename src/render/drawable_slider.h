@@ -24,14 +24,14 @@ public:
             // Follow circle
             const auto follow_radius = radius * 2.4f;
 
-            const auto progress = static_cast<float>((current_time - slider.time).count()) / slider.slider.duration.count();
+            const auto progress = static_cast<float>((current_time - slider.time).count()) / static_cast<float>(slider.slider.duration.count());
             const auto internal_progress = std::clamp(progress, 0.f, 1.f);
-            const auto extended_progress = (internal_progress * slider.slider.repeat);
+            const auto extended_progress = (internal_progress * static_cast<float>(slider.slider.repeat));
             const auto current_repeat = static_cast<int>(extended_progress);
             const auto uneven_repeat = current_repeat % 2;
 
             if(progress >= 0 && progress <= 1) {
-                const auto current_progress = extended_progress - current_repeat;
+                const auto current_progress = extended_progress - static_cast<float>(current_repeat);
                 const auto direction_progress = uneven_repeat == 0 ? current_progress : 1 - current_progress;
                 const auto pixel_progress = direction_progress * slider.slider.length;
                 const auto current_pos_it = std::find_if(slider.slider.distances.cbegin(), slider.slider.distances.cend(),

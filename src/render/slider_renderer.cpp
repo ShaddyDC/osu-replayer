@@ -53,7 +53,7 @@ Magnum::GL::Texture2D Slider_renderer::generate_texture(const osu::Slider& slide
     buffer.setData(slider_verts);
 
     Magnum::GL::Mesh body;
-    body.setCount(slider_verts.size())
+    body.setCount(static_cast<int>(slider_verts.size()))
             .setPrimitive(Magnum::MeshPrimitive::Triangles)
             .addVertexBuffer(std::move(buffer), 0,
                              Sliderbody_shader::Position{},

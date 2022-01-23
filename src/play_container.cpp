@@ -47,7 +47,7 @@ void Play_container::update(std::chrono::milliseconds time_passed)
     const auto add_approach_circle = [this, &approach_circles, &info_provider](auto pos, auto time) {
         const auto early_window = std::chrono::milliseconds{static_cast<int>(osu::ar_to_ms(info_provider.ar()))};
         const auto early_duration = time - current_time;
-        const auto progress = static_cast<float>(early_duration.count()) / early_window.count();
+        const auto progress = static_cast<float>(early_duration.count()) / static_cast<float>(early_window.count());
         const auto radius = osu::cs_to_osupixel(info_provider.cs()) * (1.f + 2 * progress);
         approach_circles.push_back(std::make_unique<Drawable_circle>(circle_renderer, pos, radius, Circle_draw_options{.circle_center = Circleobject_shader::hollow}));
     };

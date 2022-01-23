@@ -114,7 +114,8 @@ void TriangleExample::drawEvent()
     if(ImGui::Begin("Playfield")) {
         const auto size = ImGui::GetWindowSize();
         constexpr auto bottom_offset = 20.f;// Prevent scrollbar from appearing
-        const float scale = std::min((size.y - bottom_offset) / play_container.size.y(), size.x / play_container.size.x());
+        const float scale = std::min((size.y - bottom_offset) / static_cast<float>(play_container.size.y()),
+                                     size.x / static_cast<float>(play_container.size.x()));
         play_container.size_scale = scale;
     }
     ImGui::End();
@@ -140,8 +141,8 @@ void TriangleExample::drawEvent()
     if(ImGui::Begin("Controls")) {
         const auto range = play_container.data.time_range();
 
-        int time = play_container.current_time.count();
-        ImGui::SliderInt("Time", &time, range.x().count(), range.y().count());
+        auto time = static_cast<int>(play_container.current_time.count());
+        ImGui::SliderInt("Time", &time, static_cast<int>(range.x().count()), static_cast<int>(range.y().count()));
         play_container.current_time = std::chrono::milliseconds{time};
         ImGui::InputFloat("Speed", &play_container.speed);
         ImGui::Checkbox("Paused", &play_container.paused);
