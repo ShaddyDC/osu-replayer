@@ -61,8 +61,7 @@ private:
     Magnum::GL::Texture2D playtext;
 
     Config_manager* config_manager = nullptr;
-    Notification_manager* notification_manager = nullptr;
-    Api_manager api_manager{config_manager->config.api_key};
+    std::unique_ptr<Api_manager> api_manager = nullptr;
     Play_container* play_container = nullptr;
 };
 
@@ -85,8 +84,10 @@ TriangleExample::TriangleExample(const Arguments& arguments) : Platform::Applica
 
     config_manager->update_api_key(args.value("apikey")); // TODO: This isn't clean
 
+    api_manager = std::make_unique<Api_manager>(config_manager->config.api_key);
+
     components.emplace_back(std::make_unique<Notification_manager>());
-    play_container = dynamic_cast<Play_container*>(components.emplace_back(std::make_unique<Play_container>(api_manager)).get());
+    play_container = dynamic_cast<Play_container*>(components.emplace_back(std::make_unique<Play_container>(*api_manager)).get());
 
     coordinate_holder.set_resolution(play_container->get_size());
 
