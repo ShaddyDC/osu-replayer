@@ -61,6 +61,7 @@ private:
     Magnum::GL::Texture2D playtext;
 
     Config_manager config_manager;
+    Notification_manager* notification_manager = nullptr;
     Api_manager api_manager{config_manager.config.api_key};
     Play_container* play_container = nullptr;
 };
@@ -81,6 +82,7 @@ TriangleExample::TriangleExample(const Arguments& arguments) : Platform::Applica
     args.addOption("apikey").parse(arguments.argc, arguments.argv);
     config_manager.update_api_key(args.value("apikey"));
 
+    components.emplace_back(std::make_unique<Notification_manager>());
     play_container = dynamic_cast<Play_container*>(components.emplace_back(std::make_unique<Play_container>(api_manager)).get());
 
     coordinate_holder.set_resolution(play_container->size_unscaled);
@@ -125,8 +127,6 @@ void TriangleExample::drawEvent()
     for(auto& component : components) {
         component->draw();
     }
-
-    Notification_manager{}.draw();
 
     /* Enable text input, if needed */
     if(ImGui::GetIO().WantTextInput && !isTextInputActive())

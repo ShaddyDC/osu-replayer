@@ -2,8 +2,9 @@
 #define SLIDER_DRAW_NOTIFICATION_MANAGER_H
 
 #include <string>
+#include "component.h"
 
-class Notification_manager {
+class Notification_manager : public Component {
 public:
     void add_notification(std::string title, std::string notification);
     void draw();
