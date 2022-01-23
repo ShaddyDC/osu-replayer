@@ -3,7 +3,7 @@
 #include "../vector_util.h"
 #include "drawable.h"
 #include "drawable_circle.h"
-#include "playfield_coordinate_provider.h"
+#include "playfield/playfield_coordinate_provider.h"
 #include "slider_renderer.h"
 
 class Drawable_slider : public Drawable {

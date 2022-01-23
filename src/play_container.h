@@ -1,12 +1,13 @@
 #pragma once
 
 #include "component.h"
-#include "data_reader.h"
 #include "playfield/border.h"
+#include "playfield/playback_logic.h"
+#include "playfield/playfield_coordinate_provider.h"
+#include "playfield/playfield_size_manager.h"
 #include "render/circleobject_renderer.h"
 #include "render/drawable.h"
 #include "render/slider_renderer.h"
-#include "replay_container.h"
 
 #include <Magnum/GL/Texture.h>
 
@@ -33,29 +34,23 @@ public:
     explicit Play_container(Api_manager& api_manager);
     void update(std::chrono::milliseconds time_passed) override;
     void draw() override;
+    Magnum::Vector2i get_size();
+
+private:
+    Drawables drawables;
+
+    Magnum::GL::Texture2D generate_playfield_texture();
+    Magnum::Vector2 to_screen(Magnum::Vector2 point);
 
     Data_reader data;
     Replay_container replay_container;
 
-    Drawables drawables;
+    Playback_logic player;
+    Playfield_size_manager size_manager;
+    Playfield_coordinate_provider coordinate_provider;
 
-    std::chrono::milliseconds current_time = std::chrono::milliseconds::zero();
-    std::chrono::milliseconds last_time = current_time;
-    bool paused = false;
-    float speed = 1.f;
 
-    const Magnum::Vector2i field_size = {512, 384};
-    const Magnum::Vector2i top_left{50, 50};
-    const Magnum::Vector2i bottom_right{top_left + field_size};
-    const Magnum::Vector2i size_unscaled = {bottom_right + top_left};
-    float size_scale = 1.f;
-    Magnum::Vector2i scaling_size = static_cast<Magnum::Vector2i>(size_scale * size_unscaled);
-
-private:
-    Magnum::GL::Texture2D generate_playfield_texture();
-    Magnum::Vector2 to_screen(Magnum::Vector2 point);
-
-    Playfield_border border{top_left, bottom_right};
+    Playfield_border border{size_manager.get_top_left(), size_manager.get_bottom_right()};
 
     Magnum::GL::Texture2D playfield;
     Circleobject_renderer circle_renderer;

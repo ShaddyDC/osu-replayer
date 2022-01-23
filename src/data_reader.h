@@ -11,7 +11,7 @@ public:
 
     std::vector<Circle_object> circles_at(std::chrono::milliseconds time, const Beatmap_info_provider& info_provider);
     std::vector<Slider_object> sliders_at(std::chrono::milliseconds time, const Beatmap_info_provider& info_provider);
-    Magnum::Math::Vector2<std::chrono::milliseconds> time_range();
+    Magnum::Math::Vector2<std::chrono::milliseconds> time_range() const;
 
     void map_window();
     void load_map(int id);

@@ -48,7 +48,7 @@ std::vector<Slider_object> Data_reader::sliders_at(std::chrono::milliseconds tim
 }
 
 
-Magnum::Math::Vector2<std::chrono::milliseconds> Data_reader::time_range()
+Magnum::Math::Vector2<std::chrono::milliseconds> Data_reader::time_range() const
 {
     const auto start = min(sliders.front().time, circles.front().time);//Todo: Bounds Check
     const auto end = max(sliders.back().time, circles.back().time);

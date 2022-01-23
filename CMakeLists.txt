@@ -55,7 +55,13 @@ set(SOURCES
         src/config_manager.cpp
         src/replay_container.cpp
         src/notification_manager.cpp
+        src/playfield/border.cpp
+        src/playfield/playback_logic.cpp
+        src/playfield/playfield_size_manager.cpp
+        src/playfield/playfield_coordinate_provider.cpp
         )
+
+
 add_executable(slider_draw
         ${SOURCES}
         ${CMAKE_CURRENT_BINARY_DIR}/version.cpp

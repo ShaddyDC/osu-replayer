@@ -88,7 +88,7 @@ TriangleExample::TriangleExample(const Arguments& arguments) : Platform::Applica
     components.emplace_back(std::make_unique<Notification_manager>());
     play_container = dynamic_cast<Play_container*>(components.emplace_back(std::make_unique<Play_container>(api_manager)).get());
 
-    coordinate_holder.set_resolution(play_container->size_unscaled);
+    coordinate_holder.set_resolution(play_container->get_size());
 
     _imgui = ImGuiIntegration::Context(Vector2{windowSize()} / dpiScaling(),
                                        windowSize(), framebufferSize());
@@ -156,7 +156,7 @@ void TriangleExample::viewportEvent(ViewportEvent& event)
     _imgui.relayout(Vector2{event.windowSize()} / event.dpiScaling(),
                     event.windowSize(), event.framebufferSize());
 
-    coordinate_holder.set_resolution(play_container->size_unscaled);//Todo: Rework class
+    coordinate_holder.set_resolution(play_container->get_size());
 }
 
 void TriangleExample::keyPressEvent(KeyEvent& event)
