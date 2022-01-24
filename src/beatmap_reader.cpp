@@ -8,7 +8,7 @@
 
 using namespace std::chrono_literals;
 
-Beatmap_reader::Beatmap_reader(Api_manager& api_manager) : api_manager{api_manager}
+Beatmap_reader::Beatmap_reader(Api_manager& api_manager) : map{std::nullopt}, api_manager{api_manager}
 {
     const Corrade::Utility::Resource rs{"data"};
 
@@ -67,31 +67,33 @@ void Beatmap_reader::map_window()
     ImGui::End();
 
     if(ImGui::Begin("Beatmap")) {
-        if(map) {
+        if(map.get()) {
             // This is okay since this is all read-only
-            const auto input_int = [](const auto label, auto value) {
-                int v = value;
-                ImGui::InputInt(label, &v);
+            const auto imgui_input = []<typename T>(const auto label, T value) {
+                if constexpr(std::is_same_v<T, int>)
+                    ImGui::InputInt(label, &value);
+                else if constexpr(std::is_same_v<T, float>)
+                    ImGui::InputFloat(label, &value);
             };
-            ImGui::LabelText("Title", "%s", map->title.c_str());
-            ImGui::LabelText("Artist", "%s", map->artist.c_str());
-            ImGui::LabelText("Creator", "%s", map->creator.c_str());
-            ImGui::LabelText("Difficulty", "%s", map->difficulty_name.c_str());
-            ImGui::LabelText("Source", "%s", map->source.c_str());
-            ImGui::InputInt("Set ID", &map->beatmap_set_id);
-            ImGui::InputInt("Map ID", &map->beatmap_id);
+            ImGui::LabelText("Title", "%s", map.get()->title.c_str());
+            ImGui::LabelText("Artist", "%s", map.get()->artist.c_str());
+            ImGui::LabelText("Creator", "%s", map.get()->creator.c_str());
+            ImGui::LabelText("Difficulty", "%s", map.get()->difficulty_name.c_str());
+            ImGui::LabelText("Source", "%s", map.get()->source.c_str());
+            imgui_input("Set ID", map.get()->beatmap_set_id);
+            imgui_input("Map ID", map.get()->beatmap_id);
             ImGui::Text("[Difficulty]");
-            ImGui::InputFloat("HP", &map->hp);
-            ImGui::InputFloat("CS", &map->cs);
-            ImGui::InputFloat("OD", &map->od);
-            ImGui::InputFloat("AR", &map->ar);
-            ImGui::InputFloat("Slider Multiplier", &map->slider_multiplier);
-            ImGui::InputFloat("Slider Tickrate", &map->slider_tick_rate);
+            imgui_input("HP", map.get()->hp);
+            imgui_input("CS", map.get()->cs);
+            imgui_input("OD", map.get()->od);
+            imgui_input("AR", map.get()->ar);
+            imgui_input("Slider Multiplier", &map.get()->slider_multiplier);
+            imgui_input("Slider Tickrate", &map.get()->slider_tick_rate);
             ImGui::Text("[Hitobjects]");
             ImGui::BeginDisabled();
-            input_int("Circles", circles.size());
-            input_int("Sliders", sliders.size());
-            input_int("Spinners", -1);
+            imgui_input("Circles", circles.size());
+            imgui_input("Sliders", sliders.size());
+            imgui_input("Spinners", -1);
             ImGui::EndDisabled();
         } else {
             ImGui::Text("Failed loading map");
@@ -109,7 +111,7 @@ void Beatmap_reader::load_map(const int id)
     }
     map_string = std::move(*bm);
 
-    if(map_string.empty()){
+    if(map_string.empty()) {
         Corrade::Utility::Debug() << "Warning, empty map string";
     }
 
@@ -120,17 +122,17 @@ void Beatmap_reader::init_map()
 {
     osu::Beatmap_parser parser{};
     parser.slider_paths = true;
-    map = parser.from_string(map_string);
+    map.set(parser.from_string(map_string));
 
-    if(map && map->mode == osu::Gamemode::osu) {
+    if(map.get() && map.get()->mode == osu::Gamemode::osu) {
         circles.clear();
         sliders.clear();
 
-        for(const auto& circle : map->circles) {
+        for(const auto& circle : map.get()->circles) {
             circles.emplace_back(Magnum::Vector2{circle.pos.x, circle.pos.y}, circle.time);
         }
 
-        for(const auto& slider : map->sliders) {
+        for(const auto& slider : map.get()->sliders) {
             sliders.emplace_back(slider, slider.time);
         }
     }

@@ -12,7 +12,7 @@
 
 Play_container::Play_container(Api_manager& api_manager)
     : beatmap_container{api_manager}, replay_container{api_manager}, player{beatmap_container},
-      coordinate_provider{static_cast<Magnum::Vector2>(size_manager.get_top_left()), replay_container.replay},
+      coordinate_provider{static_cast<Magnum::Vector2>(size_manager.get_top_left()), replay_container.replay.get()},
       objects_manager{beatmap_container, replay_container, coordinate_provider, player}
 {
 }

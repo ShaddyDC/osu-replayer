@@ -1,6 +1,7 @@
 #pragma once
 #include "api_manager.h"
 #include "beatmap_info_provider.h"
+#include "bindable.h"
 #include "hitobjects.h"
 #include <osu_reader/beatmap.h>
 #include <string>
@@ -18,7 +19,7 @@ public:
 
     int current_id = 0;
     std::string map_string = "Not loaded";
-    std::optional<osu::Beatmap> map;
+    Bindable<std::optional<osu::Beatmap>> map;
 
 private:
     void init_map();

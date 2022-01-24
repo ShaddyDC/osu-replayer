@@ -6,12 +6,12 @@
 
 void Visible_objects_manager::update(std::chrono::milliseconds /*time_passed*/)
 {
-    if(!beatmap.map) return;
+    if(!beatmap.map.get()) return;
 
     drawables.clear();
 
-    const auto mods = replay.replay ? replay.replay->mods : osu::Mods{};
-    const Beatmap_info_provider info_provider{*beatmap.map, mods};
+    const auto mods = replay.replay.get() ? replay.replay.get()->mods : osu::Mods{};
+    const Beatmap_info_provider info_provider{*beatmap.map.get(), mods};
 
     auto circles = beatmap.circles_at(player.get_current_time(), info_provider);
     auto sliders = beatmap.sliders_at(player.get_current_time(), info_provider);
@@ -31,7 +31,7 @@ void Visible_objects_manager::update(std::chrono::milliseconds /*time_passed*/)
     approach_circles.clear();
 
     // If replay available, draw cursor
-    if(replay.replay) {
+    if(replay.replay.get()) {
         const auto current_frame = replay.frame_at(player.get_current_time());
 
         auto pos = Magnum::Vector2{current_frame.x, current_frame.y};
