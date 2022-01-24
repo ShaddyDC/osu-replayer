@@ -49,7 +49,7 @@ void Visible_objects_manager::update(std::chrono::milliseconds /*time_passed*/)
     }
 }
 
-Visible_objects_manager::Visible_objects_manager(const Beatmap_manager& beatmap, const Replay_manager& replay,
+Visible_objects_manager::Visible_objects_manager(const Beatmap_reader& beatmap, const Replay_loader& replay,
                                                        const Playfield_coordinate_provider& coordinate_provider, const Playback_logic& player)
     : beatmap{beatmap}, replay{replay}, coordinate_provider{coordinate_provider}, player{player}
 {

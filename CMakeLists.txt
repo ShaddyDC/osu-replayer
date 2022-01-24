@@ -41,7 +41,7 @@ target_link_libraries(data_resources Corrade::Utility)
 set(SOURCES
         src/main.cpp
         src/string_helpers.cpp
-        src/data_reader.cpp
+        src/beatmap_reader.cpp
         src/play_container.cpp
         src/render/vertex_generate.cpp
         src/api_manager.cpp
@@ -53,7 +53,7 @@ set(SOURCES
         src/render/slider_renderer.cpp
         src/render/line_renderer.cpp
         src/config_manager.cpp
-        src/replay_container.cpp
+        src/replay_loader.cpp
         src/notification_manager.cpp
         src/playfield/border.cpp
         src/playfield/playback_logic.cpp

@@ -1,9 +1,9 @@
-#include "replay_container.h"
+#include "replay_loader.h"
 #include <Corrade/Utility/Resource.h>
 #include <imgui.h>
 #include <osu_reader/replay_reader.h>
 
-Replay_manager::Replay_manager(Api_manager& api_manager)
+Replay_loader::Replay_loader(Api_manager& api_manager)
     : api_manager{api_manager}
 {
     const Corrade::Utility::Resource rs{"data"};
@@ -15,7 +15,7 @@ Replay_manager::Replay_manager(Api_manager& api_manager)
 
     replay = reader.from_string(replay_data);
 }
-void Replay_manager::replay_window()
+void Replay_loader::replay_window()
 {
     //    if(ImGui::Begin("Load Replay")){
     //        ImGui::InputInt("id", &current_id);
@@ -57,7 +57,7 @@ void Replay_manager::replay_window()
     }
     ImGui::End();
 }
-osu::Replay::Replay_frame Replay_manager::frame_at(std::chrono::milliseconds time) const
+osu::Replay::Replay_frame Replay_loader::frame_at(std::chrono::milliseconds time) const
 {
     if(!replay || !replay->frames || replay->frames->empty())
         return osu::Replay::Replay_frame{};

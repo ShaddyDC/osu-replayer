@@ -28,8 +28,8 @@ private:
     Magnum::GL::Texture2D generate_playfield_texture();
     Magnum::Vector2 to_screen(Magnum::Vector2 point);
 
-    Beatmap_manager beatmap_container;
-    Replay_manager replay_container;
+    Beatmap_reader beatmap_container;
+    Replay_loader replay_container;
 
     Playback_logic player;
     Playfield_size_manager size_manager;

@@ -29,6 +29,6 @@ void Playback_logic::draw()
     }
     ImGui::End();
 }
-Playback_logic::Playback_logic(const Beatmap_manager& data) : data{data}
+Playback_logic::Playback_logic(const Beatmap_reader& data) : data{data}
 {
 }
