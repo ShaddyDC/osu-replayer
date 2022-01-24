@@ -17,28 +17,17 @@ Replay_loader::Replay_loader(Api_manager& api_manager)
 }
 void Replay_loader::replay_window()
 {
-    //    if(ImGui::Begin("Load Replay")){
-    //        ImGui::InputInt("id", &current_id);
-    //        ImGui::SameLine();
-    //        if(ImGui::Button("Load ID") && current_id > 0) load_map(current_id);
-    //        ImGui::InputTextMultiline("Content", map_string.data(), map_string.size());
-    //        if(ImGui::Button("Load String")) init_map();
-    //    }
-    //    ImGui::End();
-
-    if(ImGui::Begin("Replay")) {
+   if(ImGui::Begin("Replay")) {
         if(replay.get()) {
             // Handle non-integer types below 64-bit. Fine since this is readonly anyway.
             const auto imgui_input = []<typename T>(const auto label, T value) {
                 if constexpr(std::is_integral_v<T> && sizeof(T) >= sizeof(std::int64_t)) {
-                    ImGui::InputScalar(label, ImGuiDataType_U64, &value);
-                } else if constexpr(std::is_integral_v<T>) {
+                    ImGui::InputScalar(label, ImGuiDataType_S64, &value);
+                } else if constexpr(std::is_integral_v<T> || std::is_same_v<T, osu::Mods>) {
                     auto v = static_cast<int>(value);
                     ImGui::InputInt(label, &v, ImGuiInputTextFlags_ReadOnly);
                 } else if constexpr(std::is_same_v<T, float>) {
                     ImGui::InputFloat(label, &value);
-                } else if constexpr(std::is_same_v<T, bool>) {
-                    ImGui::Checkbox(label, &value);
                 }
             };
             ImGui::BeginDisabled();
@@ -54,9 +43,9 @@ void Replay_loader::replay_window()
             imgui_input("Count Miss", replay.get()->count_miss);
             imgui_input("Score", replay.get()->score);
             imgui_input("Max combo", replay.get()->max_combo);
-            imgui_input("FC", &replay.get()->full_combo);
+            imgui_input("FC", replay.get()->full_combo);
             imgui_input("Mods", replay.get()->mods);
-            imgui_input("Score ID", &replay.get()->score_id);
+            imgui_input("Score ID", replay.get()->score_id);
             ImGui::EndDisabled();
         } else {
             ImGui::Text("Failed loading Replay");
