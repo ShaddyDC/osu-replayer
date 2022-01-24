@@ -15,7 +15,7 @@ public:
     explicit Play_container(Api_manager& api_manager);
     void update(std::chrono::milliseconds time_passed) override;
     void draw() override;
-    Magnum::Vector2i get_size();
+    [[nodiscard]] const Playfield_size_manager& get_size_manager() const;
 
     // Disable moves
     Play_container(const Play_container&) = delete;

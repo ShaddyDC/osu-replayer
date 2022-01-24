@@ -74,7 +74,7 @@ void Play_container::draw()
     beatmap_container.map_window();
     replay_container.replay_window();
 }
-Magnum::Vector2i Play_container::get_size()
+const Playfield_size_manager& Play_container::get_size_manager() const
 {
-    return size_manager.get_size();
+    return size_manager;
 }
