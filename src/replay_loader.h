@@ -12,7 +12,6 @@ public:
     Bindable<std::optional<osu::Replay>> replay;
 
     void replay_window();
-    [[nodiscard]] osu::Replay::Replay_frame frame_at(std::chrono::milliseconds time) const;
 
 private:
     Api_manager& api_manager;

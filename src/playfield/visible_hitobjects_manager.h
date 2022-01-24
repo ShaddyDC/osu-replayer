@@ -3,16 +3,16 @@
 
 #include "../render/drawable.h"
 #include "analysed_beatmap.h"
+#include "analysed_replay.h"
 #include "playback_logic.h"
 #include "playfield_coordinate_provider.h"
 #include "render/circleobject_renderer.h"
 #include "render/slider_renderer.h"
-#include "replay_loader.h"
 #include <optional>
 
 class Visible_objects_manager {
 public:
-    Visible_objects_manager(const Analysed_beatmap& beatmap, const Replay_loader& replay, const Playfield_coordinate_provider& coordinate_provider, const Playback_logic& player);
+    Visible_objects_manager(const Analysed_beatmap& beatmap, const Analysed_replay& replay, const Playfield_coordinate_provider& coordinate_provider, const Playback_logic& player);
 
     void update(std::chrono::milliseconds time_passed);
     void draw(Magnum::GL::Framebuffer& framebuffer);
@@ -23,7 +23,7 @@ private:
     void add_slider(Slider_object& slider, const Beatmap_info_provider& info_provider);
 
     const Analysed_beatmap& beatmap;
-    const Replay_loader& replay;
+    const Analysed_replay& replay;
     Drawables drawables;
     Drawables approach_circles;
 

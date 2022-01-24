@@ -33,6 +33,7 @@ private:
     Replay_loader replay_container;
 
     Analysed_beatmap beatmap;
+    Analysed_replay replay;
 
     Playback_logic player;
     Playfield_size_manager size_manager;

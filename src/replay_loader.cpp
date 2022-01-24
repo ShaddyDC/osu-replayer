@@ -64,13 +64,3 @@ void Replay_loader::replay_window()
     }
     ImGui::End();
 }
-osu::Replay::Replay_frame Replay_loader::frame_at(std::chrono::milliseconds time) const
-{
-    if(!replay.get() || !replay.get()->frames || replay.get()->frames->empty())
-        return osu::Replay::Replay_frame{};
-
-    return *std::min_element(replay.get()->frames->cbegin(), replay.get()->frames->cend(),
-                             [time](const auto& a, const auto& b) {
-                                 return std::abs((a.time - time).count()) < std::abs((b.time - time).count());
-                             });
-}
