@@ -144,8 +144,6 @@ void TriangleExample::drawEvent()
 
     ImGui::ShowMetricsWindow();
 
-    ImGui::ShowDemoWindow();
-
     /* Update application cursor */
     _imgui.updateApplicationCursor(*this);
 
