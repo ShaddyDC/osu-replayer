@@ -6,12 +6,12 @@
 
 void Visible_objects_manager::update(std::chrono::milliseconds /*time_passed*/)
 {
-    if(!beatmap.map.get()) return;
+    if(!beatmap.get_beatmap()) return;
 
     drawables.clear();
 
     const auto mods = replay.replay.get() ? replay.replay.get()->mods : osu::Mods{};
-    const Beatmap_info_provider info_provider{*beatmap.map.get(), mods};
+    const Beatmap_info_provider info_provider{*beatmap.get_beatmap(), mods};
 
     auto circles = beatmap.circles_at(player.get_current_time(), info_provider);
     auto sliders = beatmap.sliders_at(player.get_current_time(), info_provider);
@@ -49,7 +49,7 @@ void Visible_objects_manager::update(std::chrono::milliseconds /*time_passed*/)
     }
 }
 
-Visible_objects_manager::Visible_objects_manager(const Beatmap_reader& beatmap, const Replay_loader& replay,
+Visible_objects_manager::Visible_objects_manager(const Analysed_beatmap& beatmap, const Replay_loader& replay,
                                                        const Playfield_coordinate_provider& coordinate_provider, const Playback_logic& player)
     : beatmap{beatmap}, replay{replay}, coordinate_provider{coordinate_provider}, player{player}
 {

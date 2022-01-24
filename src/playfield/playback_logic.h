@@ -1,13 +1,13 @@
 #ifndef SLIDER_DRAW_PLAYBACK_LOGIC_H
 #define SLIDER_DRAW_PLAYBACK_LOGIC_H
 
-#include "beatmap_reader.h"
+#include "analysed_beatmap.h"
 #include "replay_loader.h"
 #include <chrono>
 
 class Playback_logic {
 public:
-    explicit Playback_logic(const Beatmap_reader& data);
+    explicit Playback_logic(const Analysed_beatmap& beatmap);
     void update(std::chrono::milliseconds time_passed);
 
     [[nodiscard]] std::chrono::milliseconds get_current_time() const;
@@ -19,7 +19,7 @@ private:
     bool paused = false;
     float speed = 1.f;
 
-    const Beatmap_reader& data;
+    const Analysed_beatmap& beatmap;
 };
 
 

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "beatmap_reader.h"
 #include "component.h"
 #include "playfield/border.h"
 #include "playfield/playback_logic.h"
@@ -30,6 +31,8 @@ private:
 
     Beatmap_reader beatmap_container;
     Replay_loader replay_container;
+
+    Analysed_beatmap beatmap;
 
     Playback_logic player;
     Playfield_size_manager size_manager;

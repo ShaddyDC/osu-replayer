@@ -60,7 +60,7 @@ set(SOURCES
         src/playfield/playfield_size_manager.cpp
         src/playfield/playfield_coordinate_provider.cpp
         src/playfield/visible_hitobjects_manager.cpp
-
+        src/analysed_beatmap.cpp
         )
 
 

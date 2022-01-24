@@ -16,6 +16,11 @@ public:
     }
     const Type& get() const { return v; }
 
+    template<typename F>
+    void register_callback(F f){
+        callbacks.template emplace_back(f);
+    }
+
 private:
     void callback()
     {
