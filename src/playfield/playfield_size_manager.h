@@ -9,9 +9,10 @@ class Playfield_size_manager : public Component {
 public:
     void update(std::chrono::milliseconds time_passed) override;
 
-    Magnum::Vector2i get_size();
-    Magnum::Vector2i get_top_left();
-    Magnum::Vector2i get_bottom_right();
+    [[nodiscard]] Magnum::Vector2i get_size() const;
+    [[nodiscard]] Magnum::Vector2i get_internal_size() const;
+    [[nodiscard]] Magnum::Vector2i get_top_left() const;
+    [[nodiscard]] Magnum::Vector2i get_bottom_right() const;
 
 private:
     const Magnum::Vector2i field_size = {512, 384};
