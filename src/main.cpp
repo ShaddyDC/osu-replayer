@@ -144,6 +144,8 @@ void TriangleExample::drawEvent()
 
     ImGui::ShowMetricsWindow();
 
+    ImGui::ShowDemoWindow();
+
     /* Update application cursor */
     _imgui.updateApplicationCursor(*this);
 
@@ -175,12 +177,13 @@ void TriangleExample::imgui_docking() const
         auto dock_main = dock_space_id;
 
         ImGuiID left = ImGui::DockBuilderSplitNode(dock_main, ImGuiDir_Left, 0.2, nullptr, &dock_main);
+        ImGuiID left_bot = ImGui::DockBuilderSplitNode(left, ImGuiDir_Down, 0.3, nullptr, &left);
         ImGuiID bottom = ImGui::DockBuilderSplitNode(dock_main, ImGuiDir_Down, 0.2, nullptr, &dock_main);
 
         ImGui::DockBuilderDockWindow("Playfield", dock_main);
         ImGui::DockBuilderDockWindow("Controls", bottom);
         ImGui::DockBuilderDockWindow("Beatmap", left);
-        ImGui::DockBuilderDockWindow("Load Map", left);
+        ImGui::DockBuilderDockWindow("Load Map", left_bot);
         ImGui::DockBuilderDockWindow("Replay", left);
         ImGui::DockBuilderDockWindow("config", left);
         ImGui::DockBuilderDockWindow("Debug", left);
