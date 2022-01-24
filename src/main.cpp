@@ -1,9 +1,6 @@
-#include <Magnum/GL/Buffer.h>
 #include <Magnum/GL/DefaultFramebuffer.h>
-#include <Magnum/GL/Mesh.h>
 #include <Magnum/GL/Renderer.h>
 #include <Magnum/ImGuiIntegration/Context.hpp>
-#include <Magnum/Math/Color.h>
 #include <Magnum/Mesh.h>
 #include <Magnum/Shaders/VertexColorGL.h>
 #ifndef CORRADE_TARGET_EMSCRIPTEN
@@ -13,17 +10,16 @@
 #include <Magnum/Platform/Sdl2Application.h>
 #endif
 
-#include "config_manager.h"
-#include "play_container.h"
-#include "render/coordinate_converter.h"
-
-#include <Corrade/Utility/Arguments.h>
-#include <Magnum/Timeline.h>
-
 #include "api_manager.h"
 #include "component.h"
+#include "config_manager.h"
 #include "notification_manager.h"
+#include "play_container.h"
+#include "render/coordinate_converter.h"
 #include "version.h"
+#include <Corrade/Utility/Arguments.h>
+#include <Magnum/Timeline.h>
+#include <imgui_internal.h>
 
 using namespace Magnum;
 using namespace Math::Literals;
@@ -49,16 +45,15 @@ public:
     void textInputEvent(TextInputEvent& event) override;
 
 private:
-    Container components;
-    Coordinate_holder coordinate_holder;
+    void setup_imgui();
+    void imgui_docking() const;
 
     Shaders::VertexColorGL2D _shader;
-
     ImGuiIntegration::Context _imgui{NoCreate};
-
     Magnum::Timeline timer;
 
-    Magnum::GL::Texture2D playtext;
+    Container components;
+    Coordinate_holder coordinate_holder;
 
     Config_manager* config_manager = nullptr;
     std::unique_ptr<Api_manager> api_manager = nullptr;
@@ -82,7 +77,7 @@ TriangleExample::TriangleExample(const Arguments& arguments) : Platform::Applica
 
     config_manager = dynamic_cast<Config_manager*>(components.emplace_back(std::make_unique<Config_manager>()).get());
 
-    config_manager->update_api_key(args.value("apikey")); // TODO: This isn't clean
+    config_manager->update_api_key(args.value("apikey"));// TODO: This isn't clean
 
     api_manager = std::make_unique<Api_manager>(config_manager->config.api_key);
 
@@ -91,8 +86,22 @@ TriangleExample::TriangleExample(const Arguments& arguments) : Platform::Applica
 
     coordinate_holder.set_resolution(play_container->get_size_manager().get_internal_size());
 
+    setup_imgui();
+
+#if !defined(MAGNUM_TARGET_WEBGL)
+/* Have some sane speed, please */
+// setMinimalLoopPeriod(16);
+#endif
+
+    timer.start();
+}
+void TriangleExample::setup_imgui()
+{
     _imgui = ImGuiIntegration::Context(Vector2{windowSize()} / dpiScaling(),
                                        windowSize(), framebufferSize());
+
+    ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+    ImGui::GetIO().ConfigWindowsResizeFromEdges = true;
 
     /* Set up proper blending to be used by ImGui. There's a great chance
        you'll need this exact behavior for the rest of your scene. If not, set
@@ -105,13 +114,6 @@ TriangleExample::TriangleExample(const Arguments& arguments) : Platform::Applica
     GL::Renderer::enable(GL::Renderer::Feature::ScissorTest);
     GL::Renderer::disable(GL::Renderer::Feature::FaceCulling);
     GL::Renderer::disable(GL::Renderer::Feature::DepthTest);
-
-#if !defined(MAGNUM_TARGET_WEBGL)
-/* Have some sane speed, please */
-// setMinimalLoopPeriod(16);
-#endif
-
-    timer.start();
 }
 
 void TriangleExample::drawEvent()
@@ -119,6 +121,8 @@ void TriangleExample::drawEvent()
     GL::defaultFramebuffer.clear(GL::FramebufferClear::Color);
 
     _imgui.newFrame();
+
+    imgui_docking();
 
     constexpr const auto ms_in_s = 1000;
     //Todo: Handle fractions better
@@ -148,6 +152,45 @@ void TriangleExample::drawEvent()
     swapBuffers();
     redraw();
     timer.nextFrame();
+}
+void TriangleExample::imgui_docking() const
+{
+    ImGuiViewport* viewport = ImGui::GetMainViewport();
+    ImGui::SetNextWindowPos(viewport->Pos);
+    ImGui::SetNextWindowSize(viewport->Size);
+    ImGui::SetNextWindowViewport(viewport->ID);
+
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+
+    ImGui::Begin("InvisibleWindow", nullptr, ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus | ImGuiWindowFlags_NoBackground);
+    ImGui::PopStyleVar(3);
+
+    ImGuiID dock_space_id = ImGui::GetID("InvisibleWindowDockSpace");
+
+    if(!ImGui::DockBuilderGetNode(dock_space_id)) {
+        ImGui::DockBuilderAddNode(dock_space_id);
+
+        auto dock_main = dock_space_id;
+
+        ImGuiID left = ImGui::DockBuilderSplitNode(dock_main, ImGuiDir_Left, 0.2, nullptr, &dock_main);
+        ImGuiID bottom = ImGui::DockBuilderSplitNode(dock_main, ImGuiDir_Down, 0.2, nullptr, &dock_main);
+
+        ImGui::DockBuilderDockWindow("Playfield", dock_main);
+        ImGui::DockBuilderDockWindow("Controls", bottom);
+        ImGui::DockBuilderDockWindow("Beatmap", left);
+        ImGui::DockBuilderDockWindow("Load Map", left);
+        ImGui::DockBuilderDockWindow("Replay", left);
+        ImGui::DockBuilderDockWindow("config", left);
+        ImGui::DockBuilderDockWindow("Debug", left);
+        ImGui::DockBuilderDockWindow("Dear ImGui Metrics/Debugger", left);
+
+        ImGui::DockBuilderFinish(dock_space_id);
+    }
+
+    ImGui::DockSpace(dock_space_id, ImVec2(0, 0), ImGuiDockNodeFlags_PassthruCentralNode);
+    ImGui::End();
 }
 
 void TriangleExample::viewportEvent(ViewportEvent& event)
