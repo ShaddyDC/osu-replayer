@@ -62,8 +62,6 @@ std::optional<std::string> Api_manager::api_request_impl(std::string_view endpoi
 
 std::optional<std::string> Api_manager::api_request_impl(std::string_view endpoint, int& status)
 {
-    Corrade::Utility::Debug() << "Trying to load " << api_base_url << endpoint.data();
-
     httplib::Client client{api_base_url};
     httplib::Headers headers{
             {"api-key", api_key.c_str()}};
@@ -86,6 +84,8 @@ std::optional<std::string> Api_manager::api_request_impl(std::string_view endpoi
 
 std::optional<std::string> Api_manager::api_request(std::string_view endpoint)
 {
+    Corrade::Utility::Debug() << "Trying to load " << api_base_url << endpoint.data();
+
     int status = 0;
     auto res = api_request_impl(endpoint, status);
 
