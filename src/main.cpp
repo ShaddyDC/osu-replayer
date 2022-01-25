@@ -182,6 +182,7 @@ void TriangleExample::imgui_docking() const
         ImGui::DockBuilderDockWindow("Controls", bottom);
         ImGui::DockBuilderDockWindow("Beatmap", left);
         ImGui::DockBuilderDockWindow("Load Map", left_bot);
+        ImGui::DockBuilderDockWindow("Load Replay", left_bot);
         ImGui::DockBuilderDockWindow("Replay", left);
         ImGui::DockBuilderDockWindow("config", left);
         ImGui::DockBuilderDockWindow("Debug", left);

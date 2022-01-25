@@ -15,9 +15,17 @@ Replay_loader::Replay_loader(Api_manager& api_manager)
 
     replay.set(reader.from_string(replay_data));
 }
+
 void Replay_loader::replay_window()
 {
-   if(ImGui::Begin("Replay")) {
+    if(ImGui::Begin("Load Replay")) {
+        ImGui::InputScalar("id", ImGuiDataType_U64, &id);
+        ImGui::SameLine();
+        if(ImGui::Button("Load ID") && id > 0) load_replay(id);
+    }
+    ImGui::End();
+
+    if(ImGui::Begin("Replay")) {
         if(replay.get()) {
             // Handle non-integer types below 64-bit. Fine since this is readonly anyway.
             const auto imgui_input = []<typename T>(const auto label, T value) {
@@ -52,4 +60,18 @@ void Replay_loader::replay_window()
         }
     }
     ImGui::End();
+}
+
+void Replay_loader::load_replay(std::uint64_t score_id)
+{
+    id = score_id;
+    const auto score_string = api_manager.replay(std::to_string(id));
+    if(!score_string) {
+        Corrade::Utility::Debug() << "Failed loading replay";
+        return;
+    }
+    auto reader = osu::Replay_reader{};
+    reader.parse_frames = true;
+
+    replay.set(reader.from_string(*score_string));
 }
