@@ -14,6 +14,8 @@ public:
     explicit Api_manager(const std::string& api_key);
 
     [[nodiscard]] std::optional<std::string> beatmap(std::string_view id);
+    [[nodiscard]] std::optional<std::string> replay(std::string_view id);
+    [[nodiscard]] std::optional<int> beatmap_id(std::string_view hash);
 
     Api_manager(const Api_manager&) = delete;
     Api_manager(Api_manager&&) = delete;

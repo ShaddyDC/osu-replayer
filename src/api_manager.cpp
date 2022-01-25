@@ -2,6 +2,7 @@
 #include "Magnum/Magnum.h"// Needed for MAGNUM_TARGET_WEBGL
 #include "notification_manager.h"
 #include <Corrade/Utility/Debug.h>
+#include <nlohmann/json.hpp>
 
 static constexpr const auto status_success = 200;
 static constexpr const auto status_forbidden = 401;
@@ -97,4 +98,29 @@ std::optional<std::string> Api_manager::api_request(std::string_view endpoint)
     }
 
     return res;
+}
+
+std::optional<int> Api_manager::beatmap_id(std::string_view hash)
+{
+    const auto endpoint = "/api/v1/beatmaps/lookup?checksum=" + std::string{hash};
+    const auto res = api_request(endpoint);
+    if(!res) return std::nullopt;
+
+    auto json = nlohmann::json::parse(*res, nullptr, false);
+    if(json.is_discarded()) {
+        Corrade::Utility::Debug() << "Invalid json" << res->c_str();
+        return std::nullopt;
+    }
+    if(!json["id"].is_number_integer()) {
+        Corrade::Utility::Debug() << "id is not integer"
+                                  << res->c_str();
+        return std::nullopt;
+    }
+    return json["id"].get<int>();
+}
+
+std::optional<std::string> Api_manager::replay(std::string_view id)
+{
+    const auto endpoint = "/api/v1/scorefile/osu/" + std::string{id};
+    return api_request(endpoint);
 }
