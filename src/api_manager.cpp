@@ -19,17 +19,19 @@ std::optional<std::string> Api_manager::beatmap(std::string_view id)
 #if defined(MAGNUM_TARGET_WEBGL)
 #include <emscripten.h>
 
-EM_JS(void, js_api_request, (const char* url, const char* api_key, char** body, int* status), {
+EM_JS(void, js_api_request, (const char* url, const char* api_key, char** body, int* strlen, int* status), {
     return Asyncify.handleAsync(async function() {
         const response = await fetch(UTF8ToString(url), {
             headers: {
                 "api-key": UTF8ToString(api_key)
             }
         });
-        const text = await response.text();
-        const buffer = allocate(intArrayFromString(text, false), 'i8', ALLOC_NORMAL);
+        const bytes = new Uint8Array(await response.arrayBuffer());
+        const buffer = Module._malloc(bytes.byteLength);
+        writeArrayToMemory(bytes, buffer);
 
         setValue(body, buffer, 'i32');
+        setValue(strlen, bytes.byteLength, 'i32');
         setValue(status, response.status, 'i32');
     });
 });
@@ -39,12 +41,13 @@ std::optional<std::string> Api_manager::api_request_impl(std::string_view endpoi
     const auto url = std::string{api_base_url} + std::string{endpoint};
 
     char* text = nullptr;
-    js_api_request(url.c_str(), api_key.c_str(), &text, &status);
+    int strlen = 0;
+    js_api_request(url.c_str(), api_key.c_str(), &text, &strlen, &status);
 
-    Corrade::Utility::Debug() << "web req result" << status << text;
+    Corrade::Utility::Debug() << "web req result" << status << text << strlen;
 
     if(status == status_success) {
-        std::string s{text};
+        std::string s{text, static_cast<std::size_t>(strlen)};
         delete text;
         return s;
     }
