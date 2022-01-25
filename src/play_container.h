@@ -17,6 +17,7 @@ public:
     void update(std::chrono::milliseconds time_passed) override;
     void draw() override;
     [[nodiscard]] const Playfield_size_manager& get_size_manager() const;
+    void set_score(std::uint64_t id);
 
     // Disable moves
     Play_container(const Play_container&) = delete;

@@ -1,6 +1,7 @@
 #include <Magnum/GL/DefaultFramebuffer.h>
 #include <Magnum/GL/Renderer.h>
 #include <Magnum/ImGuiIntegration/Context.hpp>
+#include <Magnum/Magnum.h>
 #include <Magnum/Mesh.h>
 #include <Magnum/Shaders/VertexColorGL.h>
 #ifndef CORRADE_TARGET_EMSCRIPTEN
@@ -19,6 +20,7 @@
 #include "version.h"
 #include <Corrade/Utility/Arguments.h>
 #include <Magnum/Timeline.h>
+#include <charconv>
 #include <imgui_internal.h>
 
 using namespace Magnum;
@@ -58,6 +60,8 @@ private:
     Config_manager* config_manager = nullptr;
     std::unique_ptr<Api_manager> api_manager = nullptr;
     Play_container* play_container = nullptr;
+
+    std::uint64_t score_id_to_load = 0;
 };
 
 TriangleExample::TriangleExample(const Arguments& arguments) : Platform::Application{arguments,
@@ -73,7 +77,7 @@ TriangleExample::TriangleExample(const Arguments& arguments) : Platform::Applica
     Magnum::Debug() << "Built at " << Version::build_time;
 
     Corrade::Utility::Arguments args{"replayer"};
-    args.addOption("apikey").parse(arguments.argc, arguments.argv);
+    args.addOption("apikey").addOption("score").parse(arguments.argc, arguments.argv);
 
     config_manager = dynamic_cast<Config_manager*>(components.emplace_back(std::make_unique<Config_manager>()).get());
 
@@ -93,6 +97,12 @@ TriangleExample::TriangleExample(const Arguments& arguments) : Platform::Applica
 // setMinimalLoopPeriod(16);
 #endif
 
+
+    if(!args.value("score").empty()) {
+        auto s = args.value("score");
+        std::from_chars(s.data(), s.data() + s.size(), score_id_to_load);
+        Corrade::Utility::Debug() << "Loading score fully initialised" << score_id_to_load;
+    }
     timer.start();
 }
 void TriangleExample::setup_imgui()
@@ -127,6 +137,12 @@ void TriangleExample::drawEvent()
     constexpr const auto ms_in_s = 1000;
     //Todo: Handle fractions better
     const auto time_passed = std::chrono::milliseconds{static_cast<int>(timer.previousFrameDuration() * ms_in_s)};
+
+    if(score_id_to_load != 0 && config_manager->is_loaded()){
+        Corrade::Utility::Debug() << "Loading score" << score_id_to_load;
+        play_container->set_score(score_id_to_load);
+        score_id_to_load = 0;
+    }
 
     for(auto& component : components) {
         component->update(time_passed);

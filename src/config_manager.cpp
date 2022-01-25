@@ -30,6 +30,8 @@ const auto config_file = std::filesystem::path{"/data"} / ".replay_viewer.conf";
 
 #include <emscripten.h>
 
+static bool loaded = false;
+
 // Probably shouldn't do this
 // Todo: Improve
 static Config_manager* instance;
@@ -40,6 +42,7 @@ void loaded_callback(void)
     instance->load();
     ImGui::GetIO().IniFilename = "/data/imgui.ini";
     ImGui::LoadIniSettingsFromDisk("/data/imgui.ini");
+    loaded = true;
 }
 }
 
@@ -163,4 +166,12 @@ void Config_manager::update_api_key(std::string api_key)
 void Config_manager::draw()
 {
     config_window();
+}
+bool Config_manager::is_loaded()
+{
+#if defined(MAGNUM_TARGET_WEBGL)
+    return loaded;
+#else
+   return true;
+#endif
 }

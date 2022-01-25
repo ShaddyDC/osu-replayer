@@ -16,6 +16,7 @@ public:
     void draw() override;
 
     void update_api_key(std::string api_key);
+    [[nodiscard]] bool is_loaded();
 
     Config config;
     const char* save_status = nullptr;

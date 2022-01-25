@@ -79,3 +79,8 @@ const Playfield_size_manager& Play_container::get_size_manager() const
 {
     return size_manager;
 }
+
+void Play_container::set_score(std::uint64_t id)
+{
+    replay_container.load_replay(id);
+}
