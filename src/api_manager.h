@@ -13,7 +13,7 @@ class Api_manager {
 public:
     explicit Api_manager(const std::string& api_key);
 
-    std::optional<std::string> beatmap(std::string_view id);
+    [[nodiscard]] std::optional<std::string> beatmap(std::string_view id);
 
     Api_manager(const Api_manager&) = delete;
     Api_manager(Api_manager&&) = delete;
