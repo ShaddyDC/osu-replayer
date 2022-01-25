@@ -62,6 +62,7 @@ set(SOURCES
         src/playfield/visible_hitobjects_manager.cpp
         src/analysed_beatmap.cpp
         src/analysed_replay.cpp
+        src/replay_beatmap_matcher.cpp
         )
 
 

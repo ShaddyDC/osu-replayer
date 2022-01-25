@@ -11,8 +11,9 @@
 #include <render/drawable_slider.h>
 
 Play_container::Play_container(Api_manager& api_manager)
-    : beatmap_container{api_manager}, replay_container{api_manager}, beatmap{beatmap_container.map},
-      replay{replay_container.replay},
+    : beatmap_container{api_manager}, replay_container{api_manager},
+      beatmap{beatmap_container.map}, replay{replay_container.replay},
+      matcher{replay_container.replay, beatmap_container, api_manager},
       player{beatmap},
       coordinate_provider{static_cast<Magnum::Vector2>(size_manager.get_top_left()), replay_container.replay.get()},
       objects_manager{beatmap, replay, coordinate_provider, player}

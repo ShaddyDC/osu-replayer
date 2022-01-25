@@ -7,6 +7,7 @@
 #include "playfield/playfield_coordinate_provider.h"
 #include "playfield/playfield_size_manager.h"
 #include "playfield/visible_hitobjects_manager.h"
+#include "replay_beatmap_matcher.h"
 
 #include <Magnum/GL/Texture.h>
 
@@ -34,6 +35,8 @@ private:
 
     Analysed_beatmap beatmap;
     Analysed_replay replay;
+
+    Replay_beatmap_matcher matcher;
 
     Playback_logic player;
     Playfield_size_manager size_manager;
