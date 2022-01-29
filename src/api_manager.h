@@ -1,7 +1,3 @@
-//
-// Created by space on 23.10.20.
-//
-
 #ifndef SLIDER_DRAW_API_MANAGER_H
 #define SLIDER_DRAW_API_MANAGER_H
 
