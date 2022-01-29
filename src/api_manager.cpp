@@ -7,7 +7,8 @@
 static constexpr const auto status_success = 200;
 static constexpr const auto status_forbidden = 401;
 
-Api_manager::Api_manager(const std::string& api_key) : api_key{api_key}
+Api_manager::Api_manager(const std::string& api_key, Notification_manager& notification_manager)
+    : api_key{api_key}, notification_manager{notification_manager}
 {
 }
 
@@ -92,7 +93,7 @@ std::optional<std::string> Api_manager::api_request(std::string_view endpoint)
 
     if(status == status_forbidden) {
         Corrade::Utility::Debug() << "Resource needs Authentication";
-        Notification_manager{}.add_notification("auth_req",
+        notification_manager.add_notification("auth_req",
                                                 "You need to be authenticated to get this resource.\n"
                                                 "This is because it is not yet stored on the server and requires a user token to access it.\n");
     }

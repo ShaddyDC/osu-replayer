@@ -1,17 +1,22 @@
 #ifndef SLIDER_DRAW_NOTIFICATION_MANAGER_H
 #define SLIDER_DRAW_NOTIFICATION_MANAGER_H
 
-#include <string>
 #include "component.h"
+#include <string>
+#include <vector>
 
 class Notification_manager : public Component {
+    struct Notification {
+        std::string title, content;
+        bool shown = false;
+    };
+
 public:
     void add_notification(std::string title, std::string notification);
-    void draw();
+    void draw() override;
 
 private:
-    static inline std::string stored_title, stored_notification;
-    static inline unsigned int id;
+    std::vector<Notification> notifications;
 };
 
 

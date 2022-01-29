@@ -83,9 +83,10 @@ TriangleExample::TriangleExample(const Arguments& arguments) : Platform::Applica
 
     config_manager->update_api_key(args.value("apikey"));// TODO: This isn't clean
 
-    api_manager = std::make_unique<Api_manager>(config_manager->config.api_key);
+    auto notification_manager = dynamic_cast<Notification_manager*>(components.emplace_back(std::make_unique<Notification_manager>()).get());
 
-    components.emplace_back(std::make_unique<Notification_manager>());
+    api_manager = std::make_unique<Api_manager>(config_manager->config.api_key, *notification_manager);
+
     play_container = dynamic_cast<Play_container*>(components.emplace_back(std::make_unique<Play_container>(*api_manager)).get());
 
     coordinate_holder.set_resolution(play_container->get_size_manager().get_internal_size());
