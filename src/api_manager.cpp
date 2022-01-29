@@ -94,8 +94,9 @@ std::optional<std::string> Api_manager::api_request(std::string_view endpoint)
     if(status == status_forbidden) {
         Corrade::Utility::Debug() << "Resource needs Authentication";
         notification_manager.add_notification("auth_req",
-                                                "You need to be authenticated to get this resource.\n"
-                                                "This is because it is not yet stored on the server and requires a user token to access it.\n");
+                                              "You need to be authenticated to get this resource.\n"
+                                              "This is because it is not yet stored on the server and requires a user token to access it.\n"
+                                              "Head to https://osuapi.shaddy.dev/ to authenticate, follow the instructions, and choose \"Load in Application\"\n");
     }
 
     return res;
