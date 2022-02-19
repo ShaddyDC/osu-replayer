@@ -104,7 +104,7 @@ std::optional<std::string> Api_manager::api_request(std::string_view endpoint)
 
 std::optional<int> Api_manager::beatmap_id(std::string_view hash)
 {
-    const auto endpoint = "/api/v1/beatmaps/lookup?checksum=" + std::string{hash};
+    const auto endpoint = "/api/v1/beatmaps/lookup/s/" + std::string{hash};
     const auto res = api_request(endpoint);
     if(!res) return std::nullopt;
 
