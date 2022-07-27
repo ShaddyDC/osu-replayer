@@ -14,8 +14,8 @@ Sliderbody_shader::Sliderbody_shader()
     Magnum::GL::Shader vert{Magnum::GL::Version::GLES300, Magnum::GL::Shader::Type::Vertex};
     Magnum::GL::Shader frag{Magnum::GL::Version::GLES300, Magnum::GL::Shader::Type::Fragment};
 
-    vert.addSource(rs.get("sliderbody.vert"));
-    frag.addSource(rs.get("sliderbody.frag"));
+    vert.addSource(rs.getString("sliderbody.vert"));
+    frag.addSource(rs.getString("sliderbody.frag"));
 
     CORRADE_INTERNAL_ASSERT_OUTPUT(Magnum::GL::Shader::compile({vert, frag}));
 

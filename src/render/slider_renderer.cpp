@@ -8,6 +8,7 @@
 #include <Magnum/GL/Texture.h>
 #include <Magnum/GL/TextureFormat.h>
 #include <Magnum/Mesh.h>
+#include <algorithm>
 
 struct Vertex_2d {
     Magnum::Vector2 position;

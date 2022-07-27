@@ -8,7 +8,7 @@ Beatmap_reader::Beatmap_reader(Api_manager& api_manager) : map{std::nullopt}, ap
 {
     const Corrade::Utility::Resource rs{"data"};
 
-    map_string = rs.get("example.osu");
+    map_string = rs.getString("example.osu");
 
     init_map();
 }

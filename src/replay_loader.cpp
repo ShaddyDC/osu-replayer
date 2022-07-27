@@ -2,13 +2,14 @@
 #include <Corrade/Utility/Resource.h>
 #include <imgui.h>
 #include <osu_reader/replay_reader.h>
+#include <Corrade/Containers/StringStlView.h>
 
 Replay_loader::Replay_loader(Api_manager& api_manager)
     : replay{std::nullopt}, api_manager{api_manager}
 {
     const Corrade::Utility::Resource rs{"data"};
 
-    const auto replay_data = rs.get("example.osr");
+    const auto replay_data = rs.getString("example.osr");
 
     auto reader = osu::Replay_reader{};
     reader.parse_frames = true;

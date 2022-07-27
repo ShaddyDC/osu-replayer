@@ -14,8 +14,8 @@ Minimal_shader::Minimal_shader()
     Magnum::GL::Shader vert{Magnum::GL::Version::GLES300, Magnum::GL::Shader::Type::Vertex};
     Magnum::GL::Shader frag{Magnum::GL::Version::GLES300, Magnum::GL::Shader::Type::Fragment};
 
-    vert.addSource(rs.get("minimal.vert"));
-    frag.addSource(rs.get("minimal.frag"));
+    vert.addSource(rs.getString("minimal.vert"));
+    frag.addSource(rs.getString("minimal.frag"));
 
     CORRADE_INTERNAL_ASSERT_OUTPUT(Magnum::GL::Shader::compile({vert, frag}));
 
