@@ -10,3 +10,9 @@
 [submodule "libs/osu_reader"]
 	path = libs/osu_reader
 	url = https://github.com/ShaddyDC/osu_reader
+[submodule "libs/corrade"]
+	path = libs/corrade
+	url = https://github.com/mosra/corrade
+[submodule "libs/magnum"]
+	path = libs/magnum
+	url = https://github.com/mosra/magnum
