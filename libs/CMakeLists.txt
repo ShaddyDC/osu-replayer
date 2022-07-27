@@ -17,7 +17,7 @@ if (CORRADE_TARGET_EMSCRIPTEN)
 endif ()
 
 set(IMGUI_DIR "${CMAKE_CURRENT_SOURCE_DIR}/imgui")
-set(WITH_IMGUI ON CACHE BOOL "" FORCE)
+set(MAGNUM_WITH_IMGUI ON CACHE BOOL "" FORCE)
 add_subdirectory(magnum-integration EXCLUDE_FROM_ALL)
 
 add_library(imgui_stdlib imgui/misc/cpp/imgui_stdlib.cpp)
