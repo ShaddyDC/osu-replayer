@@ -8,16 +8,17 @@
 template<typename Type>
 class Bindable {
 public:
-    explicit Bindable(Type v) : v{v} {}
+    explicit Bindable(Type v) : v{std::move(v)} {}
     void set(Type value)
     {
         v = std::move(value);
         callback();
     }
-    const Type& get() const { return v; }
+    [[nodiscard]] const Type& get() const { return v; }
 
     template<typename F>
-    void register_callback(F f){
+    void register_callback(F f)
+    {
         callbacks.template emplace_back(f);
     }
 

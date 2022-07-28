@@ -8,7 +8,7 @@ void Playback_logic::update(std::chrono::milliseconds time_passed)
 
     // Hitobject stuff
     current_time += duration_cast<std::chrono::milliseconds>(speed * time_passed);//Todo: Handle fractions better
-    if(current_time.count() >= beatmap.time_range().y().count()) current_time = std::chrono::milliseconds::zero();
+    if(current_time.count() > beatmap.time_range().y().count()) current_time = beatmap.time_range().x();
 
     last_time = current_time;
 }

@@ -7,7 +7,7 @@
 
 class Analysed_replay {
 public:
-    Analysed_replay(Bindable<std::optional<osu::Replay>>& replay);
+    explicit Analysed_replay(Bindable<std::optional<osu::Replay>>& replay);
 
     [[nodiscard]] const std::optional<osu::Replay>& get_replay() const;
     [[nodiscard]] osu::Replay::Replay_frame frame_at(std::chrono::milliseconds time) const;
