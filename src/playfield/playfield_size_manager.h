@@ -4,7 +4,7 @@
 #include <Magnum/Magnum.h>
 #include <Magnum/Math/Vector2.h>
 
-#include "component.h"
+#include "util/component.h"
 class Playfield_size_manager : public Component {
 public:
     void update(std::chrono::milliseconds time_passed) override;

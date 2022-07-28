@@ -1,7 +1,7 @@
 #ifndef SLIDER_DRAW_NOTIFICATION_MANAGER_H
 #define SLIDER_DRAW_NOTIFICATION_MANAGER_H
 
-#include "component.h"
+#include "util/component.h"
 #include <string>
 #include <vector>
 

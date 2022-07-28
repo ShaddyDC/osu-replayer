@@ -1,8 +1,8 @@
 #include "api_manager.h"
+#include "Corrade/Utility/Debug.h"
 #include "Magnum/Magnum.h"// Needed for MAGNUM_TARGET_WEBGL
+#include "nlohmann/json.hpp"
 #include "notification_manager.h"
-#include <Corrade/Utility/Debug.h>
-#include <nlohmann/json.hpp>
 
 static constexpr const auto status_success = 200;
 static constexpr const auto status_forbidden = 401;

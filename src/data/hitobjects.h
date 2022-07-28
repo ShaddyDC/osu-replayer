@@ -1,8 +1,8 @@
 #pragma once
 
+#include "osu_reader/hitobject.h"
 #include <Magnum/Math/Vector2.h>
 #include <chrono>
-#include <osu_reader/hitobject.h>
 #include <utility>
 
 struct Slider_object {

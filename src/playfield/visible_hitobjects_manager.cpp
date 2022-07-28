@@ -1,5 +1,5 @@
 #include "visible_hitobjects_manager.h"
-#include "beatmap_info_provider.h"
+#include "data/beatmap_info_provider.h"
 #include "osu_reader/beatmap_util.h"
 #include "render/drawable_circle.h"
 #include "render/drawable_slider.h"

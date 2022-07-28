@@ -1,13 +1,13 @@
 #pragma once
 
 #include "beatmap_reader.h"
-#include "component.h"
 #include "playfield/border.h"
 #include "playfield/playback_logic.h"
 #include "playfield/playfield_coordinate_provider.h"
 #include "playfield/playfield_size_manager.h"
 #include "playfield/visible_hitobjects_manager.h"
 #include "replay_beatmap_matcher.h"
+#include "util/component.h"
 
 #include <Magnum/GL/Texture.h>
 

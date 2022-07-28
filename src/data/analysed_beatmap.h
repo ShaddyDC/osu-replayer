@@ -1,10 +1,10 @@
 #ifndef SLIDER_DRAW_ANALYSED_BEATMAP_H
 #define SLIDER_DRAW_ANALYSED_BEATMAP_H
 
-#include "bindable.h"
-#include "hitobjects.h"
 #include "beatmap_info_provider.h"
-#include <osu_reader/beatmap.h>
+#include "hitobjects.h"
+#include "osu_reader/beatmap.h"
+#include "util/bindable.h"
 
 class Analysed_beatmap {
 public:
@@ -21,6 +21,7 @@ public:
     Analysed_beatmap(const Analysed_beatmap&) = delete;
     Analysed_beatmap& operator=(const Analysed_beatmap&) = delete;
     ~Analysed_beatmap() = default;
+
 private:
     void analyse(const Bindable<std::optional<osu::Beatmap>>& map);
 

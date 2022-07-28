@@ -11,12 +11,12 @@
 #include <Magnum/Platform/Sdl2Application.h>
 #endif
 
-#include "api_manager.h"
-#include "component.h"
-#include "config_manager.h"
-#include "notification_manager.h"
-#include "play_container.h"
+#include "data/play_container.h"
+#include "features/api_manager.h"
+#include "features/config_manager.h"
+#include "features/notification_manager.h"
 #include "render/coordinate_converter.h"
+#include "util/component.h"
 #include "version.h"
 #include <Corrade/Utility/Arguments.h>
 #include <Magnum/Timeline.h>

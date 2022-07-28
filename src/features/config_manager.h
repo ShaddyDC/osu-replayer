@@ -1,13 +1,13 @@
 #pragma once
 
+#include "util/component.h"
 #include <string>
-#include "component.h"
 
 struct Config {
     std::string api_key;
 };
 
-class Config_manager : public Component{
+class Config_manager : public Component {
 public:
     Config_manager();
     void load();

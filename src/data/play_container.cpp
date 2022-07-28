@@ -1,15 +1,15 @@
 #include "play_container.h"
 
+#include "Magnum/ImGuiIntegration/Integration.h"
 #include "beatmap_info_provider.h"
 #include "render/drawable_circle.h"
+#include "render/drawable_slider.h"
 #include <Magnum/GL/DefaultFramebuffer.h>
 #include <Magnum/GL/Renderbuffer.h>
 #include <Magnum/GL/RenderbufferFormat.h>
 #include <Magnum/GL/Renderer.h>
 #include <Magnum/GL/TextureFormat.h>
-#include <Magnum/ImGuiIntegration/Integration.h>
 #include <imgui.h>
-#include <render/drawable_slider.h>
 
 Play_container::Play_container(Bindable<std::optional<osu::Beatmap>>& bm, Bindable<std::optional<osu::Replay>>& rp)
     : beatmap{bm}, replay{rp},

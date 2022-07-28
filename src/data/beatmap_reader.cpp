@@ -1,7 +1,7 @@
 #include "beatmap_reader.h"
+#include "osu_reader/beatmap_parser.h"
 #include <Corrade/Utility/Resource.h>
 #include <imgui.h>
-#include <osu_reader/beatmap_parser.h>
 
 
 Beatmap_reader::Beatmap_reader(Api_manager& api_manager) : map{std::nullopt}, api_manager{api_manager}

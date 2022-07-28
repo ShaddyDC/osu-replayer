@@ -1,12 +1,12 @@
 #include "config_manager.h"
 
-#include <Magnum/ImGuiIntegration/Context.hpp>
+#include "Magnum/ImGuiIntegration/Context.hpp"
+#include "nlohmann/json.hpp"
 #include <array>
 #include <cstdlib>
 #include <filesystem>
 #include <fstream>
 #include <misc/cpp/imgui_stdlib.h>
-#include <nlohmann/json.hpp>
 
 #include "version.h"
 
@@ -172,6 +172,6 @@ bool Config_manager::is_loaded()
 #if defined(MAGNUM_TARGET_WEBGL)
     return loaded;
 #else
-   return true;
+    return true;
 #endif
 }

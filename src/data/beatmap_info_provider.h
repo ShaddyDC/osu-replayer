@@ -1,7 +1,7 @@
 #pragma once
 
-#include <osu_reader/beatmap.h>
-#include <osu_reader/replay.h>
+#include "osu_reader/beatmap.h"
+#include "osu_reader/replay.h"
 
 class Beatmap_info_provider {
 public:

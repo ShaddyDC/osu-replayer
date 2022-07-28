@@ -1,9 +1,9 @@
 #ifndef SLIDER_DRAW_ANALYSED_REPLAY_H
 #define SLIDER_DRAW_ANALYSED_REPLAY_H
 
-#include "bindable.h"
+#include "osu_reader/replay.h"
+#include "util/bindable.h"
 #include <optional>
-#include <osu_reader/replay.h>
 
 class Analysed_replay {
 public:

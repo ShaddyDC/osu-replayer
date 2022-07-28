@@ -2,8 +2,8 @@
 #define SLIDER_DRAW_VISIBLE_HITOBJECTS_MANAGER_H
 
 #include "../render/drawable.h"
-#include "analysed_beatmap.h"
-#include "analysed_replay.h"
+#include "data/analysed_beatmap.h"
+#include "data/analysed_replay.h"
 #include "playback_logic.h"
 #include "playfield_coordinate_provider.h"
 #include "render/circleobject_renderer.h"

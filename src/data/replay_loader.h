@@ -1,8 +1,8 @@
 #ifndef SLIDER_DRAW_REPLAY_LOADER_H
 #define SLIDER_DRAW_REPLAY_LOADER_H
 
-#include "api_manager.h"
-#include "bindable.h"
+#include "features/api_manager.h"
+#include "util/bindable.h"
 #include <optional>
 #include <osu_reader/replay.h>
 

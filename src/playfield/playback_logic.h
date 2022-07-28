@@ -1,8 +1,8 @@
 #ifndef SLIDER_DRAW_PLAYBACK_LOGIC_H
 #define SLIDER_DRAW_PLAYBACK_LOGIC_H
 
-#include "analysed_beatmap.h"
-#include "replay_loader.h"
+#include "data/analysed_beatmap.h"
+#include "data/replay_loader.h"
 #include <chrono>
 
 class Playback_logic {

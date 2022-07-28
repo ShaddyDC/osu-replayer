@@ -2,8 +2,8 @@
 #define SLIDER_DRAW_REPLAY_BEATMAP_MATCHER_H
 
 #include "beatmap_reader.h"
-#include "bindable.h"
 #include "replay_loader.h"
+#include "util/bindable.h"
 
 class Replay_beatmap_matcher : public Component {
 public:

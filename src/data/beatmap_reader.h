@@ -1,7 +1,7 @@
 #pragma once
-#include "api_manager.h"
-#include "bindable.h"
-#include <osu_reader/beatmap.h>
+#include "features/api_manager.h"
+#include "osu_reader/beatmap.h"
+#include "util/bindable.h"
 #include <string>
 
 class Beatmap_reader : public Component {
