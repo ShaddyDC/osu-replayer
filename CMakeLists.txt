@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
 
-project(slider_draw LANGUAGES CXX)
+project(osu_replayer LANGUAGES CXX)
 
 list(INSERT CMAKE_MODULE_PATH 0 "${CMAKE_CURRENT_SOURCE_DIR}/modules")
 
@@ -29,9 +29,8 @@ corrade_add_resource(DataResources res/data.conf)
 add_library(data_resources OBJECT ${DataResources})
 target_link_libraries(data_resources Corrade::Utility)
 
-
+# Program as library
 set(SOURCES
-        src/main.cpp
         src/string_helpers.cpp
         src/beatmap_reader.cpp
         src/play_container.cpp
@@ -57,36 +56,20 @@ set(SOURCES
         src/replay_beatmap_matcher.cpp
         )
 
-
-add_executable(slider_draw
+add_library(osu_replayer_lib
         ${SOURCES}
-        ${CMAKE_CURRENT_BINARY_DIR}/version.cpp
+        ${CMAKE_CURRENT_BINARY_DIR}/version.cpp)
 
-        $<TARGET_OBJECTS:shaders_resources>
-        $<TARGET_OBJECTS:data_resources>)
+target_include_directories(osu_replayer_lib PUBLIC src)
 
-# allow inclusion of headers from other folders (version.cpp)
-target_include_directories(slider_draw PRIVATE src)
-
-set_target_properties(slider_draw PROPERTIES
+set_target_properties(osu_replayer_lib PROPERTIES
         CXX_STANDARD 20
         CXX_STANDARD_REQUIRED ON
         CXX_EXTENSIONS OFF
         CORRADE_USE_PEDANTIC_FLAGS ON
         )
 
-if (CORRADE_TARGET_EMSCRIPTEN)
-    set_target_properties(slider_draw PROPERTIES
-            LINK_FLAGS "-lidbfs.js -s EXPORTED_FUNCTIONS='[_main, _loaded_callback]' -s EXPORTED_RUNTIME_METHODS='[ccall]' -s ASYNCIFY=1 -s ASYNCIFY_IMPORTS='[js_api_request]' -s ASYNCIFY_STACK_SIZE=65535"
-            )
-    # -lidbfs.js for dbfs file system
-    # EXPORTED_FUNCTIONS to allow access from js
-    # EXPORTED_RUNTIME_METHODS to allow access from js
-    # ASYNCIFY to allow async js calls
-    # ASYNCIFY_STACK_SIZE to avoid "RuntimeError: unreachable executed" in async code
-endif ()
-
-target_link_libraries(slider_draw PRIVATE
+target_link_libraries(osu_replayer_lib PUBLIC
         Magnum::Application
         Magnum::GL
         Magnum::Magnum
@@ -100,12 +83,26 @@ target_link_libraries(slider_draw PRIVATE
 
 # WebGL doesn't need OpenSSL because of javascript
 if (NOT CORRADE_TARGET_EMSCRIPTEN)
-    target_link_libraries(slider_draw PRIVATE
+    target_link_libraries(osu_replayer_lib PRIVATE
             OpenSSL::SSL
             OpenSSL::Crypto
             httplib::httplib
             )
 endif ()
+
+# Main executable
+add_executable(osu_replayer src/main.cpp
+        $<TARGET_OBJECTS:shaders_resources>
+        $<TARGET_OBJECTS:data_resources>)
+
+set_target_properties(osu_replayer PROPERTIES
+        CXX_STANDARD 20
+        CXX_STANDARD_REQUIRED ON
+        CXX_EXTENSIONS OFF
+        CORRADE_USE_PEDANTIC_FLAGS ON
+        )
+
+target_link_libraries(osu_replayer PRIVATE osu_replayer_lib)
 
 # Include Build Information
 
@@ -131,31 +128,39 @@ string(TIMESTAMP BUILD_TIME "%Y-%m-%d %H:%M:%S")
 # apply variables
 configure_file(src/version.cpp.in ${CMAKE_CURRENT_BINARY_DIR}/version.cpp @ONLY)
 
-
-# For Emscripten copy the boilerplate next to the executable so it can be run
-# directly from the build dir; provide an install target as well
 if (CORRADE_TARGET_EMSCRIPTEN)
-    add_custom_command(TARGET slider_draw POST_BUILD
+    set_target_properties(osu_replayer PROPERTIES
+            LINK_FLAGS "-lidbfs.js -s EXPORTED_FUNCTIONS='[_main, _loaded_callback]' -s EXPORTED_RUNTIME_METHODS='[ccall]' -s ASYNCIFY=1 -s ASYNCIFY_IMPORTS='[js_api_request]' -s ASYNCIFY_STACK_SIZE=65535"
+            )
+    # -lidbfs.js for dbfs file system
+    # EXPORTED_FUNCTIONS to allow access from js
+    # EXPORTED_RUNTIME_METHODS to allow access from js
+    # ASYNCIFY to allow async js calls
+    # ASYNCIFY_STACK_SIZE to avoid "RuntimeError: unreachable executed" in async code
+
+    # For Emscripten copy the boilerplate next to the executable so it can be run
+    # directly from the build dir; provide an install target as well
+    add_custom_command(TARGET osu_replayer POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_if_different
             ${MAGNUM_EMSCRIPTENAPPLICATION_JS}
             ${MAGNUM_WEBAPPLICATION_CSS}
             ${CMAKE_CURRENT_SOURCE_DIR}/src/index.html
-            $<TARGET_FILE_DIR:slider_draw>)
+            $<TARGET_FILE_DIR:osu_replayer>)
 
-    install(TARGETS slider_draw DESTINATION ${MAGNUM_DEPLOY_PREFIX})
+    install(TARGETS osu_replayer DESTINATION ${MAGNUM_DEPLOY_PREFIX})
     install(FILES
             index.html
             ${MAGNUM_EMSCRIPTENAPPLICATION_JS}
             ${MAGNUM_WEBAPPLICATION_CSS}
             DESTINATION ${MAGNUM_DEPLOY_PREFIX})
     install(FILES
-            $<TARGET_FILE_DIR:slider_draw>/slider_draw.js.mem
-            $<TARGET_FILE_DIR:slider_draw>/slider_draw.wasm
+            $<TARGET_FILE_DIR:osu_replayer>/osu_replayer.js.mem
+            $<TARGET_FILE_DIR:osu_replayer>/osu_replayer.wasm
             DESTINATION ${MAGNUM_DEPLOY_PREFIX} OPTIONAL)
 endif ()
 
 # Make the executable a default target to build & run in Visual Studio
-set_property(DIRECTORY ${PROJECT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT slider_draw)
+set_property(DIRECTORY ${PROJECT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT osu_replayer)
 
 set(CMAKE_CXX_CLANG_TIDY clang-tidy)
 add_custom_target(
