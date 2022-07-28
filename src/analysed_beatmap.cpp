@@ -29,6 +29,22 @@ void Analysed_beatmap::analyse(const Bindable<std::optional<osu::Beatmap>>& map)
     } else {
         Corrade::Utility::Debug() << "Not a valid osu mode beatmap";
     }
+
+    std::optional<std::chrono::milliseconds> start = {};
+    std::optional<std::chrono::milliseconds> end = {};
+    if(!circles.empty()) {
+        const auto [min, max] = std::ranges::minmax_element(circles, std::less{}, &Circle_object::time);
+        if(!start || *start > min->time) start = min->time;
+        if(!end || *end < min->time) end = min->time;
+    }
+    if(!sliders.empty()) {
+        const auto min = std::ranges::min_element(sliders, std::less{}, &Slider_object::time);
+        const auto max = std::ranges::max_element(sliders, [](const auto& a, const auto& b) { return a.slider.time + a.slider.duration < b.slider.time + b.slider.duration; });
+        if(!start || *start > min->time) start = min->time;
+        if(!end || *end < max->slider.time + max->slider.duration) end = max->slider.time + max->slider.duration;
+    }
+    using namespace std::chrono_literals;
+    calculated_time_range = {start.value_or(0s) - 5s, end.value_or(0s) + 5s};
 }
 
 std::vector<Circle_object> Analysed_beatmap::circles_at(std::chrono::milliseconds time, const Beatmap_info_provider& info_provider) const
@@ -63,10 +79,7 @@ std::vector<Slider_object> Analysed_beatmap::sliders_at(std::chrono::millisecond
 
 Magnum::Math::Vector2<std::chrono::milliseconds> Analysed_beatmap::time_range() const
 {
-    using namespace std::chrono_literals;
-    const auto start = min(sliders.front().time, circles.front().time);//Todo: Bounds Check
-    const auto end = max(sliders.back().time, circles.back().time);
-    return {start - 5s, end + 5s};
+    return calculated_time_range;
 }
 
 const std::optional<osu::Beatmap>& Analysed_beatmap::get_beatmap() const

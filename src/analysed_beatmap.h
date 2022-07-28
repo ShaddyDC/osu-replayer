@@ -27,6 +27,8 @@ private:
     const std::optional<osu::Beatmap>& beatmap;
     std::vector<Circle_object> circles;
     std::vector<Slider_object> sliders;
+
+    Magnum::Math::Vector2<std::chrono::milliseconds> calculated_time_range;
 };
 
 
