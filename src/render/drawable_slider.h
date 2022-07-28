@@ -3,6 +3,7 @@
 #include "../vector_util.h"
 #include "drawable.h"
 #include "drawable_circle.h"
+#include "hitobjects.h"
 #include "playfield/playfield_coordinate_provider.h"
 #include "slider_renderer.h"
 #include <Magnum/GL/Texture.h>

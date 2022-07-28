@@ -29,9 +29,9 @@ using namespace Math::Literals;
 constexpr const auto default_window_height = 900;
 constexpr const auto default_window_width = 1600;
 
-class TriangleExample : public Platform::Application {
+class OsuReplayer : public Platform::Application {
 public:
-    explicit TriangleExample(const Arguments& arguments);
+    explicit OsuReplayer(const Arguments& arguments);
     void drawEvent() override;
 
 
@@ -50,7 +50,6 @@ private:
     void setup_imgui();
     void imgui_docking() const;
 
-    Shaders::VertexColorGL2D _shader;
     ImGuiIntegration::Context _imgui{NoCreate};
     Magnum::Timeline timer;
 
@@ -64,11 +63,11 @@ private:
     std::uint64_t score_id_to_load = 0;
 };
 
-TriangleExample::TriangleExample(const Arguments& arguments) : Platform::Application{arguments,
-                                                                                     Configuration{}
-                                                                                             .setTitle("Magnum Triangle Example")
-                                                                                             .setSize({default_window_width, default_window_height})
-                                                                                             .setWindowFlags(Configuration::WindowFlag::Resizable)}
+OsuReplayer::OsuReplayer(const Arguments& arguments) : Platform::Application{arguments,
+                                                                             Configuration{}
+                                                                                     .setTitle("Magnum Triangle Example")
+                                                                                     .setSize({default_window_width, default_window_height})
+                                                                                     .setWindowFlags(Configuration::WindowFlag::Resizable)}
 {
     using namespace Math::Literals;
 
@@ -106,7 +105,7 @@ TriangleExample::TriangleExample(const Arguments& arguments) : Platform::Applica
     }
     timer.start();
 }
-void TriangleExample::setup_imgui()
+void OsuReplayer::setup_imgui()
 {
     _imgui = ImGuiIntegration::Context(Vector2{windowSize()} / dpiScaling(),
                                        windowSize(), framebufferSize());
@@ -127,7 +126,7 @@ void TriangleExample::setup_imgui()
     GL::Renderer::disable(GL::Renderer::Feature::DepthTest);
 }
 
-void TriangleExample::drawEvent()
+void OsuReplayer::drawEvent()
 {
     GL::defaultFramebuffer.clear(GL::FramebufferClear::Color);
 
@@ -139,7 +138,7 @@ void TriangleExample::drawEvent()
     //Todo: Handle fractions better
     const auto time_passed = std::chrono::milliseconds{static_cast<int>(timer.previousFrameDuration() * ms_in_s)};
 
-    if(score_id_to_load != 0 && config_manager->is_loaded()){
+    if(score_id_to_load != 0 && config_manager->is_loaded()) {
         Corrade::Utility::Debug() << "Loading score" << score_id_to_load;
         play_container->set_score(score_id_to_load);
         score_id_to_load = 0;
@@ -170,7 +169,7 @@ void TriangleExample::drawEvent()
     redraw();
     timer.nextFrame();
 }
-void TriangleExample::imgui_docking() const
+void OsuReplayer::imgui_docking() const
 {
     ImGuiViewport* viewport = ImGui::GetMainViewport();
     ImGui::SetNextWindowPos(viewport->Pos);
@@ -212,7 +211,7 @@ void TriangleExample::imgui_docking() const
     ImGui::End();
 }
 
-void TriangleExample::viewportEvent(ViewportEvent& event)
+void OsuReplayer::viewportEvent(ViewportEvent& event)
 {
     GL::defaultFramebuffer.setViewport({{}, event.framebufferSize()});
 
@@ -220,32 +219,32 @@ void TriangleExample::viewportEvent(ViewportEvent& event)
                     event.windowSize(), event.framebufferSize());
 }
 
-void TriangleExample::keyPressEvent(KeyEvent& event)
+void OsuReplayer::keyPressEvent(KeyEvent& event)
 {
     if(_imgui.handleKeyPressEvent(event)) return;
 }
 
-void TriangleExample::keyReleaseEvent(KeyEvent& event)
+void OsuReplayer::keyReleaseEvent(KeyEvent& event)
 {
     if(_imgui.handleKeyReleaseEvent(event)) return;
 }
 
-void TriangleExample::mousePressEvent(MouseEvent& event)
+void OsuReplayer::mousePressEvent(MouseEvent& event)
 {
     if(_imgui.handleMousePressEvent(event)) return;
 }
 
-void TriangleExample::mouseReleaseEvent(MouseEvent& event)
+void OsuReplayer::mouseReleaseEvent(MouseEvent& event)
 {
     if(_imgui.handleMouseReleaseEvent(event)) return;
 }
 
-void TriangleExample::mouseMoveEvent(MouseMoveEvent& event)
+void OsuReplayer::mouseMoveEvent(MouseMoveEvent& event)
 {
     if(_imgui.handleMouseMoveEvent(event)) return;
 }
 
-void TriangleExample::mouseScrollEvent(MouseScrollEvent& event)
+void OsuReplayer::mouseScrollEvent(MouseScrollEvent& event)
 {
     if(_imgui.handleMouseScrollEvent(event)) {
         /* Prevent scrolling the page */
@@ -254,9 +253,9 @@ void TriangleExample::mouseScrollEvent(MouseScrollEvent& event)
     }
 }
 
-void TriangleExample::textInputEvent(TextInputEvent& event)
+void OsuReplayer::textInputEvent(TextInputEvent& event)
 {
     if(_imgui.handleTextInputEvent(event)) return;
 }
 
-MAGNUM_APPLICATION_MAIN(TriangleExample)
+MAGNUM_APPLICATION_MAIN(OsuReplayer)
