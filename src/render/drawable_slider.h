@@ -16,7 +16,7 @@ public:
         : renderer{renderer}
     {
         for(auto& point : slider.slider.points) {
-            point = vector_m2o(coordinate_provider.convert_point(vector_o2m(point)));
+            point = vector_m2o(coordinate_provider.osu_to_field(vector_o2m(point)));
         }
         texture = renderer.generate_texture(slider.slider, radius);
 

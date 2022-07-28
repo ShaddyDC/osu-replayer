@@ -12,7 +12,8 @@ public:
 
     void update(std::chrono::milliseconds time_passed);
 
-    [[nodiscard]] Magnum::Vector2 convert_point(Magnum::Vector2 point, bool no_flip = false) const;
+    [[nodiscard]] Magnum::Vector2 osu_to_field(Magnum::Vector2 point, bool no_flip = false) const;
+    [[nodiscard]] Magnum::Vector2 field_to_osu(Magnum::Vector2 point, bool no_flip = false) const;
 
 private:
     Magnum::Vector2 offset;

@@ -28,6 +28,7 @@ public:
 
 private:
     Magnum::GL::Texture2D generate_playfield_texture();
+    void draw_playfield();
 
     Analysed_beatmap beatmap;
     Analysed_replay replay;

@@ -7,6 +7,7 @@
 #include <Magnum/GL/RenderbufferFormat.h>
 #include <Magnum/GL/Renderer.h>
 #include <Magnum/GL/TextureFormat.h>
+#include <Magnum/ImGuiIntegration/Integration.h>
 #include <imgui.h>
 #include <render/drawable_slider.h>
 
@@ -53,14 +54,29 @@ Magnum::GL::Texture2D Play_container::generate_playfield_texture()
     return texture;
 }
 
+void Play_container::draw_playfield()
+{
+    ImGui::BeginChild("playfield", ImVec2(0.f, 0.f), true, ImGuiWindowFlags_NoMove);
+
+    ImVec2 image_size = {static_cast<float>(size_manager.get_size().x()), static_cast<float>(size_manager.get_size().y())};
+    ImVec2 local_origin = {(ImGui::GetWindowSize().x - image_size.x) / 2, (ImGui::GetWindowSize().y - image_size.y) / 2};
+    ImGui::SetCursorPos(local_origin);
+    const auto global_origin = static_cast<Magnum::Vector2>(ImGui::GetCursorScreenPos());
+
+    playfield = generate_playfield_texture();
+    ImGui::Image(static_cast<void*>(&playfield), image_size, {0, 1}, {1, 0});
+
+    if(ImGui::IsItemClicked()) {
+        const auto pos = (static_cast<Magnum::Vector2>(ImGui::GetMousePos()) - global_origin) / size_manager.get_scale();
+        Magnum::Debug() << "click" << pos << coordinate_provider.field_to_osu(pos);
+    }
+    ImGui::EndChild();
+}
+
 void Play_container::draw()
 {
     if(ImGui::Begin("Playfield")) {
-        ImVec2 image_size = {static_cast<float>(size_manager.get_size().x()), static_cast<float>(size_manager.get_size().y())};
-        ImVec2 pos = {(ImGui::GetWindowSize().x - image_size.x) / 2, (ImGui::GetWindowSize().y - image_size.y) / 2};
-        ImGui::SetCursorPos(pos);
-        playfield = generate_playfield_texture();
-        ImGui::Image(static_cast<void*>(&playfield), image_size, {0, 1}, {1, 0});
+        draw_playfield();
     }
     ImGui::End();
 

@@ -35,7 +35,7 @@ void Visible_objects_manager::update(std::chrono::milliseconds /*time_passed*/)
         const auto current_frame = replay.frame_at(player.get_current_time());
 
         auto pos = Magnum::Vector2{current_frame.x, current_frame.y};
-        pos = coordinate_provider.convert_point(pos, true);
+        pos = coordinate_provider.osu_to_field(pos, true);
 
         const auto color = (current_frame.state > 0) ? Magnum::Color4::red() : Magnum::Color4::yellow();
         constexpr const auto ratio_cursor_cs = 5;
@@ -50,7 +50,7 @@ void Visible_objects_manager::update(std::chrono::milliseconds /*time_passed*/)
 }
 
 Visible_objects_manager::Visible_objects_manager(const Analysed_beatmap& beatmap, const Analysed_replay& replay,
-                                                       const Playfield_coordinate_provider& coordinate_provider, const Playback_logic& player)
+                                                 const Playfield_coordinate_provider& coordinate_provider, const Playback_logic& player)
     : beatmap{beatmap}, replay{replay}, coordinate_provider{coordinate_provider}, player{player}
 {
 }
@@ -72,7 +72,7 @@ void Visible_objects_manager::add_approach_circle(Magnum::Vector2 pos, std::chro
 
 void Visible_objects_manager::add_circle(Circle_object& circle, const Beatmap_info_provider& info_provider)
 {
-    const auto position = coordinate_provider.convert_point(circle.position);
+    const auto position = coordinate_provider.osu_to_field(circle.position);
 
     drawables.push_back(std::make_unique<Drawable_circle>(circle_renderer, position, osu::cs_to_osupixel(info_provider.cs()), Circle_draw_options{}));
     if(circle.time > player.get_current_time()) add_approach_circle(position, circle.time, info_provider);
@@ -80,7 +80,7 @@ void Visible_objects_manager::add_circle(Circle_object& circle, const Beatmap_in
 
 void Visible_objects_manager::add_slider(Slider_object& slider, const Beatmap_info_provider& info_provider)
 {
-    if(slider.time > player.get_current_time()) add_approach_circle(coordinate_provider.convert_point(vector_o2m(slider.slider.points.front())), slider.time, info_provider);
+    if(slider.time > player.get_current_time()) add_approach_circle(coordinate_provider.osu_to_field(vector_o2m(slider.slider.points.front())), slider.time, info_provider);
     drawables.push_back(std::make_unique<Drawable_slider>(slider_renderer, circle_renderer, slider, coordinate_provider,
                                                           osu::cs_to_osupixel(info_provider.cs()), player.get_current_time()));
 }
