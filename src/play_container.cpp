@@ -55,11 +55,6 @@ Magnum::GL::Texture2D Play_container::generate_playfield_texture()
     return texture;
 }
 
-Magnum::Vector2 Play_container::to_screen(const Magnum::Vector2 point)
-{
-    return point + static_cast<Magnum::Vector2>(size_manager.get_top_left());
-}
-
 void Play_container::draw()
 {
     if(ImGui::Begin("Playfield")) {

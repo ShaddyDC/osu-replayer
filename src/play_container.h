@@ -29,7 +29,6 @@ public:
 
 private:
     Magnum::GL::Texture2D generate_playfield_texture();
-    Magnum::Vector2 to_screen(Magnum::Vector2 point);
 
     Beatmap_reader beatmap_container;
     Replay_loader replay_container;
