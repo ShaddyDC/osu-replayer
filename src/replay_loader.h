@@ -6,15 +6,14 @@
 #include <optional>
 #include <osu_reader/replay.h>
 
-class Replay_loader {
+class Replay_loader : public Component {
 public:
     explicit Replay_loader(Api_manager& api_manager);
 
+    void draw() override;
     void load_replay(std::uint64_t score_id);
-    void replay_window();
 
     Bindable<std::optional<osu::Replay>> replay;
-
 
 private:
     Api_manager& api_manager;

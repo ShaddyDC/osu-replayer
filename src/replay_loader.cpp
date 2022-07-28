@@ -1,8 +1,8 @@
 #include "replay_loader.h"
+#include <Corrade/Containers/StringStlView.h>
 #include <Corrade/Utility/Resource.h>
 #include <imgui.h>
 #include <osu_reader/replay_reader.h>
-#include <Corrade/Containers/StringStlView.h>
 
 Replay_loader::Replay_loader(Api_manager& api_manager)
     : replay{std::nullopt}, api_manager{api_manager}
@@ -17,7 +17,7 @@ Replay_loader::Replay_loader(Api_manager& api_manager)
     replay.set(reader.from_string(replay_data));
 }
 
-void Replay_loader::replay_window()
+void Replay_loader::draw()
 {
     if(ImGui::Begin("Load Replay")) {
         ImGui::InputScalar("id", ImGuiDataType_U64, &id);

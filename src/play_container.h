@@ -13,11 +13,10 @@
 
 class Play_container : public Component {
 public:
-    explicit Play_container(Api_manager& api_manager);
+    explicit Play_container(Bindable<std::optional<osu::Beatmap>>& beatmap, Bindable<std::optional<osu::Replay>>& replay);
     void update(std::chrono::milliseconds time_passed) override;
     void draw() override;
     [[nodiscard]] const Playfield_size_manager& get_size_manager() const;
-    void set_score(std::uint64_t id);
 
     // Disable moves
     Play_container(const Play_container&) = delete;
@@ -30,13 +29,8 @@ public:
 private:
     Magnum::GL::Texture2D generate_playfield_texture();
 
-    Beatmap_reader beatmap_container;
-    Replay_loader replay_container;
-
     Analysed_beatmap beatmap;
     Analysed_replay replay;
-
-    Replay_beatmap_matcher matcher;
 
     Playback_logic player;
     Playfield_size_manager size_manager;

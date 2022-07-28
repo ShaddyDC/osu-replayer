@@ -58,6 +58,7 @@ private:
 
     Config_manager* config_manager = nullptr;
     std::unique_ptr<Api_manager> api_manager = nullptr;
+    Replay_loader* replay_loader;
     Play_container* play_container = nullptr;
 
     std::uint64_t score_id_to_load = 0;
@@ -86,7 +87,11 @@ OsuReplayer::OsuReplayer(const Arguments& arguments) : Platform::Application{arg
 
     api_manager = std::make_unique<Api_manager>(config_manager->config.api_key, *notification_manager);
 
-    play_container = dynamic_cast<Play_container*>(components.emplace_back(std::make_unique<Play_container>(*api_manager)).get());
+    const auto beatmap_reader = dynamic_cast<Beatmap_reader*>(components.emplace_back(std::make_unique<Beatmap_reader>(*api_manager)).get());
+    replay_loader = dynamic_cast<Replay_loader*>(components.emplace_back(std::make_unique<Replay_loader>(*api_manager)).get());
+    components.emplace_back(std::make_unique<Replay_beatmap_matcher>(replay_loader->replay, *beatmap_reader, *api_manager));
+
+    play_container = dynamic_cast<Play_container*>(components.emplace_back(std::make_unique<Play_container>(beatmap_reader->map, replay_loader->replay)).get());
 
     coordinate_holder.set_resolution(play_container->get_size_manager().get_internal_size());
 
@@ -140,7 +145,7 @@ void OsuReplayer::drawEvent()
 
     if(score_id_to_load != 0 && config_manager->is_loaded()) {
         Corrade::Utility::Debug() << "Loading score" << score_id_to_load;
-        play_container->set_score(score_id_to_load);
+        replay_loader->load_replay(score_id_to_load);
         score_id_to_load = 0;
     }
 

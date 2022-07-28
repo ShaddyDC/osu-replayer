@@ -4,11 +4,11 @@
 #include <osu_reader/beatmap.h>
 #include <string>
 
-class Beatmap_reader {
+class Beatmap_reader : public Component {
 public:
     explicit Beatmap_reader(Api_manager& api_manager);
 
-    void map_window();
+    void draw() override;
     void load_map(int id);
 
     int current_id = 0;

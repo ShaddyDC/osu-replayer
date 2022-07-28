@@ -13,7 +13,7 @@ Beatmap_reader::Beatmap_reader(Api_manager& api_manager) : map{std::nullopt}, ap
     init_map();
 }
 
-void Beatmap_reader::map_window()
+void Beatmap_reader::draw()
 {
     if(ImGui::Begin("Load Map")) {
         ImGui::InputInt("id", &current_id);
@@ -31,8 +31,7 @@ void Beatmap_reader::map_window()
                 if constexpr(std::is_integral_v<T>) {
                     auto v = static_cast<int>(value);
                     ImGui::InputInt(label, &v);
-                }
-                else if constexpr(std::is_same_v<T, float>)
+                } else if constexpr(std::is_same_v<T, float>)
                     ImGui::InputFloat(label, &value);
             };
             ImGui::LabelText("Title", "%s", map.get()->title.c_str());

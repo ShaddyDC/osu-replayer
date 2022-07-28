@@ -10,12 +10,10 @@
 #include <imgui.h>
 #include <render/drawable_slider.h>
 
-Play_container::Play_container(Api_manager& api_manager)
-    : beatmap_container{api_manager}, replay_container{api_manager},
-      beatmap{beatmap_container.map}, replay{replay_container.replay},
-      matcher{replay_container.replay, beatmap_container, api_manager},
+Play_container::Play_container(Bindable<std::optional<osu::Beatmap>>& bm, Bindable<std::optional<osu::Replay>>& rp)
+    : beatmap{bm}, replay{rp},
       player{beatmap},
-      coordinate_provider{static_cast<Magnum::Vector2>(size_manager.get_top_left()), replay_container.replay.get()},
+      coordinate_provider{static_cast<Magnum::Vector2>(size_manager.get_top_left()), rp.get()},
       objects_manager{beatmap, replay, coordinate_provider, player}
 {
 }
@@ -67,15 +65,8 @@ void Play_container::draw()
     ImGui::End();
 
     player.draw();
-    beatmap_container.map_window();
-    replay_container.replay_window();
 }
 const Playfield_size_manager& Play_container::get_size_manager() const
 {
     return size_manager;
-}
-
-void Play_container::set_score(std::uint64_t id)
-{
-    replay_container.load_replay(id);
 }
