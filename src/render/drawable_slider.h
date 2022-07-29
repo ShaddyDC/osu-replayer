@@ -10,16 +10,14 @@
 
 class Drawable_slider : public Drawable {
 public:
-    Drawable_slider(Slider_renderer& renderer, Circleobject_renderer& circle_renderer,
-                    const Slider_object& slider, const Playfield_coordinate_provider& coordinate_provider,
-                    float radius, std::chrono::milliseconds current_time)
+    Drawable_slider(Slider_renderer& renderer, Circleobject_renderer& circle_renderer, const Slider_object& slider, bool is_selected, const Playfield_coordinate_provider& coordinate_provider, float radius, std::chrono::milliseconds current_time)
         : renderer{renderer}
     {
         auto slider_copy = slider;
         for(auto& point : slider_copy.slider.points) {
             point = vector_m2o(coordinate_provider.osu_to_field(vector_o2m(point)));
         }
-        texture = renderer.generate_texture(slider_copy.slider, radius);
+        texture = renderer.generate_texture(slider_copy.slider, radius, is_selected);
 
 
         //        if(slider.time + slider.slider.duration >= current_time)

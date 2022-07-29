@@ -17,7 +17,7 @@ struct Slider_mesh {
 
 class Slider_renderer {
 public:
-    Magnum::GL::Texture2D generate_texture(const osu::Slider& slider, float radius);
+    Magnum::GL::Texture2D generate_texture(const osu::Slider& slider, const float radius, bool is_selected);
     void draw(Magnum::GL::Texture2D& texture, Magnum::GL::Framebuffer& target);
     void draw(Sliderbody_mesh& mesh);
 

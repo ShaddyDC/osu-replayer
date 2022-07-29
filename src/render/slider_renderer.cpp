@@ -1,4 +1,5 @@
 #include "slider_renderer.h"
+#include "drawable_circle.h"
 
 #include <Corrade/Containers/ArrayViewStl.h>
 #include <Magnum/GL/DefaultFramebuffer.h>
@@ -15,9 +16,9 @@ struct Vertex_2d {
     Magnum::Vector2 textureCoordinates;
 };
 
-static inline Magnum::GL::Texture2D create_texture(
-        Slider_renderer& slider_renderer, Circleobject_renderer& circle_renderer, Magnum::GL::Mesh& body, Magnum::GL::Mesh& head)
+static inline Magnum::GL::Texture2D create_texture(Slider_renderer& slider_renderer, Magnum::GL::Mesh& body, Drawable_circle& head)
 {
+
     Magnum::GL::Texture2D texture;
     const auto size = Magnum::GL::defaultFramebuffer.viewport().size();
     Magnum::GL::Renderbuffer depthStencil;
@@ -34,7 +35,7 @@ static inline Magnum::GL::Texture2D create_texture(
 
     Magnum::GL::Renderer::disable(Magnum::GL::Renderer::Feature::Blending);
     Magnum::GL::Renderer::enable(Magnum::GL::Renderer::Feature::DepthTest);
-    circle_renderer.draw(head);
+    head.draw(framebuffer);
     slider_renderer.draw(body);
     Magnum::GL::Renderer::disable(Magnum::GL::Renderer::Feature::DepthTest);
     Magnum::GL::Renderer::enable(Magnum::GL::Renderer::Feature::Blending);
@@ -42,11 +43,13 @@ static inline Magnum::GL::Texture2D create_texture(
     return texture;
 }
 
-Magnum::GL::Texture2D Slider_renderer::generate_texture(const osu::Slider& slider, const float radius)
+Magnum::GL::Texture2D Slider_renderer::generate_texture(const osu::Slider& slider, const float radius, bool is_selected)
 {
+    const auto color = is_selected ? Magnum::Color4::yellow() : Magnum::Color4{1};
+
     std::vector<Magnum::Vector2> points;
     std::transform(slider.points.cbegin(), slider.points.cend(), std::back_inserter(points), [](const auto p) { return Magnum::Vector2{p.x, p.y}; });
-    auto head = circle_renderer.generate_mesh(points.front(), radius);
+    auto head = Drawable_circle{circle_renderer, points.front(), radius, Circle_draw_options{.color = color}};
 
     const auto slider_verts = vertex_generate(points, radius);
 
@@ -61,7 +64,7 @@ Magnum::GL::Texture2D Slider_renderer::generate_texture(const osu::Slider& slide
                              Sliderbody_shader::Side{});
 
 
-    return create_texture(*this, circle_renderer, body, head);
+    return create_texture(*this, body, head);
 }
 
 void Slider_renderer::draw(Magnum::GL::Texture2D& texture, Magnum::GL::Framebuffer& target)

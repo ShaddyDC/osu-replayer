@@ -41,7 +41,7 @@ void Visible_objects_manager::update(std::chrono::milliseconds /*time_passed*/)
             using T = std::decay_t<decltype(object)>;
             if constexpr(std::is_same_v<T, const Slider_object*>) {
                 if(std::ranges::filter_view(object->slider.points, point_in_range)) {// TODO Handle large point distance
-                    selection = object;
+                    selection = object;                                              // TODO Invalidate selection value when beatmap changes
                     click_handled = true;
                     return false;
                 }
@@ -65,13 +65,11 @@ void Visible_objects_manager::update(std::chrono::milliseconds /*time_passed*/)
         const auto is_selected = selection && std::holds_alternative<T>(*selection) && object == std::get<T>(*selection);
 
         if constexpr(std::is_same_v<T, const Slider_object*>) {
-            if(!is_selected) {
-                add_slider(*object, info_provider);
-            }
+            add_slider(*object, info_provider, is_selected);
+
         } else if constexpr(std::is_same_v<T, const Circle_object*>) {
-            if(!is_selected) {
-                add_circle(*object, info_provider);
-            }
+            add_circle(*object, info_provider, is_selected);
+
         } else {
             throw std::logic_error{"Invalid type"};
         }
@@ -124,17 +122,19 @@ void Visible_objects_manager::add_approach_circle(Magnum::Vector2 pos, std::chro
     approach_circles.push_back(std::make_unique<Drawable_circle>(circle_renderer, pos, radius, Circle_draw_options{.circle_center = Circleobject_shader::hollow}));
 }
 
-void Visible_objects_manager::add_circle(const Circle_object& circle, const Beatmap_info_provider& info_provider)
+void Visible_objects_manager::add_circle(const Circle_object& circle, const Beatmap_info_provider& info_provider, bool is_selected)
 {
     const auto position = coordinate_provider.osu_to_field(circle.position);
 
-    drawables.push_back(std::make_unique<Drawable_circle>(circle_renderer, position, osu::cs_to_osupixel(info_provider.cs()), Circle_draw_options{}));
+    const auto color = is_selected ? Magnum::Color4::yellow() : Magnum::Color4{1};
+
+    drawables.push_back(std::make_unique<Drawable_circle>(circle_renderer, position, osu::cs_to_osupixel(info_provider.cs()), Circle_draw_options{.color = color}));
     if(circle.time > player.get_current_time()) add_approach_circle(position, circle.time, info_provider);
 }
 
-void Visible_objects_manager::add_slider(const Slider_object& slider, const Beatmap_info_provider& info_provider)
+void Visible_objects_manager::add_slider(const Slider_object& slider, const Beatmap_info_provider& info_provider, bool is_selected)
 {
     if(slider.time > player.get_current_time()) add_approach_circle(coordinate_provider.osu_to_field(vector_o2m(slider.slider.points.front())), slider.time, info_provider);
-    drawables.push_back(std::make_unique<Drawable_slider>(slider_renderer, circle_renderer, slider, coordinate_provider,
+    drawables.push_back(std::make_unique<Drawable_slider>(slider_renderer, circle_renderer, slider, is_selected, coordinate_provider,
                                                           osu::cs_to_osupixel(info_provider.cs()), player.get_current_time()));
 }

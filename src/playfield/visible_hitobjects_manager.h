@@ -22,8 +22,8 @@ public:
 
 private:
     void add_approach_circle(Magnum::Vector2 pos, std::chrono::milliseconds time, const Beatmap_info_provider& info_provider);
-    void add_circle(const Circle_object& circle, const Beatmap_info_provider& info_provider);
-    void add_slider(const Slider_object& slider, const Beatmap_info_provider& info_provider);
+    void add_circle(const Circle_object& circle, const Beatmap_info_provider& info_provider, bool is_selected);
+    void add_slider(const Slider_object& slider, const Beatmap_info_provider& info_provider, bool is_selected);
 
     const Analysed_beatmap& beatmap;
     const Analysed_replay& replay;
