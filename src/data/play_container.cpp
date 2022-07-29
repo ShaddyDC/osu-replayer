@@ -15,7 +15,7 @@ Play_container::Play_container(Bindable<std::optional<osu::Beatmap>>& bm, Bindab
     : beatmap{bm}, replay{rp},
       player{beatmap},
       coordinate_provider{static_cast<Magnum::Vector2>(size_manager.get_top_left()), rp.get()},
-      objects_manager{beatmap, replay, coordinate_provider, player}
+      objects_manager{beatmap, replay, coordinate_provider, player, mouse_provider}
 {
 }
 
@@ -61,15 +61,17 @@ void Play_container::draw_playfield()
     ImVec2 image_size = {static_cast<float>(size_manager.get_size().x()), static_cast<float>(size_manager.get_size().y())};
     ImVec2 local_origin = {(ImGui::GetWindowSize().x - image_size.x) / 2, (ImGui::GetWindowSize().y - image_size.y) / 2};
     ImGui::SetCursorPos(local_origin);
+
     const auto global_origin = static_cast<Magnum::Vector2>(ImGui::GetCursorScreenPos());
+    const auto local_mouse = static_cast<Magnum::Vector2>(ImGui::GetMousePos()) - global_origin;
+    const auto local_mouse_osu = coordinate_provider.field_to_osu(local_mouse / size_manager.get_scale());
+    mouse_provider.set_coordinates(vector_m2o(local_mouse_osu));
+    mouse_provider.set_was_clicked(ImGui::IsMouseClicked(ImGuiMouseButton_Left));
+    mouse_provider.set_is_down(ImGui::IsMouseDown(ImGuiMouseButton_Left));
 
     playfield = generate_playfield_texture();
     ImGui::Image(static_cast<void*>(&playfield), image_size, {0, 1}, {1, 0});
 
-    if(ImGui::IsItemClicked()) {
-        const auto pos = (static_cast<Magnum::Vector2>(ImGui::GetMousePos()) - global_origin) / size_manager.get_scale();
-        Magnum::Debug() << "click" << pos << coordinate_provider.field_to_osu(pos);
-    }
     ImGui::EndChild();
 }
 

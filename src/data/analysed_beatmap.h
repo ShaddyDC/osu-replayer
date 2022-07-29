@@ -10,8 +10,8 @@ class Analysed_beatmap {
 public:
     explicit Analysed_beatmap(Bindable<std::optional<osu::Beatmap>>& beatmap);
 
-    [[nodiscard]] std::vector<Circle_object> circles_at(std::chrono::milliseconds time, const Beatmap_info_provider& info_provider) const;
-    [[nodiscard]] std::vector<Slider_object> sliders_at(std::chrono::milliseconds time, const Beatmap_info_provider& info_provider) const;
+    [[nodiscard]] std::vector<const Circle_object*> circles_at(std::chrono::milliseconds time, const Beatmap_info_provider& info_provider) const;
+    [[nodiscard]] std::vector<const Slider_object*> sliders_at(std::chrono::milliseconds time, const Beatmap_info_provider& info_provider) const;
     [[nodiscard]] Magnum::Math::Vector2<std::chrono::milliseconds> time_range() const;
     [[nodiscard]] const std::optional<osu::Beatmap>& get_beatmap() const;
 

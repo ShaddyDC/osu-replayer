@@ -2,6 +2,7 @@
 
 #include "beatmap_reader.h"
 #include "playfield/border.h"
+#include "playfield/mouse_provider.h"
 #include "playfield/playback_logic.h"
 #include "playfield/playfield_coordinate_provider.h"
 #include "playfield/playfield_size_manager.h"
@@ -36,6 +37,7 @@ private:
     Playback_logic player;
     Playfield_size_manager size_manager;
     Playfield_coordinate_provider coordinate_provider;
+    Mouse_provider mouse_provider;
 
     Visible_objects_manager objects_manager;
 

@@ -31,11 +31,11 @@ target_link_libraries(data_resources Corrade::Utility)
 
 # Program as library
 set(SOURCES
-        src/string_helpers.cpp
-        src/beatmap_reader.cpp
-        src/play_container.cpp
+        src/util/string_helpers.cpp
+        src/data/beatmap_reader.cpp
+        src/data/play_container.cpp
         src/render/vertex_generate.cpp
-        src/api_manager.cpp
+        src/features/api_manager.cpp
         src/render/shaders/sliderbody_shader.cpp
         src/render/shaders/circleobject_shader.cpp
         src/render/shaders/minimal_shader.cpp
@@ -43,17 +43,18 @@ set(SOURCES
         src/render/coordinate_converter.cpp
         src/render/slider_renderer.cpp
         src/render/line_renderer.cpp
-        src/config_manager.cpp
-        src/replay_loader.cpp
-        src/notification_manager.cpp
+        src/features/config_manager.cpp
+        src/data/replay_loader.cpp
+        src/features/notification_manager.cpp
         src/playfield/border.cpp
         src/playfield/playback_logic.cpp
         src/playfield/playfield_size_manager.cpp
         src/playfield/playfield_coordinate_provider.cpp
         src/playfield/visible_hitobjects_manager.cpp
-        src/analysed_beatmap.cpp
-        src/analysed_replay.cpp
-        src/replay_beatmap_matcher.cpp
+        src/data/analysed_beatmap.cpp
+        src/data/analysed_replay.cpp
+        src/data/replay_beatmap_matcher.cpp
+        src/playfield/mouse_provider.cpp
         )
 
 add_library(osu_replayer_lib

@@ -2,6 +2,7 @@
 #include "osu_reader/beatmap_util.h"
 #include <Magnum/Magnum.h>
 #include <algorithm>
+#include <ranges>
 
 Analysed_beatmap::Analysed_beatmap(Bindable<std::optional<osu::Beatmap>>& beatmap)
     : beatmap{beatmap.get()}
@@ -47,9 +48,9 @@ void Analysed_beatmap::analyse(const Bindable<std::optional<osu::Beatmap>>& map)
     calculated_time_range = {start.value_or(0s) - 5s, end.value_or(0s) + 5s};
 }
 
-std::vector<Circle_object> Analysed_beatmap::circles_at(std::chrono::milliseconds time, const Beatmap_info_provider& info_provider) const
+std::vector<const Circle_object*> Analysed_beatmap::circles_at(std::chrono::milliseconds time, const Beatmap_info_provider& info_provider) const
 {
-    std::vector<Circle_object> ret;
+    std::vector<const Circle_object*> ret;
 
     const auto early_window = std::chrono::milliseconds{static_cast<int>(osu::ar_to_ms(info_provider.ar()))};
     const auto late_window = std::chrono::milliseconds{static_cast<int>(osu::od_to_ms300(info_provider.od()))};
@@ -58,13 +59,15 @@ std::vector<Circle_object> Analysed_beatmap::circles_at(std::chrono::millisecond
         return (obj.time - early_window).count() < time.count() && (obj.time + late_window).count() > time.count();
     };
 
-    std::copy_if(circles.cbegin(), circles.cend(), std::back_inserter(ret), in_time);
+    std::ranges::copy(circles | std::views::filter(in_time) | std::views::transform([](const auto& o) { return &o; }),
+                      std::back_inserter(ret));
+
     return ret;
 }
 
-std::vector<Slider_object> Analysed_beatmap::sliders_at(std::chrono::milliseconds time, const Beatmap_info_provider& info_provider) const
+std::vector<const Slider_object*> Analysed_beatmap::sliders_at(std::chrono::milliseconds time, const Beatmap_info_provider& info_provider) const
 {
-    std::vector<Slider_object> ret;
+    std::vector<const Slider_object*> ret;
 
     const auto early_window = std::chrono::milliseconds{static_cast<int>(osu::ar_to_ms(info_provider.ar()))};
     const auto late_window = std::chrono::milliseconds{static_cast<int>(osu::od_to_ms300(info_provider.od()))};
@@ -73,7 +76,9 @@ std::vector<Slider_object> Analysed_beatmap::sliders_at(std::chrono::millisecond
         return (obj.time - early_window).count() < time.count() && (obj.time + obj.slider.duration + late_window).count() > time.count();
     };
 
-    std::copy_if(sliders.cbegin(), sliders.cend(), std::back_inserter(ret), in_time);
+    std::ranges::copy(sliders | std::views::filter(in_time) | std::views::transform([](const auto& o) { return &o; }),
+                      std::back_inserter(ret));
+
     return ret;
 }
 
