@@ -62,6 +62,13 @@ public:
                 }
             }
         }
+
+        if(is_selected) {
+            const auto point_radius = radius / 10;
+            for(const auto& p : slider_copy.slider.points) {
+                drawables.push_back(std::make_unique<Drawable_circle>(circle_renderer, vector_o2m(p), point_radius, Circle_draw_options{.color = Magnum::Color4::red(), .circle_center = Circleobject_shader::filled}));
+            }
+        }
     }
 
     void draw(Magnum::GL::Framebuffer& target) override

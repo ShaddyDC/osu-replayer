@@ -14,7 +14,7 @@
 
 class Visible_objects_manager {
 public:
-    Visible_objects_manager(const Analysed_beatmap& beatmap, const Analysed_replay& replay, const Playfield_coordinate_provider& coordinate_provider, const Playback_logic& player,
+    Visible_objects_manager(Analysed_beatmap& beatmap, const Analysed_replay& replay, const Playfield_coordinate_provider& coordinate_provider, const Playback_logic& player,
                             const Mouse_provider& mouse_provider);
 
     void update(std::chrono::milliseconds time_passed);
@@ -25,7 +25,7 @@ private:
     void add_circle(const Circle_object& circle, const Beatmap_info_provider& info_provider, bool is_selected);
     void add_slider(const Slider_object& slider, const Beatmap_info_provider& info_provider, bool is_selected);
 
-    const Analysed_beatmap& beatmap;
+    Analysed_beatmap& beatmap;
     const Analysed_replay& replay;
     Drawables drawables;
     Drawables approach_circles;
@@ -38,7 +38,7 @@ private:
     const Mouse_provider& mouse_provider;
 
     bool click_handled = false;
-    std::optional<std::variant<const Circle_object*, const Slider_object*>> selection;
+    std::optional<std::variant<Circle_object*, Slider_object*>> selection;
 };
 
 

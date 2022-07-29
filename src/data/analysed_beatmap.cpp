@@ -48,9 +48,9 @@ void Analysed_beatmap::analyse(const Bindable<std::optional<osu::Beatmap>>& map)
     calculated_time_range = {start.value_or(0s) - 5s, end.value_or(0s) + 5s};
 }
 
-std::vector<const Circle_object*> Analysed_beatmap::circles_at(std::chrono::milliseconds time, const Beatmap_info_provider& info_provider) const
+std::vector<Circle_object*> Analysed_beatmap::circles_at(std::chrono::milliseconds time, const Beatmap_info_provider& info_provider)
 {
-    std::vector<const Circle_object*> ret;
+    std::vector<Circle_object*> ret;
 
     const auto early_window = std::chrono::milliseconds{static_cast<int>(osu::ar_to_ms(info_provider.ar()))};
     const auto late_window = std::chrono::milliseconds{static_cast<int>(osu::od_to_ms300(info_provider.od()))};
@@ -59,15 +59,15 @@ std::vector<const Circle_object*> Analysed_beatmap::circles_at(std::chrono::mill
         return (obj.time - early_window).count() < time.count() && (obj.time + late_window).count() > time.count();
     };
 
-    std::ranges::copy(circles | std::views::filter(in_time) | std::views::transform([](const auto& o) { return &o; }),
+    std::ranges::copy(circles | std::views::filter(in_time) | std::views::transform([](auto& o) { return &o; }),
                       std::back_inserter(ret));
 
     return ret;
 }
 
-std::vector<const Slider_object*> Analysed_beatmap::sliders_at(std::chrono::milliseconds time, const Beatmap_info_provider& info_provider) const
+std::vector<Slider_object*> Analysed_beatmap::sliders_at(std::chrono::milliseconds time, const Beatmap_info_provider& info_provider)
 {
-    std::vector<const Slider_object*> ret;
+    std::vector<Slider_object*> ret;
 
     const auto early_window = std::chrono::milliseconds{static_cast<int>(osu::ar_to_ms(info_provider.ar()))};
     const auto late_window = std::chrono::milliseconds{static_cast<int>(osu::od_to_ms300(info_provider.od()))};
@@ -76,7 +76,7 @@ std::vector<const Slider_object*> Analysed_beatmap::sliders_at(std::chrono::mill
         return (obj.time - early_window).count() < time.count() && (obj.time + obj.slider.duration + late_window).count() > time.count();
     };
 
-    std::ranges::copy(sliders | std::views::filter(in_time) | std::views::transform([](const auto& o) { return &o; }),
+    std::ranges::copy(sliders | std::views::filter(in_time) | std::views::transform([](auto& o) { return &o; }),
                       std::back_inserter(ret));
 
     return ret;

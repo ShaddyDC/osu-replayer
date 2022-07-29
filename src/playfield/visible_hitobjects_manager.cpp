@@ -3,10 +3,11 @@
 #include "osu_reader/beatmap_util.h"
 #include "render/drawable_circle.h"
 #include "render/drawable_slider.h"
+#include <algorithm>
 #include <ranges>
 
 template<class Visitor>
-static void iterate_hitobjects(const std::vector<const Circle_object*>& circles, const std::vector<const Slider_object*>& sliders, Visitor&& f)
+static void iterate_hitobjects(const std::vector<Circle_object*>& circles, const std::vector<Slider_object*>& sliders, Visitor&& f)
 {
     auto circles_it = circles.begin();
     auto sliders_it = sliders.begin();
@@ -19,6 +20,21 @@ static void iterate_hitobjects(const std::vector<const Circle_object*>& circles,
             ++circles_it;
         }
     }
+}
+
+static void move_slider(Slider_object& slider, const osu::Vector2 pos)
+{
+    if(slider.slider.points.empty()) return;
+
+    auto p = std::ranges::min_element(slider.slider.points, [&pos](const auto& a, const auto& b) { return length_squared(pos - a) < length_squared(pos - b); });
+    *p = pos;
+
+    slider.slider.distances.clear();
+    slider.slider.distances.reserve(slider.slider.points.size());
+    slider.slider.distances.push_back(0.f);
+
+    for(auto it = slider.slider.points.cbegin() + 1; it != slider.slider.points.cend(); ++it)
+        slider.slider.distances.push_back(distance(*it, *(it - 1)));
 }
 
 void Visible_objects_manager::update(std::chrono::milliseconds /*time_passed*/)
@@ -39,13 +55,15 @@ void Visible_objects_manager::update(std::chrono::milliseconds /*time_passed*/)
         const auto point_in_range = [&](const osu::Vector2& p) { return distance(p, mouse_provider.get_coordinates()) < osu::cs_to_osupixel(info_provider.cs()); };
         iterate_hitobjects(circles, sliders, [&](const auto& object) {
             using T = std::decay_t<decltype(object)>;
-            if constexpr(std::is_same_v<T, const Slider_object*>) {
+            const auto already_selected = selection && std::holds_alternative<T>(*selection) && object == std::get<T>(*selection);
+
+            if constexpr(std::is_same_v<T, Slider_object*>) {
                 if(std::ranges::filter_view(object->slider.points, point_in_range)) {// TODO Handle large point distance
                     selection = object;                                              // TODO Invalidate selection value when beatmap changes
-                    click_handled = true;
+                    click_handled = !already_selected;                               // Allow interacting with selection
                     return false;
                 }
-            } else if constexpr(std::is_same_v<T, const Circle_object*>) {
+            } else if constexpr(std::is_same_v<T, Circle_object*>) {
                 if(point_in_range(vector_m2o(object->position))) {
                     selection = object;
                     click_handled = true;
@@ -59,17 +77,18 @@ void Visible_objects_manager::update(std::chrono::milliseconds /*time_passed*/)
     }
 
     // Create drawings in reverse order and reverse
-    iterate_hitobjects(circles, sliders, [&](const auto& object) {
+    iterate_hitobjects(circles, sliders, [&](auto& object) {
         using T = std::decay_t<decltype(object)>;
 
         const auto is_selected = selection && std::holds_alternative<T>(*selection) && object == std::get<T>(*selection);
 
-        if constexpr(std::is_same_v<T, const Slider_object*>) {
+        if constexpr(std::is_same_v<T, Slider_object*>) {
+            if(is_selected && mouse_provider.is_down() && !click_handled) {
+                move_slider(*object, mouse_provider.get_coordinates());
+            }
             add_slider(*object, info_provider, is_selected);
-
-        } else if constexpr(std::is_same_v<T, const Circle_object*>) {
+        } else if constexpr(std::is_same_v<T, Circle_object*>) {
             add_circle(*object, info_provider, is_selected);
-
         } else {
             throw std::logic_error{"Invalid type"};
         }
@@ -100,7 +119,7 @@ void Visible_objects_manager::update(std::chrono::milliseconds /*time_passed*/)
     }
 }
 
-Visible_objects_manager::Visible_objects_manager(const Analysed_beatmap& beatmap, const Analysed_replay& replay,
+Visible_objects_manager::Visible_objects_manager(Analysed_beatmap& beatmap, const Analysed_replay& replay,
                                                  const Playfield_coordinate_provider& coordinate_provider, const Playback_logic& player,
                                                  const Mouse_provider& mouse_provider)
     : beatmap{beatmap}, replay{replay}, coordinate_provider{coordinate_provider}, player{player}, mouse_provider{mouse_provider}
