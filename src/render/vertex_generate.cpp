@@ -65,7 +65,7 @@ std::vector<Slider_vert> vertex_generate(const std::vector<Magnum::Vector2>& sli
         const auto direction = (b - a).normalized();
         const auto side = direction.perpendicular();
 
-        auto color_mid = Magnum::Math::lerp(color_left, color_right, 0.5f);
+        const auto color_mid = Magnum::Math::lerp(color_left, color_right, 0.5f);
 
         output.emplace_back(Magnum::Vector3{a - width * side, depth_border}, color_left);
         output.emplace_back(Magnum::Vector3{a, depth_mid}, color_mid);
@@ -98,9 +98,9 @@ std::vector<Slider_vert> vertex_generate(const std::vector<Magnum::Vector2>& sli
     }
 
     for(std::size_t i = 2; i < slider_points.size(); ++i) {
-        const auto a = lerp(slider_points[i - 2], slider_points[i - 1], 0.5);
+        const auto a = slider_points[i - 2];
         const auto b = slider_points[i - 1];
-        const auto c = lerp(slider_points[i - 1], slider_points[i], 0.5);
+        const auto c = slider_points[i];
 
         const auto direction_a = (b - a).normalized();
         const auto direction_c = (c - b).normalized();
@@ -122,7 +122,11 @@ std::vector<Slider_vert> vertex_generate(const std::vector<Magnum::Vector2>& sli
                 direction_c);
         if(!std::isfinite(t) || !std::isfinite(u) || std::isnan(t) || std::isnan(u)) continue;//no intersection or whatever //Todo: Handle straight lines
 
-        const auto inner = a - width * side_a + t * direction_a;
+        // Attempt to prevent jutting out for very sharp edges
+        // This still breaks in some cases but not as noticeably
+        const auto projected_inner_a = a - width * side_a + std::max(t, 0.f) * direction_a;
+        const auto projected_inner_c = c - width * side_c + std::min(u, 0.f) * direction_c;
+        const auto inner = t > -u ? projected_inner_a : projected_inner_c;
 
 
         // Slider consists of two incoming line segments and the outer arc (E)
