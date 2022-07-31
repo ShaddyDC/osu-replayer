@@ -4,7 +4,8 @@
 #include "render/drawable_circle.h"
 #include "render/drawable_slider.h"
 #include <algorithm>
-#include <ranges>
+#include <range/v3/algorithm.hpp>
+#include <range/v3/view.hpp>
 
 template<class Visitor>
 static void iterate_hitobjects(const std::vector<Circle_object*>& circles, const std::vector<Slider_object*>& sliders, Visitor&& f)
@@ -26,7 +27,7 @@ static void move_slider(Slider_object& slider, const osu::Vector2 pos)
 {
     if(slider.slider.points.empty()) return;
 
-    auto p = std::ranges::min_element(slider.slider.points, [&pos](const auto& a, const auto& b) { return length_squared(pos - a) < length_squared(pos - b); });
+    auto p = ranges::min_element(slider.slider.points, [&pos](const auto& a, const auto& b) { return length_squared(pos - a) < length_squared(pos - b); });
     *p = pos;
 
     slider.slider.distances.clear();
@@ -58,9 +59,9 @@ void Visible_objects_manager::update(std::chrono::milliseconds /*time_passed*/)
             const auto already_selected = selection && std::holds_alternative<T>(*selection) && object == std::get<T>(*selection);
 
             if constexpr(std::is_same_v<T, Slider_object*>) {
-                if(std::ranges::filter_view(object->slider.points, point_in_range)) {// TODO Handle large point distance
-                    selection = object;                                              // TODO Invalidate selection value when beatmap changes
-                    click_handled = !already_selected;                               // Allow interacting with selection
+                if(object->slider.points | ranges::views::filter(point_in_range)) {// TODO Handle large point distance
+                    selection = object;                                            // TODO Invalidate selection value when beatmap changes
+                    click_handled = !already_selected;                             // Allow interacting with selection
                     return false;
                 }
             } else if constexpr(std::is_same_v<T, Circle_object*>) {

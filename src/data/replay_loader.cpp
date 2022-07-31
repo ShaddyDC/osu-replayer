@@ -1,8 +1,10 @@
 #include "replay_loader.h"
 #include "osu_reader/replay_reader.h"
 #include <Corrade/Containers/StringStlView.h>
+#include <Corrade/Utility/Debug.h>
 #include <Corrade/Utility/Resource.h>
 #include <imgui.h>
+
 
 Replay_loader::Replay_loader(Api_manager& api_manager)
     : replay{std::nullopt}, api_manager{api_manager}

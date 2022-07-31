@@ -80,6 +80,7 @@ target_link_libraries(osu_replayer_lib PUBLIC
         Corrade::Utility
         nlohmann_json::nlohmann_json
         osuReader::osuReader
+        range-v3::range-v3
         )
 
 # WebGL doesn't need OpenSSL because of javascript

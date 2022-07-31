@@ -1,8 +1,9 @@
 #include "analysed_beatmap.h"
 #include "osu_reader/beatmap_util.h"
+#include "range/v3/algorithm.hpp"
+#include "range/v3/range.hpp"
+#include "range/v3/view.hpp"
 #include <Magnum/Magnum.h>
-#include <algorithm>
-#include <ranges>
 
 Analysed_beatmap::Analysed_beatmap(Bindable<std::optional<osu::Beatmap>>& beatmap)
     : beatmap{beatmap.get()}
@@ -34,13 +35,13 @@ void Analysed_beatmap::analyse(const Bindable<std::optional<osu::Beatmap>>& map)
     std::optional<std::chrono::milliseconds> start = {};
     std::optional<std::chrono::milliseconds> end = {};
     if(!circles.empty()) {
-        const auto [min, max] = std::ranges::minmax_element(circles, std::less{}, &Circle_object::time);
+        const auto [min, max] = ranges::minmax_element(circles, std::less{}, &Circle_object::time);
         if(!start || *start > min->time) start = min->time;
         if(!end || *end < min->time) end = min->time;
     }
     if(!sliders.empty()) {
-        const auto min = std::ranges::min_element(sliders, std::less{}, &Slider_object::time);
-        const auto max = std::ranges::max_element(sliders, [](const auto& a, const auto& b) { return a.slider.time + a.slider.duration < b.slider.time + b.slider.duration; });
+        const auto min = ranges::min_element(sliders, std::less{}, &Slider_object::time);
+        const auto max = ranges::max_element(sliders, [](const auto& a, const auto& b) { return a.slider.time + a.slider.duration < b.slider.time + b.slider.duration; });
         if(!start || *start > min->time) start = min->time;
         if(!end || *end < max->slider.time + max->slider.duration) end = max->slider.time + max->slider.duration;
     }
@@ -50,8 +51,6 @@ void Analysed_beatmap::analyse(const Bindable<std::optional<osu::Beatmap>>& map)
 
 std::vector<Circle_object*> Analysed_beatmap::circles_at(std::chrono::milliseconds time, const Beatmap_info_provider& info_provider)
 {
-    std::vector<Circle_object*> ret;
-
     const auto early_window = std::chrono::milliseconds{static_cast<int>(osu::ar_to_ms(info_provider.ar()))};
     const auto late_window = std::chrono::milliseconds{static_cast<int>(osu::od_to_ms300(info_provider.od()))};
 
@@ -59,16 +58,11 @@ std::vector<Circle_object*> Analysed_beatmap::circles_at(std::chrono::millisecon
         return (obj.time - early_window).count() < time.count() && (obj.time + late_window).count() > time.count();
     };
 
-    std::ranges::copy(circles | std::views::filter(in_time) | std::views::transform([](auto& o) { return &o; }),
-                      std::back_inserter(ret));
-
-    return ret;
+    return circles | ranges::views::filter(in_time) | ranges::views::transform([](auto& o) { return &o; }) | ranges::to_vector;
 }
 
 std::vector<Slider_object*> Analysed_beatmap::sliders_at(std::chrono::milliseconds time, const Beatmap_info_provider& info_provider)
 {
-    std::vector<Slider_object*> ret;
-
     const auto early_window = std::chrono::milliseconds{static_cast<int>(osu::ar_to_ms(info_provider.ar()))};
     const auto late_window = std::chrono::milliseconds{static_cast<int>(osu::od_to_ms300(info_provider.od()))};
 
@@ -76,10 +70,7 @@ std::vector<Slider_object*> Analysed_beatmap::sliders_at(std::chrono::millisecon
         return (obj.time - early_window).count() < time.count() && (obj.time + obj.slider.duration + late_window).count() > time.count();
     };
 
-    std::ranges::copy(sliders | std::views::filter(in_time) | std::views::transform([](auto& o) { return &o; }),
-                      std::back_inserter(ret));
-
-    return ret;
+    return sliders | ranges::views::filter(in_time) | ranges::views::transform([](auto& o) { return &o; }) | ranges::to_vector;
 }
 
 Magnum::Math::Vector2<std::chrono::milliseconds> Analysed_beatmap::time_range() const

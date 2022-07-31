@@ -2,9 +2,13 @@ cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
 
 set(MAGNUM_WITH_SDL2APPLICATION ON CACHE BOOL "" FORCE)
 set(MAGNUM_GL_INFO ON CACHE BOOL "" FORCE)
+set(MAGNUM_TARGET_GLES2 OFF CACHE BOOL "" FORCE)
 
 add_subdirectory(corrade EXCLUDE_FROM_ALL)
 add_subdirectory(magnum EXCLUDE_FROM_ALL)
+
+# get CORRADE_TARGET_EMSCRIPTEN
+find_package(Corrade REQUIRED)
 
 if (CORRADE_TARGET_EMSCRIPTEN)
     # emscripten ships with a custom implementation of TEST_BIG_ENDIAN in TestBigEndian.cmake that xz requires to compile
@@ -32,3 +36,6 @@ add_subdirectory(httplib)
 set(ENABLE_TESTING OFF CACHE INTERNAL "")
 set(ENABLE_LZMA ON CACHE INTERNAL "")
 add_subdirectory(osu_reader)
+
+add_subdirectory(range-v3)
+set_target_properties(range-v3 PROPERTIES INTERFACE_SYSTEM_INCLUDE_DIRECTORIES $<TARGET_PROPERTY:range-v3,INTERFACE_INCLUDE_DIRECTORIES>)

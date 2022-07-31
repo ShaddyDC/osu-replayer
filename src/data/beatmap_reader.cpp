@@ -1,5 +1,6 @@
 #include "beatmap_reader.h"
 #include "osu_reader/beatmap_parser.h"
+#include <Corrade/Utility/Debug.h>
 #include <Corrade/Utility/Resource.h>
 #include <imgui.h>
 

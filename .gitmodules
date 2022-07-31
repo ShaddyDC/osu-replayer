@@ -16,3 +16,9 @@
 [submodule "libs/magnum"]
 	path = libs/magnum
 	url = https://github.com/mosra/magnum
+[submodule "toolchains"]
+	path = toolchains
+	url = https://github.com/mosra/toolchains
+[submodule "libs/range-v3"]
+	path = libs/range-v3
+	url = https://github.com/ericniebler/range-v3
