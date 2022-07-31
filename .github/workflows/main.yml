@@ -35,8 +35,8 @@ jobs:
           
     - name: Push update
       run: |
-        git config --global user.name 'ShaddyDC'
-        git config --global user.email 'shaddythefirst@gmail.com'
+        git config --global user.name 'github-actions'
+        git config --global user.email 'github-actions@github.com'
         git clone https://x-access-token:${{ secrets.WEBSITETOKEN }}@github.com/ShaddyDC/replayer-website
         cp build-emscripten/RelWithDebInfo/bin/* replayer-website/
         cd replayer-website
