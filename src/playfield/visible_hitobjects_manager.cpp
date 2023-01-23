@@ -52,7 +52,7 @@ void Visible_objects_manager::update(std::chrono::milliseconds /*time_passed*/)
 
     // Check if hitobject was clicked
     click_handled &= mouse_provider.is_down();// Mouse down => unhandled
-    if(mouse_provider.was_clicked()) {
+    if(mouse_provider.was_clicked() && !click_handled) {
         const auto point_in_range = [&](const osu::Vector2& p) { return distance(p, mouse_provider.get_coordinates()) < osu::cs_to_osupixel(info_provider.cs()); };
         iterate_hitobjects(circles, sliders, [&](const auto& object) {
             using T = std::decay_t<decltype(object)>;
@@ -84,7 +84,7 @@ void Visible_objects_manager::update(std::chrono::milliseconds /*time_passed*/)
         const auto is_selected = selection && std::holds_alternative<T>(*selection) && object == std::get<T>(*selection);
 
         if constexpr(std::is_same_v<T, Slider_object*>) {
-            if(is_selected && mouse_provider.is_down() && !click_handled) {
+            if(is_selected && mouse_provider.is_down() && !click_handled && modifiable_sliders) {
                 move_slider(*object, mouse_provider.get_coordinates());
             }
             add_slider(*object, info_provider, is_selected);
@@ -122,8 +122,9 @@ void Visible_objects_manager::update(std::chrono::milliseconds /*time_passed*/)
 
 Visible_objects_manager::Visible_objects_manager(Analysed_beatmap& beatmap, const Analysed_replay& replay,
                                                  const Playfield_coordinate_provider& coordinate_provider, const Playback_logic& player,
-                                                 const Mouse_provider& mouse_provider)
-    : beatmap{beatmap}, replay{replay}, coordinate_provider{coordinate_provider}, player{player}, mouse_provider{mouse_provider}
+                                                 const Mouse_provider& mouse_provider, const bool& modifiable_sliders)
+    : beatmap{beatmap}, replay{replay}, coordinate_provider{coordinate_provider}, player{player}, mouse_provider{mouse_provider},
+      modifiable_sliders{modifiable_sliders}
 {
 }
 

@@ -99,12 +99,14 @@ void Config_manager::load()
         json = nlohmann::json::object();
 
     config.api_key = json.value("api_key", "");
+    config.modifiable_slider_points = json.value("modifiable_slider_points", false);
 }
 
 void Config_manager::save()
 {
     nlohmann::json json;
     json["api_key"] = config.api_key;
+    json["modifiable_slider_points"] = config.modifiable_slider_points;
 
     std::ofstream file{config_file};
     if(!file) {
@@ -135,6 +137,7 @@ void Config_manager::save()
 void Config_manager::config_window()
 {
     if(ImGui::Begin("config")) {
+        ImGui::Checkbox("Modifiable slider points", &config.modifiable_slider_points);
         ImGui::InputText("Api Key", &config.api_key);
         if(!cli_updated_api_key.empty() && cli_updated_api_key != config.api_key) {
             ImGui::InputText("New Key", &cli_updated_api_key, ImGuiInputTextFlags_ReadOnly);

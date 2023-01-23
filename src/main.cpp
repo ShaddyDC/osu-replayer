@@ -91,7 +91,10 @@ OsuReplayer::OsuReplayer(const Arguments& arguments) : Platform::Application{arg
     replay_loader = dynamic_cast<Replay_loader*>(components.emplace_back(std::make_unique<Replay_loader>(*api_manager)).get());
     components.emplace_back(std::make_unique<Replay_beatmap_matcher>(replay_loader->replay, *beatmap_reader, *api_manager));
 
-    play_container = dynamic_cast<Play_container*>(components.emplace_back(std::make_unique<Play_container>(beatmap_reader->map, replay_loader->replay)).get());
+    play_container = dynamic_cast<Play_container*>(
+            components.emplace_back(std::make_unique<Play_container>(
+                                            beatmap_reader->map, replay_loader->replay, config_manager->config.modifiable_slider_points))
+                    .get());
 
     coordinate_holder.set_resolution(play_container->get_size_manager().get_internal_size());
 

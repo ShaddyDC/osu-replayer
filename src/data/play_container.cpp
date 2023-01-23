@@ -11,11 +11,11 @@
 #include <Magnum/GL/TextureFormat.h>
 #include <imgui.h>
 
-Play_container::Play_container(Bindable<std::optional<osu::Beatmap>>& bm, Bindable<std::optional<osu::Replay>>& rp)
+Play_container::Play_container(Bindable<std::optional<osu::Beatmap>>& bm, Bindable<std::optional<osu::Replay>>& rp, const bool& modifiable_sliders)
     : beatmap{bm}, replay{rp},
       player{beatmap},
       coordinate_provider{static_cast<Magnum::Vector2>(size_manager.get_top_left()), rp.get()},
-      objects_manager{beatmap, replay, coordinate_provider, player, mouse_provider}
+      objects_manager{beatmap, replay, coordinate_provider, player, mouse_provider, modifiable_sliders}
 {
 }
 

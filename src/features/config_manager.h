@@ -5,6 +5,7 @@
 
 struct Config {
     std::string api_key;
+    bool modifiable_slider_points;
 };
 
 class Config_manager : public Component {
