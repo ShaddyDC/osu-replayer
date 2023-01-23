@@ -21,7 +21,7 @@ std::filesystem::path folder{buffer};
 if(!result) {
     result = folder = "./";
 }
-const auto config_file = foler / "replay_viewer.conf";
+const auto config_file = folder / "replay_viewer.conf";
 
 const auto config_file = std::filesystem::path{"/data"} / ".replay_viewer.conf";
 
