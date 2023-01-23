@@ -1,0 +1,21 @@
+# osu-replayer
+
+Viewer for osu! (stable, no lazer support) replays.
+It is written in C++ and can be run both natively and in the browser with WASM and WebGL.
+
+If the [API](https://github.com/ShaddyDC/osu-api-proxy/) is available,
+a downloadable replay can be passed (like `https://replay.shaddy.dev/?replayer-score=3287277626`).
+Both the replay and the corresponding beatmap will be fetched automatically, and the play will be shown.
+
+## Building
+
+Since the project uses standard CMake, many environments like [VSCode](https://code.visualstudio.com/docs/cpp/cmake-linux) will support it out-of-the-box.
+To manually build it, follow these steps while having CMake and a C++ compiler installed, or if using [Nix](https://nixos.org/), 
+use the provided dev environment with `nix develop`.
+
+```console
+$ git clone https://github.com/ShaddyDC/osu-replayer --recurse-submodules
+$ cd osu-replayer
+$ mkdir build && cd build
+$ cmake .. && cmake --build .
+```
