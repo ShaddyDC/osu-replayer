@@ -24,5 +24,5 @@ public:
 private:
     Sliderbody_shader shader;
     Circleobject_renderer circle_renderer;
-    Magnum::Shaders::FlatGL2D flat_shader{Magnum::Shaders::FlatGL2D::Flag::Textured};
+    Magnum::Shaders::FlatGL2D flat_shader{Magnum::Shaders::FlatGL2D::Configuration{}.setFlags(Magnum::Shaders::FlatGL2D::Flag::Textured)};
 };

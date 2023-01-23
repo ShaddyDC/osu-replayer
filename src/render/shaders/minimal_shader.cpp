@@ -1,6 +1,7 @@
 #include "minimal_shader.h"
 #include <Corrade/Containers/Reference.h>
 #include <Corrade/Utility/Resource.h>
+#include <Magnum/GL/Attribute.h>
 #include <Magnum/GL/Context.h>
 #include <Magnum/GL/Shader.h>
 #include <Magnum/GL/Version.h>
@@ -17,7 +18,7 @@ Minimal_shader::Minimal_shader()
     vert.addSource(rs.getString("minimal.vert"));
     frag.addSource(rs.getString("minimal.frag"));
 
-    CORRADE_INTERNAL_ASSERT_OUTPUT(Magnum::GL::Shader::compile({vert, frag}));
+    CORRADE_INTERNAL_ASSERT_OUTPUT(vert.compile() && frag.compile());
 
     attachShaders({vert, frag});
 

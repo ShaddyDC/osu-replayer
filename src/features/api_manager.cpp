@@ -73,12 +73,12 @@ std::optional<std::string> Api_manager::api_request_impl(std::string_view endpoi
     if(response) {
         status = response->status;
         if(status != status_success) {
-            Corrade::Utility::Debug() << "Error " << response.error() << response->status << response->body.c_str();
+            Corrade::Utility::Debug() << "Error " << static_cast<int>(response.error()) << response->status << response->body.c_str();
             return std::nullopt;
         }
         return response->body;
     }
-    Corrade::Utility::Debug() << "Bad error, no response" << response.error();
+    Corrade::Utility::Debug() << "Bad error, no response" << static_cast<int>(response.error());
     return std::nullopt;
 }
 
