@@ -11,6 +11,7 @@ public:
 
     [[nodiscard]] Magnum::Vector2i get_size() const;
     [[nodiscard]] Magnum::Vector2i get_internal_size() const;
+    [[nodiscard]] Magnum::Vector2i get_field_size() const;
     [[nodiscard]] Magnum::Vector2i get_top_left() const;
     [[nodiscard]] Magnum::Vector2i get_bottom_right() const;
     [[nodiscard]] float get_scale() const;
@@ -19,7 +20,7 @@ private:
     const Magnum::Vector2i field_size = {512, 384};
     const Magnum::Vector2i top_left{50, 50};
     const Magnum::Vector2i bottom_right{top_left + field_size};
-    const Magnum::Vector2i size_unscaled = {bottom_right + top_left};
+    const Magnum::Vector2i size_unscaled = {bottom_right + 2 * top_left};
     float scale = 1.f;
     Magnum::Vector2i scaling_size = size_unscaled;
 };

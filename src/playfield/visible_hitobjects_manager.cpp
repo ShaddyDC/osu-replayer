@@ -77,6 +77,16 @@ void Visible_objects_manager::update(std::chrono::milliseconds /*time_passed*/)
         });
     }
 
+    // Move slider on click
+    if(mouse_provider.is_down() && !click_handled && modifiable_sliders &&
+       selection.has_value() && std::holds_alternative<Slider_object*>(*selection)) {
+        const auto p = mouse_provider.get_coordinates();
+        if(p.x >= 0 - 50 && p.x <= size_manager.get_field_size().x() + 50 &&
+           p.y >= 0 - 50 && p.y <= size_manager.get_field_size().y() + 50) {
+            move_slider(*std::get<Slider_object*>(*selection), p);
+        }
+    }
+
     // Create drawings in reverse order and reverse
     iterate_hitobjects(circles, sliders, [&](auto& object) {
         using T = std::decay_t<decltype(object)>;
@@ -84,9 +94,6 @@ void Visible_objects_manager::update(std::chrono::milliseconds /*time_passed*/)
         const auto is_selected = selection && std::holds_alternative<T>(*selection) && object == std::get<T>(*selection);
 
         if constexpr(std::is_same_v<T, Slider_object*>) {
-            if(is_selected && mouse_provider.is_down() && !click_handled && modifiable_sliders) {
-                move_slider(*object, mouse_provider.get_coordinates());
-            }
             add_slider(*object, info_provider, is_selected);
         } else if constexpr(std::is_same_v<T, Circle_object*>) {
             add_circle(*object, info_provider, is_selected);
@@ -122,9 +129,10 @@ void Visible_objects_manager::update(std::chrono::milliseconds /*time_passed*/)
 
 Visible_objects_manager::Visible_objects_manager(Analysed_beatmap& beatmap, const Analysed_replay& replay,
                                                  const Playfield_coordinate_provider& coordinate_provider, const Playback_logic& player,
-                                                 const Mouse_provider& mouse_provider, const bool& modifiable_sliders)
+                                                 const Mouse_provider& mouse_provider, const Playfield_size_manager& size_manager,
+                                                 const bool& modifiable_sliders)
     : beatmap{beatmap}, replay{replay}, coordinate_provider{coordinate_provider}, player{player}, mouse_provider{mouse_provider},
-      modifiable_sliders{modifiable_sliders}
+      size_manager{size_manager}, modifiable_sliders{modifiable_sliders}
 {
 }
 

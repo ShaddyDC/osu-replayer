@@ -7,6 +7,7 @@
 #include "mouse_provider.h"
 #include "playback_logic.h"
 #include "playfield_coordinate_provider.h"
+#include "playfield_size_manager.h"
 #include "render/circleobject_renderer.h"
 #include "render/slider_renderer.h"
 #include <optional>
@@ -14,8 +15,9 @@
 
 class Visible_objects_manager {
 public:
-    Visible_objects_manager(Analysed_beatmap& beatmap, const Analysed_replay& replay, const Playfield_coordinate_provider& coordinate_provider, const Playback_logic& player,
-                            const Mouse_provider& mouse_provider, const bool& modifiable_sliders);
+    Visible_objects_manager(Analysed_beatmap& beatmap, const Analysed_replay& replay, const Playfield_coordinate_provider& coordinate_provider,
+                            const Playback_logic& player, const Mouse_provider& mouse_provider, const Playfield_size_manager& size_manager,
+                            const bool& modifiable_sliders);
 
     void update(std::chrono::milliseconds time_passed);
     void draw(Magnum::GL::Framebuffer& framebuffer);
@@ -36,6 +38,7 @@ private:
     const Playfield_coordinate_provider& coordinate_provider;
     const Playback_logic& player;
     const Mouse_provider& mouse_provider;
+    const Playfield_size_manager& size_manager;
     const bool& modifiable_sliders;
 
     bool click_handled = false;

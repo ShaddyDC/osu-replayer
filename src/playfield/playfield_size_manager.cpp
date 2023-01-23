@@ -30,6 +30,10 @@ Magnum::Vector2i Playfield_size_manager::get_internal_size() const
 {
     return size_unscaled;
 }
+Magnum::Vector2i Playfield_size_manager::get_field_size() const
+{
+    return field_size;
+}
 float Playfield_size_manager::get_scale() const
 {
     return scale;

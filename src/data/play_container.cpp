@@ -15,7 +15,7 @@ Play_container::Play_container(Bindable<std::optional<osu::Beatmap>>& bm, Bindab
     : beatmap{bm}, replay{rp},
       player{beatmap},
       coordinate_provider{static_cast<Magnum::Vector2>(size_manager.get_top_left()), rp.get()},
-      objects_manager{beatmap, replay, coordinate_provider, player, mouse_provider, modifiable_sliders}
+      objects_manager{beatmap, replay, coordinate_provider, player, mouse_provider, size_manager, modifiable_sliders}
 {
 }
 
