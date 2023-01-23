@@ -66,7 +66,7 @@ private:
 
 OsuReplayer::OsuReplayer(const Arguments& arguments) : Platform::Application{arguments,
                                                                              Configuration{}
-                                                                                     .setTitle("Magnum Triangle Example")
+                                                                                     .setTitle("osu-replayer")
                                                                                      .setSize({default_window_width, default_window_height})
                                                                                      .setWindowFlags(Configuration::WindowFlag::Resizable)}
 {
