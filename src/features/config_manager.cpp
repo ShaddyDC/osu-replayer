@@ -70,7 +70,7 @@ Config_manager::Config_manager()
             FS.syncfs(
                     true, function(err) {
                         assert(!err);
-                        console.log("Finished loading files system!");
+                        console.log("Finished loading file system!");
                         Module.ccall('loaded_callback');
                     }););
 #else
