@@ -132,7 +132,7 @@ configure_file(src/version.cpp.in ${CMAKE_CURRENT_BINARY_DIR}/version.cpp @ONLY)
 
 if (CORRADE_TARGET_EMSCRIPTEN)
     set_target_properties(osu_replayer PROPERTIES
-            LINK_FLAGS "-lidbfs.js -s EXPORTED_FUNCTIONS='[_main, _loaded_callback]' -s EXPORTED_RUNTIME_METHODS='[ccall]' -s ASYNCIFY=1 -s ASYNCIFY_IMPORTS='[js_api_request]' -s ASYNCIFY_STACK_SIZE=65535"
+            LINK_FLAGS "-lidbfs.js -s EXPORTED_FUNCTIONS='[_main, _loaded_callback]' -s EXPORTED_RUNTIME_METHODS='[ccall, AsciiToString]' -s ASYNCIFY=1 -s ASYNCIFY_IMPORTS='[js_api_request]' -s ASYNCIFY_STACK_SIZE=65535"
             )
     # -lidbfs.js for dbfs file system
     # EXPORTED_FUNCTIONS to allow access from js
@@ -140,25 +140,16 @@ if (CORRADE_TARGET_EMSCRIPTEN)
     # ASYNCIFY to allow async js calls
     # ASYNCIFY_STACK_SIZE to avoid "RuntimeError: unreachable executed" in async code
 
-    # For Emscripten copy the boilerplate next to the executable so it can be run
-    # directly from the build dir; provide an install target as well
-    add_custom_command(TARGET osu_replayer POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    install(TARGETS osu_replayer DESTINATION ${CMAKE_INSTALL_PREFIX})
+    install(FILES
+            src/index.html
+            ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/osu_replayer.wasm
             ${MAGNUM_EMSCRIPTENAPPLICATION_JS}
             ${MAGNUM_WEBAPPLICATION_CSS}
-            ${CMAKE_CURRENT_SOURCE_DIR}/src/index.html
-            $<TARGET_FILE_DIR:osu_replayer>)
-
-    install(TARGETS osu_replayer DESTINATION ${MAGNUM_DEPLOY_PREFIX})
+            DESTINATION ${CMAKE_INSTALL_PREFIX})
     install(FILES
-            index.html
-            ${MAGNUM_EMSCRIPTENAPPLICATION_JS}
-            ${MAGNUM_WEBAPPLICATION_CSS}
-            DESTINATION ${MAGNUM_DEPLOY_PREFIX})
-    install(FILES
-            $<TARGET_FILE_DIR:osu_replayer>/osu_replayer.js.mem
-            $<TARGET_FILE_DIR:osu_replayer>/osu_replayer.wasm
-            DESTINATION ${MAGNUM_DEPLOY_PREFIX} OPTIONAL)
+            ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/osu_replayer.js.mem
+            DESTINATION ${CMAKE_INSTALL_PREFIX} OPTIONAL)
 endif ()
 
 # Make the executable a default target to build & run in Visual Studio

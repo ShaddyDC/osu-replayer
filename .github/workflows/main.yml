@@ -33,14 +33,14 @@ jobs:
       run: |
         docker run -v "$PWD":/src ghcr.io/shaddydc/emscripten-magnum-docker:master sh -c "
           cd /src && mkdir build-emscripten && cd build-emscripten &&
-          cmake .. -DCMAKE_TOOLCHAIN_FILE="../toolchains/generic/Emscripten-wasm.cmake" -DCMAKE_BUILD_TYPE=RelWithDebInfo &&
-          cmake --build . "
+          cmake .. -DCMAKE_TOOLCHAIN_FILE="../toolchains/generic/Emscripten-wasm.cmake" -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_INSTALL_PREFIX=./deploy &&
+          cmake --build . --target install"
     - name: Setup Pages
       uses: actions/configure-pages@v2
     - name: Upload artifact
       uses: actions/upload-pages-artifact@v1
       with:
-        path: './build-emscripten/RelWithDebInfo/bin/'
+        path: './build-emscripten/deploy/'
     - name: Deploy to GitHub Pages
       id: deployment
       uses: actions/deploy-pages@v1
