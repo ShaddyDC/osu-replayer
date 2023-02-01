@@ -21,15 +21,6 @@
             name = "slider_draw";
             src = ./.;
             buildInputs = inputs;
-            # cmakeFlags = [
-            #   "-DCMAKE_BUILD_TYPE=RelWithDebInfo"
-            #   "-DCMAKE_INSTALL_PREFIX=$out"
-            # ];
-            # installPhase = ''
-            #   # ls RelWithDebInfo/bin/
-            #   mkdir -p $out/bin
-            #   cp RelWithDebInfo/bin/* $out/bin
-            # '';
           };
 
           # Uses podman to ensure same process as CD
