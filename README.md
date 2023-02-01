@@ -22,3 +22,12 @@ $ cd osu-replayer
 $ mkdir build && cd build
 $ cmake .. && cmake --build .
 ```
+
+## Using the flake package
+
+If you're using [Nix](https://nixos.org/), the executable is exported in the flake.
+However, since it relies on submodules, you have to explicitly enable those.
+
+```console
+$ nix shell "git+https://github.com/ShaddyDC/osu-replayer?submodules=1" -c osu_replayer
+```
