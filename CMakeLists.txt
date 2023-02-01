@@ -150,6 +150,13 @@ if (CORRADE_TARGET_EMSCRIPTEN)
     install(FILES
             ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/osu_replayer.js.mem
             DESTINATION ${CMAKE_INSTALL_PREFIX} OPTIONAL)
+else()
+include(GNUInstallDirs)
+    install(TARGETS osu_replayer)
+
+    # Runtime dependencies that need to be installed
+    # Unfortunately, these cannot be installed by Alias targets
+    install(TARGETS MagnumImGuiIntegration MagnumShaders MagnumGL Magnum CorradeUtility)
 endif ()
 
 # Make the executable a default target to build & run in Visual Studio
